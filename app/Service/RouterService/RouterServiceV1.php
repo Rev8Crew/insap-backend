@@ -15,15 +15,15 @@ class RouterServiceV1 extends AbstractRouterService
     public function registerRoutes()
     {
         $path = $this->getBasePath();
+        $api = static::API_PREFIX . '/' . static::ROUTE_VERSION_PREFIX;
+        $web = static::BACKEND_PREFIX . '/' . static::ROUTE_VERSION_PREFIX;
 
-        Route::prefix(static::API_PREFIX)
-            ->prefix(static::ROUTE_VERSION_PREFIX)
+        Route::prefix($api)
             ->middleware('api')
             ->namespace($this->namespace)
             ->group(base_path($path . 'api.php'));
 
-        Route::prefix(static::BACKEND_PREFIX)
-            ->prefix(static::ROUTE_VERSION_PREFIX)
+        Route::prefix($web)
             ->middleware('web')
             ->namespace($this->namespace)
             ->group(base_path($path . 'web.php'));

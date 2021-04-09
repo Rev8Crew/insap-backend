@@ -42,6 +42,12 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes( function () use ($routerServiceV1) {
             $routerServiceV1->registerRoutes();
+
+            // Preload static common routes for app
+            // such as frontend, etc ...
+            Route::middleware('web')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/common.php'));
         });
     }
 

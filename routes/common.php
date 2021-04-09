@@ -14,9 +14,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 // For public application
 Route::any('/{any}', [FrontendController::class, 'app'])->where('any', '^(?!api).*$');
