@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Service\RouterService\RouterServiceV1;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/home';
+    public const HOME = '/';
     /**
      * The controller namespace for the application.
      *
@@ -36,15 +37,11 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
-        $this->routes(function () {
-            Route::prefix('api')
-                ->middleware('api')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/api.php'));
+        $routerServiceV1 = app(RouterServiceV1::class);
+        $routerServiceV1->setNamespace($this->namespace);
 
-            Route::middleware('web')
-                ->namespace($this->namespace)
-                ->group(base_path('routes/web.php'));
+        $this->routes( function () use ($routerServiceV1) {
+            $routerServiceV1->registerRoutes();
         });
     }
 

@@ -166,6 +166,7 @@ return [
          * Package Service Providers...
          */
         Jenssegers\Mongodb\MongodbServiceProvider::class,
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 
         /*
          * Application Service Providers...
