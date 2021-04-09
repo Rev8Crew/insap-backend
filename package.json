@@ -1,0 +1,10 @@
+{
+  "name": "insap",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "serve:app": "cd resources/frontend/app && npm run serve",
+    "build:app": "cd resources/frontend/app && npm run build",
+    "lint:app": "cd resources/frontend/app && npm run lint"
+  }
+}
