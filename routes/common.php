@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes
+| Common Routes
 |--------------------------------------------------------------------------
 |
 | Here is where you can register web routes for your application. These
@@ -14,6 +14,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/**
+ *  Common Routes
+ */
 
 // For public application
-Route::any('/{any}', [FrontendController::class, 'app'])->where('any', '^(?!api).*$');
+Route::any('/{any}', [\App\Http\Controllers\CommonController::class, 'app'])->where('any', '^(?!api).*$');

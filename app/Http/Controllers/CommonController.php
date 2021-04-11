@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
-class FrontendController extends Controller
+
+/**
+ * Class CommonController
+ *
+ * @package App\Http\Controllers
+ */
+class CommonController extends Controller
 {
     // For public application
     public function app()

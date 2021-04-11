@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Service\RouterService\RouterServiceV1;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
@@ -29,6 +28,13 @@ class RouteServiceProvider extends ServiceProvider
     // protected $namespace = 'App\\Http\\Controllers';
 
     /**
+     * The Version of application api.
+     *
+     * @var string
+     */
+    public const WEB_PREFIX = 'web';
+
+    /**
      * Define your route model bindings, pattern filters, etc.
      *
      * @return void
@@ -37,18 +43,54 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
-        $routerServiceV1 = app(RouterServiceV1::class);
-        $routerServiceV1->setNamespace($this->namespace);
+        $this->routes( function () {
+            $this->addModulesRoutes();
 
-        $this->routes( function () use ($routerServiceV1) {
-            $routerServiceV1->registerRoutes();
-
-            // Preload static common routes for app
-            // such as frontend, etc ...
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/common.php'));
         });
+    }
+
+    /**
+     * Define the "modules" routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function addModulesRoutes()
+    {
+        $modules_folder = app_path('Modules');
+        $modules = $this->getModulesList($modules_folder);
+
+        foreach ($modules as $module) {
+            $routesPathWeb   = $modules_folder . DIRECTORY_SEPARATOR . $module . DIRECTORY_SEPARATOR . 'routes_web.php';
+
+            if (file_exists($routesPathWeb)) {
+                Route::prefix(self::WEB_PREFIX)
+                    ->middleware('web')
+                    ->namespace($this->namespace/*"\\App\\Modules\\$module\Controllers"*/)
+                    ->group($routesPathWeb);
+            }
+        }
+    }
+
+    /**
+     * @param string $modules_folder
+     * @return array
+     */
+    private function getModulesList(string $modules_folder): array
+    {
+        return
+            array_values(
+                array_filter(
+                    scandir($modules_folder),
+                    function ($item) use($modules_folder) {
+                        return is_dir($modules_folder . DIRECTORY_SEPARATOR . $item) && !in_array($item, [".",".."]);
+                    }
+                )
+            );
     }
 
     /**
