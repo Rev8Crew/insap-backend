@@ -14,12 +14,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
-
-        $user = User::create([
-            'name' => 'root',
-            'email' => 'admin@admin.com',
-            'password' => \Hash::make('rootadmin')
+        $this->call([
+            RolePermissionSeeder::class,
+            UserSeeder::class,
         ]);
     }
 }

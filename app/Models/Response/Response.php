@@ -12,15 +12,7 @@ use Illuminate\Contracts\Support\Arrayable;
  */
 class Response implements Arrayable
 {
-    const STATUS_OK    = 0;
-    const STATUS_ERROR = 1;
-
-    const ERROR_NOT_FOUND       = 404;
-    const ERROR_INTERNAL_SERVER = 500;
-    const ERROR_BAD_REQUEST     = 400;
-    const ERROR_UNAUTHORIZED    = 401;
-
-    protected int   $status = self::STATUS_OK;
+    protected ?ResponseStatus $status;
 
     /**
      *  Response data
@@ -51,6 +43,7 @@ class Response implements Arrayable
     public function __construct()
     {
         $this->executionTime = time();
+        $this->status = new ResponseStatus(ResponseStatus::DEFAULT_STATUS);
     }
 
     /**
@@ -62,10 +55,13 @@ class Response implements Arrayable
      */
     public function withError(int $errorCode, string $message): self
     {
-        $this->hasErrors = true;
+        if (!$this->hasErrors) {
+            $this->hasErrors = true;
+            $this->status = new ResponseStatus( ResponseStatus::STATUS_ERROR);
+        }
 
         $this->errors[] = [
-            'code'    => $errorCode,
+            'code'    => (new ResponseErrorStatus($errorCode))->getStatus(),
             'message' => $message,
         ];
 
@@ -80,6 +76,7 @@ class Response implements Arrayable
     public function withData(array $data): Response
     {
         $this->data = $data;
+        $this->status = new ResponseStatus( ResponseStatus::STATUS_OK );
 
         return $this;
     }
@@ -91,7 +88,7 @@ class Response implements Arrayable
      */
     public function withStatus(int $status): Response
     {
-        $this->status = $status;
+        $this->status = new ResponseStatus($status);
         return $this;
     }
 
@@ -102,7 +99,7 @@ class Response implements Arrayable
     {
         return [
             'data'      => $this->data,
-            'status'    => $this->status,
+            'status'    => $this->status->getStatus(),
             'hasErrors' => $this->hasErrors,
             'errors'    => $this->errors,
             'execution_time' => time() - $this->executionTime
