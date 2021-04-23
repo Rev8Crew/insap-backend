@@ -71,4 +71,13 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    protected $appends = [
+        'userInfo'
+    ];
+
+    public function getUserInfoAttribute() : ?UserInfo {
+
+        return isset($this->id) ? UserInfo::where(['user_id' => $this->id])->first() : null;
+    }
 }
