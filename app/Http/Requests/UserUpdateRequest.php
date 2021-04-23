@@ -12,6 +12,7 @@ class UserUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'email' => 'string|email',
             'name' => 'string|min:3',
             'is_active' => 'integer'
         ];

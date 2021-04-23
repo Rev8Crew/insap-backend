@@ -37,11 +37,11 @@ class UserService
      */
     public function update(User $user, array $userParams = []): bool
     {
-//        $email = $userParams['email'] ?? null;
-//
-//        if ($email && User::whereEmail($email)->first()) {
-//            return false;
-//        }
+        $email = $userParams['email'] ?? null;
+
+        if ($email && User::whereEmail($email)->first()) {
+            return false;
+        }
 
         $user->update($userParams);
         return true;
