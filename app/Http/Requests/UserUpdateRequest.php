@@ -6,17 +6,21 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UserUpdateRequest extends FormRequest
 {
-    public function rules()
+    /**
+     * @return string[]
+     */
+    public function rules(): array
     {
         return [
-            'email' => 'string|email',
             'name' => 'string|min:3',
-            'password' => 'string|min:4|confirmed',
             'is_active' => 'integer'
         ];
     }
 
-    public function authorize()
+    /**
+     * @return bool
+     */
+    public function authorize(): bool
     {
         return true;
     }

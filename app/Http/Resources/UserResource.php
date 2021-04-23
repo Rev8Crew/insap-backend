@@ -24,7 +24,7 @@ class UserResource extends JsonResource
             'updated_at' => Carbon::parse($this->updated_at)->format('d.m.Y H:i:s'),
             'token' => $this->_token,
 
-            'userInfo' => UserInfo::where('user_id', $this->id)->first()
+            'userInfo' => $this->userInfo
         ];
     }
 
