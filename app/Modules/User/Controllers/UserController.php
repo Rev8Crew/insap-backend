@@ -3,12 +3,12 @@
 namespace App\Modules\User\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UserCreateRequest;
-use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Response\Response;
 use App\Models\Response\ResponseStatus;
 use App\Models\User;
+use App\Modules\User\Requests\UserCreateRequest;
+use App\Modules\User\Requests\UserUpdateRequest;
 use App\Modules\User\Services\UserService;
 
 /**

@@ -3,12 +3,12 @@
 namespace App\Modules\Auth\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Response\Response;
 use App\Models\Response\ResponseErrorStatus;
 use App\Models\Response\ResponseStatus;
 use App\Models\User;
+use App\Modules\Auth\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 
 /**
