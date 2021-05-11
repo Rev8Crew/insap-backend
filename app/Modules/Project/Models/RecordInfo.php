@@ -1,23 +1,15 @@
 <?php
 
-namespace App\Models;
+namespace App\Modules\Project\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
-use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
-/**
- * Class UserInfo
- * @property int user_id
- * @property string avatar
- *
- * @package App\Models
- */
-class UserInfo extends Model
+class RecordInfo extends Model
 {
     /**
      * @var string Collection name
      */
-    protected $collection = 'user_infos';
+    protected $collection = 'records';
 
     /**
      * @var string Connection name

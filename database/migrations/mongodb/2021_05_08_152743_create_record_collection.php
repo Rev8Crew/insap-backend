@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Jenssegers\Mongodb\Schema\Blueprint;
 
-class CreateRecordLogsTable extends Migration
+class CreateRecordCollection extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class CreateRecordLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('record_logs', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::connection('mongodb')->create('records', function (Blueprint $collection) {
+            $collection->index('record_id');
         });
     }
 
@@ -26,6 +25,6 @@ class CreateRecordLogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('record_logs');
+        Schema::connection('mongodb')->drop('records');
     }
 }

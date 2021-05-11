@@ -1,0 +1,12 @@
+use db_mongodb_00000000_insap;
+
+db.createUser({
+    user: "user",
+    pwd: "example",
+    roles: [
+        {
+            role: "dbOwner",
+            db: "db_mongodb_00000000_insap"
+        }
+    ]
+});

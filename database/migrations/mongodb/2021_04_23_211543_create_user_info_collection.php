@@ -4,10 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 use Jenssegers\Mongodb\Schema\Blueprint;
 
-/**
- * Class UserInfo
- */
-class UserInfo extends Migration
+class CreateUserInfoCollection extends Migration
 {
     /**
      *
