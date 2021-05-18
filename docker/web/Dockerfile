@@ -34,6 +34,10 @@ RUN apt-get update && apt-get install -y \
         gd \
         mysqli \
         pdo_mysql \
+        sockets \
+        zip \
+        mbstring \
+        xml \
     && pecl install \
         mongodb \
         xdebug \

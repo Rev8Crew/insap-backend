@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
     public function run()
     {
         $root = User::create([
-            'id' => 1,
+            'id' => User::ROOT_USER_ID,
             'name' => 'root',
             'email' => 'admin@admin.com',
             'password' => \Hash::make('rootadmin')
@@ -24,14 +24,19 @@ class UserSeeder extends Seeder
 
         $root->assignRole('super-admin');
 
-        $userInfo = UserInfo::create([
+        UserInfo::create([
             'user_id' => $root->id
         ]);
 
         $test = User::create([
+            'id' => User::TEST_USER_ID,
             'name' => 'test',
             'email' => 'test@test.com',
             'password' => \Hash::make('rootadmin')
+        ]);
+
+        UserInfo::create([
+            'user_id' => $test->id
         ]);
     }
 }

@@ -20,4 +20,9 @@ class IsActiveHelper
 
         return self::ACTIVE_ACTIVE;
     }
+
+    public static function validate( int $value ): bool
+    {
+        return in_array($value, [ self::ACTIVE_ACTIVE, self::ACTIVE_INACTIVE]);
+    }
 }

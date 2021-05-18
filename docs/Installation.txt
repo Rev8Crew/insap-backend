@@ -1,7 +1,11 @@
-use admin
-db.auth("root", "example")
-use db_mongodb_00000000_insap;
+---------------------------
+MongoDb configuration:
 
+ - docker exec -it insap_mongo bash
+ - mongo init
+ - use admin
+ - db.auth("root", "example")
+ - use db_mongodb_00000000_insap;
 db.createUser({
 user: "user",
 pwd: "example",

@@ -105,7 +105,7 @@ services:
     links:
       - insap-mongo
     command: ["--mongodb.uri=mongodb://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@${MONGO_DB_HOST}:${MONGO_DB_PORT}/admin",
-              "--web.listen-address=0.0.0.0:9091", "--mongodb.direct-connect=true", "--mongodb.collstats-colls=${MONGO_DB_NAME}.records"]
+              "--web.listen-address=0.0.0.0:9091", "--mongodb.direct-connect=true"]
 
   insap-node-exporter:
     image: prom/node-exporter:v0.18.1
@@ -123,7 +123,7 @@ services:
       - 9100
 
   insap-grafana:
-    image: grafana/grafana
+    image: grafana/grafana:7.4.5-ubuntu
     user: "$UID:$GID"
     depends_on:
       - insap-prometheus
@@ -140,4 +140,15 @@ services:
       - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
       - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
       - GF_USERS_ALLOW_SIGN_UP=false
+
+  insap-rabbit:
+    image: rabbitmq:3.8-management-alpine
+    environment:
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST}
+    ports:
+      - 15672:15672
+      - 5672:5672
 

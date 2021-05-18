@@ -2,6 +2,7 @@
 
 namespace App\Modules\Project\Models;
 
+use Illuminate\Support\Collection;
 use Jenssegers\Mongodb\Eloquent\Model;
 
 class RecordInfo extends Model
@@ -22,4 +23,12 @@ class RecordInfo extends Model
     protected $dates = ['created_at', 'updated_at'];
 
     protected $guarded = [];
+
+    /**
+     * @return Record
+     */
+    public function getRecordAttribute(): ?Collection
+    {
+        return Record::where('record_id', $this->record_id)->first();
+    }
 }

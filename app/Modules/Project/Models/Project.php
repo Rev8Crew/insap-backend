@@ -54,11 +54,13 @@ class Project extends Model
         'is_active'
     ];
 
-    public function recordsData() {
+    public function recordsData(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
         return $this->hasMany(RecordData::class);
     }
 
-    public function users() {
+    public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
         return $this->belongsToMany(User::class, 'user_project');
     }
 }

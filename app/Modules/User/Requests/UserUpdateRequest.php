@@ -2,6 +2,7 @@
 
 namespace App\Modules\User\Requests;
 
+use App\Rules\IsActive;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserUpdateRequest extends FormRequest
@@ -12,9 +13,9 @@ class UserUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'string|email',
+            'email' => 'string|email|unique:users',
             'name' => 'string|min:3',
-            'is_active' => 'integer'
+            'is_active' => ['integer', new IsActive]
         ];
     }
 

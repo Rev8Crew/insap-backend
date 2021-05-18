@@ -5,6 +5,7 @@ namespace App\Modules\User\Services;
 use App\Models\User;
 use App\Models\UserInfo;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserService
 {
@@ -12,12 +13,12 @@ class UserService
      *  Generate User model with userInfo and role
      * @param array $userParams
      * @param array $userInfoParams
-     * @return User|\Illuminate\Database\Eloquent\Model
+     * @return User
      */
-    public function create(array $userParams, array $userInfoParams = []) {
-        // Pre actions
-        $userParams['password'] = Hash::make($userParams['password']);
+    public function create(array $userParams, array $userInfoParams = []): User
+    {
 
+        $userParams['password'] = Hash::make($userParams['password']);
         $user = User::create( $userParams );
 
         UserInfo::create([
@@ -25,7 +26,7 @@ class UserService
             'info' => $userInfoParams
         ]);
 
-        // Add Role
+        // Add default role
         $user->assignRole(['super-admin']);
         return $user;
     }
@@ -33,18 +34,38 @@ class UserService
     /**
      * @param User $user
      * @param array $userParams
-     * @return bool
+     * @param array $userInfoParams
      */
-    public function update(User $user, array $userParams = []): bool
+    public function update(User $user, array $userParams = [], array $userInfoParams = [])
     {
-        $email = $userParams['email'] ?? null;
-
-        if ($email && User::whereEmail($email)->first()) {
-            return false;
-        }
-
         $user->update($userParams);
-        return true;
+        $user->user_info->update($userInfoParams);
+    }
+
+    /**
+     * @param User $user
+     */
+    public function delete(User $user) {
+        $userInfo = UserInfo::where('user_id', $user->id);
+        $userInfo->delete();
+
+        $user->delete();
+    }
+
+    /**
+     * @param User $user
+     * @param array $roles
+     */
+    public function attachRoles(User $user, array $roles) {
+        $user->roles()->attach( Role::whereIn('name', $roles)->get());
+    }
+
+    /**
+     * @param User $user
+     * @param array $roles
+     */
+    public function removeRoles(User $user, array $roles) {
+        $user->roles()->detach(Role::whereIn('name', $roles)->get());
     }
 
 }

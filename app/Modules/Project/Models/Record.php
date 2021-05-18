@@ -5,6 +5,7 @@ namespace App\Modules\Project\Models;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
@@ -60,15 +61,21 @@ class Record extends Model
         'records_info'
     ];
 
-    public function getRecordsInfoAttribute() {
+    /**
+     * @return Collection|null
+     */
+    public function getRecordsInfoAttribute(): ?Collection
+    {
         return RecordInfo::where('record_id', $this->id)->get();
     }
 
-    public function recordData() {
+    public function recordData(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
         return $this->belongsTo(RecordData::class, 'record_data_id');
     }
 
-    public function user() {
+    public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
         return $this->belongsTo(User::class, 'user_id');
     }
 }

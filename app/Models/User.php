@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\helpers\IsActiveHelper;
 use App\Modules\Project\Models\Project;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -51,6 +52,9 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
+    const ROOT_USER_ID = 1;
+    const TEST_USER_ID = 2;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -80,6 +84,10 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+    ];
+
+    protected $attributes = [
+        'is_active' => IsActiveHelper::ACTIVE_ACTIVE
     ];
 
     protected $appends = [
