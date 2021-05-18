@@ -2,6 +2,7 @@
 
 namespace App\Modules\Project\Models;
 
+use App\helpers\IsActiveHelper;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -59,6 +60,10 @@ class Record extends Model
 
     protected $appends = [
         'records_info'
+    ];
+
+    protected $attributes = [
+        'is_active' => IsActiveHelper::ACTIVE_ACTIVE
     ];
 
     /**

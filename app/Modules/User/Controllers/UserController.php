@@ -8,6 +8,7 @@ use App\Models\Response\Response;
 use App\Models\Response\ResponseStatus;
 use App\Models\User;
 use App\Modules\User\Requests\UserCreateRequest;
+use App\Modules\User\Requests\UserStatusRequest;
 use App\Modules\User\Requests\UserUpdateRequest;
 use App\Modules\User\Services\UserService;
 
@@ -81,6 +82,38 @@ class UserController extends Controller
         /** @var UserService $userService */
         $userService = app(UserService::class);
         $userService->update( $object, $request->all() );
+
+        return $response->withStatus(ResponseStatus::STATUS_OK);
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return Response
+     */
+    public function activate(User $user): Response
+    {
+        $response = new Response();
+
+        /** @var UserService $userService */
+        $userService = app(UserService::class);
+        $userService->activate($user);
+
+        return $response->withStatus(ResponseStatus::STATUS_OK);
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return Response
+     */
+    public function deactivate(User $user): Response
+    {
+        $response = new Response();
+
+        /** @var UserService $userService */
+        $userService = app(UserService::class);
+        $userService->deactivate($user);
 
         return $response->withStatus(ResponseStatus::STATUS_OK);
     }

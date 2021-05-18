@@ -2,6 +2,7 @@
 
 namespace App\Modules\User\Services;
 
+use App\helpers\IsActiveHelper;
 use App\Models\User;
 use App\Models\UserInfo;
 use Illuminate\Support\Facades\Hash;
@@ -68,4 +69,17 @@ class UserService
         $user->roles()->detach(Role::whereIn('name', $roles)->get());
     }
 
+    /**
+     * @param User $user
+     */
+    public function activate(User $user) {
+        $user->update(['is_active' => IsActiveHelper::ACTIVE_ACTIVE]);
+    }
+
+    /**
+     * @param User $user
+     */
+    public function deactivate(User $user) {
+        $user->update(['is_active' => IsActiveHelper::ACTIVE_INACTIVE]);
+    }
 }

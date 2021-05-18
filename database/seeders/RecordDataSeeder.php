@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Modules\Project\Models\Project;
+use App\Modules\Project\Models\RecordData;
 use Illuminate\Database\Seeder;
 
 class RecordDataSeeder extends Seeder
@@ -13,6 +15,12 @@ class RecordDataSeeder extends Seeder
      */
     public function run()
     {
-        //
+        $recordData = RecordData::create([
+            'name' => 'Test Journal',
+            'description' => 'description',
+            'project_id' => Project::TEST_PROJECT_ID
+        ]);
+
+
     }
 }

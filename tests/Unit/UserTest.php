@@ -20,7 +20,7 @@ class UserTest extends TestCase
 
         $this->_userService = $this->app->make(UserService::class);
         // Take test user from seeder
-        $this->_user = User::find(2);
+        $this->_user = User::find(User::TEST_USER_ID);
     }
 
     public function testBasicCreate()
@@ -86,9 +86,6 @@ class UserTest extends TestCase
         $this->assertTrue($this->_user->hasAllRoles($roles));
     }
 
-    /**
-     * @depends testBasicAddRoles
-     */
     public function testBasicRemoveRoles() {
         $roles = [
             'super-admin',
@@ -99,5 +96,11 @@ class UserTest extends TestCase
         $this->_userService->removeRoles($this->_user, $roles);
 
         $this->assertFalse($this->_user->hasAllRoles($roles));
+    }
+
+    public function testBasicActivateUser() {
+        $this->_userService->activate($this->_user);
+
+        $this->assertTrue(IsActiveHelper::ACTIVE_ACTIVE, $this->_user->is_active);
     }
 }

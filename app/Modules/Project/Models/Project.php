@@ -2,6 +2,7 @@
 
 namespace App\Modules\Project\Models;
 
+use App\helpers\IsActiveHelper;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -37,6 +38,8 @@ class Project extends Model
 {
     use HasFactory, LogsActivity;
 
+    const TEST_PROJECT_ID = 1;
+
     /**
      *  Log all fillable attr
      * @var bool
@@ -52,6 +55,10 @@ class Project extends Model
         'image',
         'order',
         'is_active'
+    ];
+
+    protected $attributes = [
+        'is_active' => IsActiveHelper::ACTIVE_ACTIVE
     ];
 
     public function recordsData(): \Illuminate\Database\Eloquent\Relations\HasMany

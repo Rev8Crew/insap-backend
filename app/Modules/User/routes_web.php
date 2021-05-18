@@ -7,11 +7,12 @@ use Illuminate\Support\Facades\Route;
 /**
  *  User Routes
  */
-Route::prefix('user')->middleware('auth:sanctum')->group(function () {
-    Route::post(RouteHelper::ROUTE_CREATE, [UserController::class, 'create']);
-    Route::post(RouteHelper::ROUTE_UPDATE, [UserController::class, 'update']);
-    Route::post(RouteHelper::ROUTE_DELETE, [UserController::class, 'delete']);
+Route::prefix('users')->middleware('auth:sanctum')->group(function () {
+    Route::post('/', [UserController::class, 'get']);
+    Route::post('create', [UserController::class, 'create']);
+    Route::post('delete/{user}', [UserController::class, 'delete']);
+    Route::post('view/{user}', [UserController::class, 'view']);
 
-    Route::post(RouteHelper::ROUTE_INDEX, [UserController::class, 'get']);
-    Route::post(RouteHelper::ROUTE_VIEW, [UserController::class, 'view']);
+    Route::post('{user}/activate', [ UserController::class, 'activate']);
+    Route::post('{user}/deactivate', [ UserController::class, 'deactivate']);
 });

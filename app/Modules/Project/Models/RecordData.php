@@ -2,6 +2,7 @@
 
 namespace App\Modules\Project\Models;
 
+use App\helpers\IsActiveHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -38,6 +39,8 @@ class RecordData extends Model
 {
     use HasFactory, LogsActivity;
 
+    const TEST_RECORD_DATA_ID = 1;
+
     /**
      *  Log all fillable attr
      * @var bool
@@ -53,6 +56,10 @@ class RecordData extends Model
         'image',
         'order',
         'is_active'
+    ];
+
+    protected $attributes = [
+        'is_active' => IsActiveHelper::ACTIVE_ACTIVE,
     ];
 
     public function project(): \Illuminate\Database\Eloquent\Relations\BelongsTo
