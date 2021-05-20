@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Response\Response;
 use App\Models\Response\ResponseStatus;
 use App\Modules\Project\Models\Project;
+use App\Modules\Project\Requests\ProjectCreateRequest;
 use App\Modules\Project\Resources\ProjectResource;
 use App\Modules\Project\Services\ProjectService;
 
@@ -29,13 +30,13 @@ class ProjectController extends Controller
     /**
      * @return Response
      */
-    public function create(): Response
+    public function create(ProjectCreateRequest $request): Response
     {
         $response = new Response();
 
         /** @var ProjectService $projectService */
         $projectService = app(ProjectService::class);
-        $projectService->create(request()->all());
+        $projectService->create($request->all());
 
         return $response->withStatus(ResponseStatus::STATUS_OK);
     }
