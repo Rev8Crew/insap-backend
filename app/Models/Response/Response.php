@@ -16,9 +16,9 @@ class Response implements Arrayable
 
     /**
      *  Response data
-     * @var array
+     * @var mixed
      */
-    protected array $data = [];
+    protected $data = [];
 
     /**
      * @var bool
@@ -69,11 +69,11 @@ class Response implements Arrayable
     }
 
     /**
-     * @param array $data
+     * @param mixed $data
      *
      * @return Response
      */
-    public function withData(array $data): Response
+    public function withData($data): Response
     {
         $this->data = $data;
         $this->status = new ResponseStatus( ResponseStatus::STATUS_OK );

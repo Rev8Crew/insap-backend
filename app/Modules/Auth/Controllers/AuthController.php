@@ -3,12 +3,12 @@
 namespace App\Modules\Auth\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\UserResource;
 use App\Models\Response\Response;
 use App\Models\Response\ResponseErrorStatus;
 use App\Models\Response\ResponseStatus;
 use App\Models\User;
 use App\Modules\Auth\Requests\LoginRequest;
+use App\Modules\User\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -41,7 +41,7 @@ class AuthController extends Controller
         $resource = new UserResource($user);
         $resource->setToken($token->plainTextToken);
 
-        return $response->withData( $resource->toArray($request) );
+        return $response->withData( $resource );
     }
 
     /**
@@ -66,6 +66,8 @@ class AuthController extends Controller
      */
     public function me() : Response {
         $response = new Response();
-        return $response->withData( (new UserResource(request()->user()))->toArray(request()));
+        $resource = new UserResource( request()->user());
+
+        return $response->withData( $resource );
     }
 }

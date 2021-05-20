@@ -13,6 +13,6 @@ Route::prefix('users')->middleware('auth:sanctum')->group(function () {
     Route::post('delete/{user}', [UserController::class, 'delete']);
     Route::post('view/{user}', [UserController::class, 'view']);
 
-    Route::post('{user}/activate', [ UserController::class, 'activate']);
-    Route::post('{user}/deactivate', [ UserController::class, 'deactivate']);
+    Route::post('activate/{user}', [ UserController::class, 'activate']);
+    Route::post('deactivate/{user}', [ UserController::class, 'deactivate']);
 });
