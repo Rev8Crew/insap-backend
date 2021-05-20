@@ -16,6 +16,7 @@ class RecordDataSeeder extends Seeder
     public function run()
     {
         $recordData = RecordData::create([
+            'id' => RecordData::TEST_RECORD_DATA_ID,
             'name' => 'Test Journal',
             'description' => 'description',
             'project_id' => Project::TEST_PROJECT_ID

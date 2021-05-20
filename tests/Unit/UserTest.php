@@ -101,6 +101,6 @@ class UserTest extends TestCase
     public function testBasicActivateUser() {
         $this->_userService->activate($this->_user);
 
-        $this->assertTrue(IsActiveHelper::ACTIVE_ACTIVE, $this->_user->is_active);
+        $this->assertEquals(IsActiveHelper::ACTIVE_ACTIVE, $this->_user->is_active);
     }
 }

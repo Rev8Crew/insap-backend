@@ -49,18 +49,18 @@ class RecordDataTest extends TestCase
         // Delete
         $this->recordDataService->delete($this->recordData);
 
-        $this->assertNull(Project::find($id));
+        $this->assertNull(RecordData::find($id));
     }
 
     public function testBasicActivate() {
         $this->recordDataService->activate($this->recordData);
 
-        $this->assertTrue(IsActiveHelper::ACTIVE_ACTIVE, $this->recordData->is_active);
+        $this->assertEquals(IsActiveHelper::ACTIVE_ACTIVE, $this->recordData->is_active);
     }
 
     public function testBasicDeactivate() {
         $this->recordDataService->deactivate($this->recordData);
 
-        $this->assertTrue(IsActiveHelper::ACTIVE_INACTIVE, $this->recordData->is_active);
+        $this->assertEquals(IsActiveHelper::ACTIVE_INACTIVE, $this->recordData->is_active);
     }
 }

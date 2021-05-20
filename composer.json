@@ -1,7 +1,7 @@
 {
-  "name": "laravel/laravel",
+  "name": "insap/backend",
   "type": "project",
-  "description": "The Laravel Framework.",
+  "description": " Laravel Application for in-situ data processing.",
   "keywords": [
     "framework",
     "laravel"
@@ -24,7 +24,6 @@
     "barryvdh/laravel-ide-helper": "^2.10",
     "facade/ignition": "^2.5",
     "fakerphp/faker": "^1.9.1",
-    "laravel/sail": "^1.5",
     "mockery/mockery": "^1.4.2",
     "nunomaduro/collision": "^5.0",
     "phpunit/phpunit": "^9.3.3"

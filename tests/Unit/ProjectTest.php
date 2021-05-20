@@ -55,13 +55,13 @@ class ProjectTest extends TestCase
     public function testBasicActivate() {
         $this->projectService->activate($this->project);
 
-        $this->assertTrue(IsActiveHelper::ACTIVE_ACTIVE, $this->project->is_active);
+        $this->assertEquals(IsActiveHelper::ACTIVE_ACTIVE, $this->project->is_active);
     }
 
     public function testBasicDeactivate() {
         $this->projectService->deactivate($this->project);
 
-        $this->assertTrue(IsActiveHelper::ACTIVE_INACTIVE, $this->project->is_active);
+        $this->assertEquals(IsActiveHelper::ACTIVE_INACTIVE, $this->project->is_active);
     }
 
     public function testBasicAddUser() {
