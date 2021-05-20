@@ -3,19 +3,17 @@
 namespace App\Modules\User\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\UserResource;
 use App\Models\Response\Response;
 use App\Models\Response\ResponseStatus;
 use App\Models\User;
 use App\Modules\User\Requests\UserCreateRequest;
-use App\Modules\User\Requests\UserStatusRequest;
 use App\Modules\User\Requests\UserUpdateRequest;
+use App\Modules\User\Resources\UserResource;
 use App\Modules\User\Services\UserService;
 
 /**
- * Class AuthController
- *
- * @package App\Http\Controllers\v1\Auth
+ * Class UserController
+ * @package App\Modules\User\Controllers
  */
 class UserController extends Controller
 {
@@ -27,19 +25,19 @@ class UserController extends Controller
         $response = new Response();
         $resource = UserResource::collection( User::all() );
 
-        return $response->withData( $resource->toArray(request()));
+        return $response->withData( $resource );
     }
 
     /**
-     * @param User $object
+     * @param User $user
      * @return Response
      */
-    public function view(User $object): Response
+    public function view(User $user): Response
     {
         $response = new Response();
-        $resource = (new UserResource($object));
+        $resource = (new UserResource($user));
 
-        return $response->withData( $resource->toArray(request()));
+        return $response->withData( $resource );
     }
 
     /**
@@ -58,30 +56,33 @@ class UserController extends Controller
     }
 
     /**
-     * @param User $object
+     * @param User $user
      * @return Response
      * @throws \Exception
      */
-    public function delete(User $object): Response
-    {
-        $response = new Response();
-        $status = $object->delete();
-
-        return $response->withStatus($status ? ResponseStatus::STATUS_OK : ResponseStatus::STATUS_ERROR);
-    }
-
-    /**
-     * @param UserUpdateRequest $request
-     * @param User $object
-     * @return Response
-     */
-    public function update(UserUpdateRequest $request, User $object): Response
+    public function delete(User $user): Response
     {
         $response = new Response();
 
         /** @var UserService $userService */
         $userService = app(UserService::class);
-        $userService->update( $object, $request->all() );
+        $userService->delete($user);
+
+        return $response->withStatus(ResponseStatus::STATUS_OK);
+    }
+
+    /**
+     * @param UserUpdateRequest $request
+     * @param User $user
+     * @return Response
+     */
+    public function update(UserUpdateRequest $request, User $user): Response
+    {
+        $response = new Response();
+
+        /** @var UserService $userService */
+        $userService = app(UserService::class);
+        $userService->update( $user, $request->all() );
 
         return $response->withStatus(ResponseStatus::STATUS_OK);
     }
