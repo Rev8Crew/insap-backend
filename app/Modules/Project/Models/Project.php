@@ -3,9 +3,13 @@
 namespace App\Modules\Project\Models;
 
 use App\helpers\IsActiveHelper;
+use App\Models\File;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
@@ -14,7 +18,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property int $id
  * @property string $name Project name
  * @property string $description Project description
- * @property string|null $image Project image
+ * @property integer $image_id Project image
  * @property int $order Project order
  * @property int $is_active Is project active
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -61,13 +65,18 @@ class Project extends Model
         'is_active' => IsActiveHelper::ACTIVE_ACTIVE
     ];
 
-    public function recordsData(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function recordsData(): HasMany
     {
         return $this->hasMany(RecordData::class);
     }
 
-    public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_project');
+    }
+
+    public function image(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'image_id');
     }
 }
