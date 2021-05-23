@@ -9,16 +9,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Spatie\Activitylog\Traits\LogsActivity;
 
+
 /**
  * App\Modules\Project\Models\Record
  *
- * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Activitylog\Models\Activity[] $activities
- * @property-read int|null $activities_count
- * @property-read mixed $records_info
- * @method static \Illuminate\Database\Eloquent\Builder|Record newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Record newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Record query()
- * @mixin \Eloquent
  * @property int $id
  * @property string $name Record name
  * @property string $description Record description
@@ -28,6 +22,14 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property int $user_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Activitylog\Models\Activity[] $activities
+ * @property-read int|null $activities_count
+ * @property-read \Illuminate\Support\Collection|null $records_info
+ * @property-read \App\Modules\Project\Models\RecordData $recordData
+ * @property-read User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Record newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Record newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Record query()
  * @method static \Illuminate\Database\Eloquent\Builder|Record whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Record whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Record whereId($value)
@@ -37,6 +39,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @method static \Illuminate\Database\Eloquent\Builder|Record whereRecordDataId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Record whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Record whereUserId($value)
+ * @mixin \Eloquent
  */
 class Record extends Model
 {

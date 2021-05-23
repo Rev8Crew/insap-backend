@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Jenssegers\Mongodb\Eloquent\Model;
-use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
 /**
  * Class UserInfo

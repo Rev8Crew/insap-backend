@@ -36,7 +36,7 @@ class ProjectController extends Controller
 
         /** @var ProjectService $projectService */
         $projectService = app(ProjectService::class);
-        $projectService->create($request->all());
+        $projectService->create($request->except(['image']), $request->file('image'), $request->user());
 
         return $response->withStatus(ResponseStatus::STATUS_OK);
     }

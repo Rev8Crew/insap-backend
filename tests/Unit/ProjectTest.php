@@ -8,7 +8,9 @@ use App\Models\UserInfo;
 use App\Modules\Project\Models\Project;
 use App\Modules\Project\Services\ProjectService;
 use App\Modules\User\Services\UserService;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ProjectTest extends TestCase
@@ -76,5 +78,17 @@ class ProjectTest extends TestCase
         $this->projectService->removeUserFromProject($this->project, $this->_user);
 
         $this->assertEquals( 0, $this->project->users()->count());
+    }
+
+    public function testChangeImage() {
+        $uploadedFile = UploadedFile::fake()->image('test_image.png', 100, 100);
+        $image = $this->project->imageFile->path;
+
+        $this->projectService->changeImage($this->project, $uploadedFile, $this->_user);
+
+        Storage::disk('fileStore')->assertMissing($image);
+        Storage::disk('fileStore')->assertExists($uploadedFile->hashName())->delete($uploadedFile->hashName());
+
+        $this->assertNotNull($this->project->imageFile);
     }
 }

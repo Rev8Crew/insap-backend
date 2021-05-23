@@ -6,7 +6,9 @@ use App\helpers\IsActiveHelper;
 use App\Models\User;
 use App\Models\UserInfo;
 use App\Modules\User\Services\UserService;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class UserTest extends TestCase
@@ -102,5 +104,14 @@ class UserTest extends TestCase
         $this->_userService->activate($this->_user);
 
         $this->assertEquals(IsActiveHelper::ACTIVE_ACTIVE, $this->_user->is_active);
+    }
+
+    public function testChangeImage() {
+        $uploadedFile = UploadedFile::fake()->image('test_image.png', 100, 100);
+
+        $this->_userService->changeImage($this->_user, $uploadedFile, $this->_user);
+
+        Storage::disk('fileStore')->assertExists($uploadedFile->hashName())->delete($uploadedFile->hashName());
+        $this->assertNotNull($this->_user->imageFile);
     }
 }

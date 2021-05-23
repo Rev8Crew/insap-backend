@@ -18,10 +18,10 @@ class CreateProjectsTable extends Migration
 
             $table->string('name')->comment('Project name');
             $table->string('description')->comment('Project description')->default('');
-            $table->text('image')->comment('Project image')->nullable();
             $table->integer('order')->comment('Project order')->default(0 );
             $table->smallInteger('is_active')->comment('Is project active')->default(\App\helpers\IsActiveHelper::ACTIVE_ACTIVE);
 
+            $table->integer('image_id')->comment('Project image')->nullable();
             $table->timestamps();
         });
     }

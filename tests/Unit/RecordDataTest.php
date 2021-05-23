@@ -10,13 +10,16 @@ use App\Modules\Project\Models\RecordData;
 use App\Modules\Project\Services\ProjectService;
 use App\Modules\Project\Services\RecordDataService;
 use App\Modules\User\Services\UserService;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class RecordDataTest extends TestCase
 {
     private ?RecordData $recordData = null;
     private ?RecordDataService $recordDataService = null;
+    private ?User $_user = null;
 
     public function setUp(): void
     {
@@ -24,6 +27,7 @@ class RecordDataTest extends TestCase
 
         $this->recordDataService = $this->app->make(RecordDataService::class);
         $this->recordData = RecordData::find(RecordData::TEST_RECORD_DATA_ID);
+        $this->_user = User::find(User::TEST_USER_ID);
     }
 
     public function testBasicCreate()
@@ -62,5 +66,14 @@ class RecordDataTest extends TestCase
         $this->recordDataService->deactivate($this->recordData);
 
         $this->assertEquals(IsActiveHelper::ACTIVE_INACTIVE, $this->recordData->is_active);
+    }
+
+    public function testChangeImage() {
+        $uploadedFile = UploadedFile::fake()->image('test_image.png', 100, 100);
+
+        $this->recordDataService->changeImage($this->recordData, $uploadedFile, $this->_user);
+
+        Storage::disk('fileStore')->assertExists($uploadedFile->hashName())->delete($uploadedFile->hashName());
+        $this->assertNotNull($this->recordData->imageFile);
     }
 }
