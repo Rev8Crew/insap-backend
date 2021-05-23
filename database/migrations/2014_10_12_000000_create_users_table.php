@@ -22,6 +22,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
 
             $table->smallInteger('is_active')->default(\App\helpers\IsActiveHelper::ACTIVE_ACTIVE);
+            $table->integer('image_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

@@ -12,6 +12,7 @@ class CreateFilesTable extends Migration
             $table->bigIncrements('id');
 
             $table->string('path')->nullable();
+            $table->string('url')->nullable();
 
             $table->string('name')->nullable();
             $table->string('mime')->nullable();

@@ -31,8 +31,8 @@ class BasicAuthTest extends TestCase
     }
 
     public function testBasicMe() {
-        $userRoot = User::first();
-        $response = $this->actingAs($userRoot)->getJson('web/auth/me');
+        $user = User::find(User::ROOT_USER_ID);
+        $response = $this->actingAs($user)->getJson('web/auth/me');
 
         $response->assertStatus(200);
         $response->assertJson(fn(AssertableJson $json) =>
@@ -44,8 +44,8 @@ class BasicAuthTest extends TestCase
     }
 
     public function testBasicLogout() {
-        $userRoot = User::first();
-        $response = $this->actingAs($userRoot)->postJson('web/auth/logout');
+        $user = User::find(User::TEST_USER_ID);
+        $response = $this->actingAs($user)->postJson('web/auth/logout');
 
         $response->assertStatus(200);
         $response->assertJson(fn(AssertableJson $json) =>
