@@ -46,6 +46,7 @@ class ImporterService
             // Event before import
             $this->importerEventService->event($event, ImporterEvent::EVENT_TYPE_PRE, $importer->appliance, $params, $files);
 
+            // Processing data
             $data = $this->exec($importer, $params, $files);
 
             // Event with processed data
