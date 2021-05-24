@@ -12,6 +12,12 @@ class CreateImportersTable extends Migration
             $table->bigIncrements('id');
 
             //
+            $table->string('name')->nullable();
+            $table->string('description')->nullable();
+
+            $table->integer('importer_script_id')->index()->nullable();
+            $table->integer('appliance_id')->index()->nullable();
+            $table->integer('user_id')->index()->nullable();
 
             $table->timestamps();
         });
