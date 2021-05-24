@@ -1,5 +1,6 @@
 <?php
 
+use App\helpers\IsActiveHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,9 +17,9 @@ class CreateFilesTable extends Migration
 
             $table->string('name')->nullable();
             $table->string('mime')->nullable();
-            $table->integer('is_active')->default(\App\helpers\IsActiveHelper::ACTIVE_ACTIVE);
+            $table->integer('is_active')->default(IsActiveHelper::ACTIVE_ACTIVE);
 
-            $table->integer('user_id')->nullable();
+            $table->integer('user_id')->index()->nullable();
 
             $table->timestamps();
         });

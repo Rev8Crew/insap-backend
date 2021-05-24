@@ -1,5 +1,6 @@
 <?php
 
+use App\helpers\IsActiveHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,9 +20,9 @@ class CreateProjectsTable extends Migration
             $table->string('name')->comment('Project name');
             $table->string('description')->comment('Project description')->default('');
             $table->integer('order')->comment('Project order')->default(0 );
-            $table->smallInteger('is_active')->comment('Is project active')->default(\App\helpers\IsActiveHelper::ACTIVE_ACTIVE);
+            $table->smallInteger('is_active')->comment('Is project active')->default(IsActiveHelper::ACTIVE_ACTIVE);
 
-            $table->integer('image_id')->comment('Project image')->nullable();
+            $table->integer('image_id')->comment('Project image')->index()->nullable();
             $table->timestamps();
         });
     }
