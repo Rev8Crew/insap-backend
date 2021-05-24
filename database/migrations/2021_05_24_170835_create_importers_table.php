@@ -1,24 +1,22 @@
 <?php
 
-use App\helpers\IsActiveHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateFilesTable extends Migration
+class CreateImportersTable extends Migration
 {
     public function up()
     {
-        Schema::create('files', function (Blueprint $table) {
+        Schema::create('importers', function (Blueprint $table) {
             $table->bigIncrements('id');
 
-            $table->string('path')->nullable();
-            $table->string('url')->nullable();
-
+            //
             $table->string('name')->nullable();
-            $table->string('mime')->nullable();
-            $table->integer('is_active')->default(IsActiveHelper::ACTIVE_ACTIVE);
+            $table->string('description')->nullable();
 
+            $table->integer('importer_script_id')->index()->nullable();
+            $table->integer('appliance_id')->index()->nullable();
             $table->integer('user_id')->index()->nullable();
 
             $table->timestamps();
@@ -27,6 +25,6 @@ class CreateFilesTable extends Migration
 
     public function down()
     {
-        Schema::dropIfExists('files');
+        Schema::dropIfExists('importers');
     }
 }
