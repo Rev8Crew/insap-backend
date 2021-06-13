@@ -15,9 +15,11 @@ class CreateImportersTable extends Migration
             $table->string('name')->nullable();
             $table->string('description')->nullable();
 
-            $table->integer('importer_script_id')->index()->nullable();
+            $table->string('interpreter_class')->nullable();
             $table->integer('appliance_id')->index()->nullable();
             $table->integer('user_id')->index()->nullable();
+
+            $table->integer('is_active')->default(\App\helpers\IsActiveHelper::ACTIVE_ACTIVE);
 
             $table->timestamps();
         });

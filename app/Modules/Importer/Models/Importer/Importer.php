@@ -2,19 +2,57 @@
 
 namespace App\Modules\Importer\Models\Importer;
 
+use App\helpers\IsActiveHelper;
+use App\Models\User;
 use App\Modules\Appliance\Models\Appliance;
+use App\Modules\Importer\Models\ImporterScripts\ImporterScriptAbstract;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\UploadedFile;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Importer extends Model
 {
+    use HasFactory, LogsActivity;
+
+    /**
+     *  Log all fillable attr
+     * @var bool
+     */
+    protected static $logFillable = true;
+
+    /**
+     * @var string[]
+     */
+    protected $fillable = [
+        'name',
+        'description',
+        'interpreter_class',
+        'appliance_id',
+        'user_id',
+        'is_active'
+    ];
+
+    protected $attributes = [
+        'is_active' => IsActiveHelper::ACTIVE_ACTIVE
+    ];
+
     /**
      * Return processed data
      * @param array $params
-     * @param array $files
+     * @param UploadedFile[] $files
      * @return array
      */
     public function exec(array $params, array $files) : array {
-        // @TODO add method
+
+    }
+
+    /**
+     * @return string
+     */
+    public function getStoragePath(): string
+    {
+        return \Storage::disk('import')->path($this->id);
     }
 
 

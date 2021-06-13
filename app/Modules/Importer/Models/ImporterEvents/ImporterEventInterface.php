@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Modules\Importer\Models\ImporterEvent;
+namespace App\Modules\Importer\Models\ImporterEvents;
 
 
 use Illuminate\Http\UploadedFile;

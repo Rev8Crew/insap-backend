@@ -4,13 +4,21 @@
 namespace App\Modules\Importer\Service;
 
 
+use App\Models\User;
+use App\Modules\Appliance\Models\Appliance;
 use App\Modules\Importer\Models\Importer\Importer;
-use App\Modules\Importer\Models\ImporterEvent\ImporterEvent;
+use App\Modules\Importer\Models\Importer\ImporterInstall;
+use App\Modules\Importer\Models\ImporterEvents\ImporterEvent;
+use App\Modules\Importer\Models\ImporterInterpreter\ImporterInterpreter;
 use App\Modules\Project\Models\Record;
 use App\Modules\Project\Services\RecordService;
 use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use PhpZip\Exception\ZipException;
+use PhpZip\ZipFile;
 use Throwable;
 
 /**
@@ -26,6 +34,73 @@ class ImporterService
     {
         $this->importerEventService = $importerEventService;
         $this->recordService = $recordService;
+    }
+
+    public function create(
+        string $name,
+        string $description,
+        string $interpreter_class,
+        Appliance $appliance,
+        User $user,
+        UploadedFile $archive
+    ): ?Importer
+    {
+        $array = compact('name', 'description', 'interpreter_class');
+
+        $array['appliance_id'] = $appliance->id;
+        $array['user_id'] = $user->id;
+
+        $importer = Importer::create($array);
+
+        try {
+            $this->install($importer, $archive);
+        } catch (Throwable $exception) {
+            $importer->delete();
+            throw new Exception('[Create] Importer service create failed ...', 0, $exception);
+        }
+
+        return $importer;
+    }
+
+    /**
+     * @param Importer $importer
+     * @param UploadedFile $archive
+     * @throws Exception|Throwable
+     */
+    protected function install(Importer $importer, UploadedFile $archive)
+    {
+        $storage = Storage::disk('import');
+        $storage->makeDirectory($importer->id);
+
+        $path = $importer->getStoragePath();
+
+        try {
+            $zip = new ZipFile();
+            $zip->openFile($archive->getRealPath())
+                ->extractTo($path);
+        } catch (ZipException $exception) {
+            Log::error("Can't Open/Extract file '{$archive->getRealPath()}' to '$path'", [
+                'uploadedFile' => $archive,
+                'path' => $path,
+                'importer' => $importer
+            ]);
+            throw new Exception("Can't Open/Extract file '{$archive->getRealPath()}' to '$path'", 0, $exception);
+        }
+
+        $interpreter = $importer->interpreter_class;
+        /** @var ImporterInterpreter $interpreter */
+        $interpreter = new $interpreter;
+
+        /** Install requirements */
+        $importerInstall = new ImporterInstall($importer, $interpreter);
+        $importerInstall->install();
+
+        /** Execute Test Command */
+        $interpreter->addArg('--test=', '1');
+
+        $cd = 'cd ' . $importer->getStoragePath();
+        $exitCode = $interpreter->execute("$cd;{$interpreter->getAppCommand()}");
+        throw_if($exitCode > 0, new Exception('[Install] Exit code greater then 0, [' . $exitCode . ']'));
     }
 
     /**
@@ -97,4 +172,6 @@ class ImporterService
 
         }
     }
+
+
 }

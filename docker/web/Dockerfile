@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y \
         jq \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
+        libzip-dev \
+        libonig-dev \
         libxslt-dev \
         libicu-dev \
         libmcrypt-dev \

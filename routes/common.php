@@ -18,5 +18,8 @@ use Illuminate\Support\Facades\Route;
  *  Common Routes
  */
 
+/** Log viewer */
+Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+
 // For public application
 Route::any('/{any}', [\App\Http\Controllers\CommonController::class, 'app'])->where('any', '^(?!api).*$');
