@@ -5,7 +5,6 @@ namespace App\Modules\Importer\Models\Importer;
 use App\helpers\IsActiveHelper;
 use App\Models\User;
 use App\Modules\Appliance\Models\Appliance;
-use App\Modules\Importer\Models\ImporterScripts\ImporterScriptAbstract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
@@ -14,6 +13,8 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class Importer extends Model
 {
     use HasFactory, LogsActivity;
+
+    public const TEST_IMPORTER_ID = 1;
 
     /**
      *  Log all fillable attr
