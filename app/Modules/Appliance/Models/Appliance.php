@@ -33,6 +33,8 @@ class Appliance extends Model
 {
     use HasFactory, LogsActivity;
 
+    const APPLIANCE_TEST_ID = 1;
+
     /**
      *  Log all fillable attr
      * @var bool

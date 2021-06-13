@@ -5,8 +5,8 @@ namespace App\Modules\Importer\Service;
 
 
 use App\Modules\Appliance\Models\Appliance;
-use App\Modules\Importer\Models\ImporterEvent\ImporterEvent;
-use App\Modules\Importer\Models\ImporterEvent\ImporterEventInterface;
+use App\Modules\Importer\Models\ImporterEvents\ImporterEvent;
+use App\Modules\Importer\Models\ImporterEvents\ImporterEventInterface;
 
 class ImporterEventService
 {

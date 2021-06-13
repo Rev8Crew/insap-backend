@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             FileSeeder::class,
             ProjectSeeder::class,
-            RecordDataSeeder::class
+            RecordDataSeeder::class,
+            RecordSeeder::class
         ]);
     }
 }

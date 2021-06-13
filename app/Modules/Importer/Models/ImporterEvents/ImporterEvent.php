@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\Importer\Models\ImporterEvent;
+namespace App\Modules\Importer\Models\ImporterEvents;
 
 use App\Modules\Appliance\Models\Appliance;
 use Illuminate\Database\Eloquent\Model;
