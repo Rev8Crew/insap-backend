@@ -2,13 +2,10 @@ FROM php:7.4-apache
 
 RUN apt-get update && apt-get install -y \
         cron \
-        rsyslog \
         curl \
         wget \
         git \
-        jq \
         libfreetype6-dev \
-        libjpeg62-turbo-dev \
         libzip-dev \
         libonig-dev \
         libxslt-dev \
@@ -22,14 +19,10 @@ RUN apt-get update && apt-get install -y \
         pkg-config \
         libssl-dev \
         supervisor \
+        python3 \
+        python3-pip \
     && a2enmod \
         rewrite \
-    && ACCEPT_EULA=Y \
-        DEBIAN_FRONTEND=noninteractive \
-        apt-get install --yes \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libpng-dev \
     && docker-php-ext-configure \
         gd \
     && docker-php-ext-install \
@@ -46,6 +39,12 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-enable mongodb \
         xdebug
 
+# Go Lang
+RUN wget https://dl.google.com/go/go1.16.5.linux-amd64.tar.gz  \
+    && tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz \
+    && export PATH="$PATH:/usr/local/go/bin" \
+    && export GOPATH=~/.go
+
 # Add the user UID:1000, GID:1000, home at /app
 RUN groupadd -r app -g 1000 && useradd -u 1000 -r -g app -m -d /app -s /sbin/nologin -c "App user" app && \
     chmod 755 /var/www/html
@@ -56,6 +55,17 @@ RUN curl -sS https://getcomposer.org/installer | php -- \
         --install-dir=/usr/local/bin && \
         echo "alias composer='composer'" >> /root/.bashrc && \
         composer
+
+# CLEANUP
+RUN apt-get autoremove -yqq --purge \
+ && apt-get clean \
+ && rm -rf \
+    /var/lib/apt/lists/* \
+    /tmp/* \
+    /var/tmp/* \
+    /usr/share/man \
+    /usr/share/doc \
+    /usr/share/doc-base
 
 #Supervisord
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf

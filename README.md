@@ -2,11 +2,21 @@
 ## Project start date: 01.05.2021
 
 ## Technology stack:
- - Laravel(backend)
- - Vue(frontend)
- - Docker
- - Laravel sanctum
- - RabbitMQ
- - Grafana + prometheus
- - MySQL + MongoDB
- - Laravel-permission
+
+- Laravel(backend)
+- Vue(frontend)
+- Docker
+- Laravel sanctum
+- RabbitMQ
+- Grafana + prometheus
+- MySQL + MongoDB
+- Laravel-permission
+
+## Plugin stack:
+
+### Importer
+
+- PHP
+- Python
+- Go
+- Perl (In future)
