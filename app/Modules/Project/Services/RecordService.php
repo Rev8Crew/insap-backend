@@ -7,6 +7,7 @@ namespace App\Modules\Project\Services;
 use App\Models\User;
 use App\Modules\Project\Models\Record;
 use App\Modules\Project\Models\RecordData;
+use App\Modules\Project\Models\RecordInfo;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -28,7 +29,10 @@ class RecordService
         return $record;
     }
 
-    public function delete(Record $record) : bool {
+    public function delete(Record $record) : bool
+    {
+        RecordInfo::where('record_id', $record->id)->delete();
+
         return $record->delete();
     }
 }
