@@ -2,9 +2,16 @@
 
 namespace App\Modules\Project\Models;
 
+use Eloquent;
 use Illuminate\Support\Collection;
 use Jenssegers\Mongodb\Eloquent\Model;
 
+/**
+ * Class RecordInfo
+ * @package App\Modules\Project\Models
+ *
+ * @mixin Eloquent
+ */
 class RecordInfo extends Model
 {
     /**

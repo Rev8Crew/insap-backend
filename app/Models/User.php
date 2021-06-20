@@ -5,11 +5,22 @@ namespace App\Models;
 use App\helpers\ImageHelper;
 use App\helpers\IsActiveHelper;
 use App\Modules\Project\Models\Project;
+use Database\Factories\UserFactory;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\DatabaseNotification;
+use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\HasApiTokens;
+use Laravel\Sanctum\PersonalAccessToken;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 /**
@@ -18,41 +29,43 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int $id
  * @property string $name
  * @property string $email
- * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property Carbon|null $email_verified_at
  * @property string $password
  * @property int $is_active
  * @property string|null $remember_token
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read string $image
- * @property-read \App\Models\UserInfo|null $user_info
- * @property-read \App\Models\File $imageFile
- * @property-read \Illuminate\Notifications\DatabaseNotificationCollection|\Illuminate\Notifications\DatabaseNotification[] $notifications
+ * @property-read UserInfo|null $user_info
+ * @property-read File $imageFile
+ * @property-read DatabaseNotificationCollection|DatabaseNotification[] $notifications
  * @property-read int|null $notifications_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Permission\Models\Permission[] $permissions
+ * @property-read Collection|Permission[] $permissions
  * @property-read int|null $permissions_count
- * @property-read \Illuminate\Database\Eloquent\Collection|Project[] $projects
+ * @property-read Collection|Project[] $projects
  * @property-read int|null $projects_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Permission\Models\Role[] $roles
+ * @property-read Collection|Role[] $roles
  * @property-read int|null $roles_count
- * @property-read \Illuminate\Database\Eloquent\Collection|\Laravel\Sanctum\PersonalAccessToken[] $tokens
+ * @property-read Collection|PersonalAccessToken[] $tokens
  * @property-read int|null $tokens_count
- * @method static \Database\Factories\UserFactory factory(...$parameters)
- * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|User permission($permissions)
- * @method static \Illuminate\Database\Eloquent\Builder|User query()
- * @method static \Illuminate\Database\Eloquent\Builder|User role($roles, $guard = null)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereIsActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
- * @mixin \Eloquent
+ * @method static UserFactory factory(...$parameters)
+ * @method static Builder|User newModelQuery()
+ * @method static Builder|User newQuery()
+ * @method static Builder|User permission($permissions)
+ * @method static Builder|User query()
+ * @method static Builder|User role($roles, $guard = null)
+ * @method static Builder|User whereCreatedAt($value)
+ * @method static Builder|User whereEmail($value)
+ * @method static Builder|User whereEmailVerifiedAt($value)
+ * @method static Builder|User whereId($value)
+ * @method static Builder|User whereIsActive($value)
+ * @method static Builder|User whereName($value)
+ * @method static Builder|User wherePassword($value)
+ * @method static Builder|User whereRememberToken($value)
+ * @method static Builder|User whereUpdatedAt($value)
+ * @mixin Eloquent
+ * @property int|null $image_id
+ * @method static Builder|User whereImageId($value)
  */
 class User extends Authenticatable
 {
@@ -106,7 +119,7 @@ class User extends Authenticatable
         return isset($this->id) ? UserInfo::where(['user_id' => $this->id])->first() : null;
     }
 
-    public function projects(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    public function projects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'user_project');
     }

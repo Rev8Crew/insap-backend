@@ -1,15 +1,12 @@
 <?php
 
 
-namespace App\Modules\Importer\Models\Importer;
+namespace App\Modules\Importer\Models\ImporterEvents;
 
 
 use App\Modules\Importer\Models\ImporterInterpreter\ImporterInterpreter;
 use Exception;
-use Illuminate\Support\Facades\Storage;
 use JsonMachine\JsonMachine;
-use Log;
-use mikehaertl\shellcommand\Command;
 
 /**
  *  Install importer script requirements.
@@ -30,16 +27,16 @@ use mikehaertl\shellcommand\Command;
  * Class ImporterInstall
  * @package App\Modules\Importer\Models\Importer
  */
-class ImporterInstall
+class ImporterEventInstall
 {
     public const REQUIREMENTS_FILE_NAME = 'requirements.json';
 
-    private Importer $importer;
+    private ImporterEvent $importerEvent;
     private ImporterInterpreter $interpreter;
 
-    public function __construct(Importer $importer, ImporterInterpreter $interpreter)
+    public function __construct(ImporterEvent $importerEvent, ImporterInterpreter $interpreter)
     {
-        $this->importer = $importer;
+        $this->importerEvent = $importerEvent;
         $this->interpreter = $interpreter;
     }
 
@@ -47,8 +44,8 @@ class ImporterInstall
      * @throws Exception
      */
     public function install() {
-        $path = $this->importer->getStoragePath();
-        $requirementsJsonFile = $path. DIRECTORY_SEPARATOR . self::REQUIREMENTS_FILE_NAME;
+        $path = $this->importerEvent->getStoragePath();
+        $requirementsJsonFile = $path . DIRECTORY_SEPARATOR . self::REQUIREMENTS_FILE_NAME;
 
         if (file_exists($requirementsJsonFile)) {
             /**
