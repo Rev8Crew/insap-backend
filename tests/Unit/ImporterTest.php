@@ -5,9 +5,12 @@ namespace Tests\Unit;
 use App\Models\User;
 use App\Modules\Appliance\Models\Appliance;
 use App\Modules\Importer\Models\Importer\Importer;
+use App\Modules\Importer\Models\ImporterInterpreter\ImporterInterpreterGo;
 use App\Modules\Importer\Models\ImporterInterpreter\ImporterInterpreterPhp;
+use App\Modules\Importer\Models\ImporterInterpreter\ImporterInterpreterPython;
 use App\Modules\Importer\Service\ImporterService;
 use Illuminate\Http\UploadedFile;
+use Storage;
 use Tests\TestCase;
 
 class ImporterTest extends TestCase
@@ -24,6 +27,23 @@ class ImporterTest extends TestCase
         $this->user = User::find(User::TEST_USER_ID);
     }
 
+    private function createBasicImporter($array, string $filename = 'importer_php.zip')
+    {
+        $storage = Storage::disk('examples');
+
+        $uploadedFile = UploadedFile::fake()->createWithContent($filename, file_get_contents($storage->path($filename)));
+        $appliance = Appliance::create(['id' => Appliance::APPLIANCE_TEST_ID, 'name' => 'test']);
+
+        return $this->importerService->create(
+            $array['name'],
+            $array['description'],
+            $array['interpreter_class'],
+            $appliance,
+            $this->user,
+            $uploadedFile
+        );
+    }
+
     public function testCreate()
     {
         $array = [
@@ -34,27 +54,92 @@ class ImporterTest extends TestCase
             'interpreter_class' => ImporterInterpreterPhp::class
         ];
 
-        $storage = \Storage::disk('examples');
-
-        $uploadedFile = UploadedFile::fake()->createWithContent('importer_php.zip', file_get_contents($storage->path('importer_php.zip')));
-        $appliance = Appliance::create(['id' => Appliance::APPLIANCE_TEST_ID, 'name' => 'test']);
-
-        $this->importer = $this->importerService->create(
-            $array['name'],
-            $array['description'],
-            $array['interpreter_class'],
-            $appliance,
-            $this->user,
-            $uploadedFile
-        );
+        $this->importer = $this->createBasicImporter($array);
 
         $this->assertTrue($this->importer instanceof Importer);
+
         $this->assertEquals($array['name'], $this->importer->name);
         $this->assertEquals($array['description'], $this->importer->description);
         $this->assertEquals($array['interpreter_class'], $this->importer->interpreter_class);
         $this->assertEquals($array['user_id'], $this->importer->user->id);
         $this->assertEquals($array['appliance_id'], $this->importer->appliance->id);
 
-        \Storage::disk('import')->assertExists($this->importer->id)->deleteDirectory($this->importer->id);
+        Storage::disk('import')->assertExists($this->importer->id)->deleteDirectory($this->importer->id);
+    }
+
+    public function testUpdateApp()
+    {
+        $array = [
+            'name' => 'testImporter',
+            'description' => 'testImporterDescription',
+            'appliance_id' => Appliance::APPLIANCE_TEST_ID,
+            'user_id' => $this->user->id,
+            'interpreter_class' => ImporterInterpreterPhp::class
+        ];
+
+        $this->importer = $this->createBasicImporter($array);
+        $uploadedFile = UploadedFile::fake()->createWithContent('importer_php.zip', file_get_contents(Storage::disk('examples')->path('importer_php.zip')));
+
+        $this->importerService->updateApp($this->importer, $uploadedFile);
+        Storage::disk('import')->assertExists($this->importer->id)->deleteDirectory($this->importer->id);
+    }
+
+    public function testDelete()
+    {
+        $array = [
+            'name' => 'testImporter',
+            'description' => 'testImporterDescription',
+            'appliance_id' => Appliance::APPLIANCE_TEST_ID,
+            'user_id' => $this->user->id,
+            'interpreter_class' => ImporterInterpreterPhp::class
+        ];
+
+        $this->importer = $this->createBasicImporter($array);
+
+        $this->importerService->delete($this->importer);
+        $this->assertNull(Importer::find(Importer::TEST_IMPORTER_ID));
+        Storage::disk('import')->assertMissing($this->importer->id);
+    }
+
+    public function testPythonImporter()
+    {
+        $array = [
+            'name' => 'testImporter',
+            'description' => 'testImporterDescription',
+            'user_id' => $this->user->id,
+            'interpreter_class' => ImporterInterpreterPython::class
+        ];
+
+        $this->importer = $this->createBasicImporter($array, 'importer_python.zip');
+
+        $this->assertTrue($this->importer instanceof Importer);
+
+        $this->assertEquals($array['name'], $this->importer->name);
+        $this->assertEquals($array['description'], $this->importer->description);
+        $this->assertEquals($array['interpreter_class'], $this->importer->interpreter_class);
+        $this->assertEquals($array['user_id'], $this->importer->user->id);
+
+        Storage::disk('import')->assertExists($this->importer->id)->deleteDirectory($this->importer->id);
+    }
+
+    public function testGoImporter()
+    {
+        $array = [
+            'name' => 'testImporter',
+            'description' => 'testImporterDescription',
+            'user_id' => $this->user->id,
+            'interpreter_class' => ImporterInterpreterGo::class
+        ];
+
+        $this->importer = $this->createBasicImporter($array, 'importer_go.zip');
+
+        $this->assertTrue($this->importer instanceof Importer);
+
+        $this->assertEquals($array['name'], $this->importer->name);
+        $this->assertEquals($array['description'], $this->importer->description);
+        $this->assertEquals($array['interpreter_class'], $this->importer->interpreter_class);
+        $this->assertEquals($array['user_id'], $this->importer->user->id);
+
+        Storage::disk('import')->assertExists($this->importer->id)->deleteDirectory($this->importer->id);
     }
 }

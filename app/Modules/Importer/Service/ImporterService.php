@@ -30,12 +30,27 @@ class ImporterService
     private ImporterEventService $importerEventService;
     private RecordService $recordService;
 
+    /**
+     * ImporterService constructor.
+     * @param ImporterEventService $importerEventService
+     * @param RecordService $recordService
+     */
     public function __construct(ImporterEventService $importerEventService, RecordService $recordService)
     {
         $this->importerEventService = $importerEventService;
         $this->recordService = $recordService;
     }
 
+    /**
+     * @param string $name
+     * @param string $description
+     * @param string $interpreter_class
+     * @param Appliance $appliance
+     * @param User $user
+     * @param UploadedFile $archive
+     * @return Importer|null
+     * @throws Exception
+     */
     public function create(
         string $name,
         string $description,
@@ -52,6 +67,7 @@ class ImporterService
 
         $importer = Importer::create($array);
 
+        // Install importer from zip archive
         try {
             $this->install($importer, $archive);
         } catch (Throwable $exception) {
@@ -60,6 +76,36 @@ class ImporterService
         }
 
         return $importer;
+    }
+
+    /**
+     * @param Importer $importer
+     * @param UploadedFile $archive
+     * @return Importer
+     * @throws Exception
+     */
+    public function updateApp(Importer $importer, UploadedFile $archive): Importer
+    {
+        $this->deleteApp($importer);
+
+        // Install importer from zip archive
+        try {
+            $this->install($importer, $archive);
+        } catch (Throwable $exception) {
+            $importer->delete();
+            throw new Exception('[Create] Importer service create failed ...', 0, $exception);
+        }
+
+        return $importer;
+    }
+
+    /**
+     * @param Importer $importer
+     * @return bool
+     */
+    protected function deleteApp(Importer $importer): bool
+    {
+        return Storage::disk('import')->deleteDirectory($importer->id);
     }
 
     /**
@@ -101,6 +147,13 @@ class ImporterService
         $cd = 'cd ' . $importer->getStoragePath();
         $exitCode = $interpreter->execute("$cd;{$interpreter->getAppCommand()}");
         throw_if($exitCode > 0, new Exception('[Install] Exit code greater then 0, [' . $exitCode . ']'));
+    }
+
+    public function delete(Importer $importer)
+    {
+        $this->deleteApp($importer);
+        $importer->delete();
+        return $importer;
     }
 
     /**
