@@ -7,7 +7,6 @@ namespace App\Modules\Importer\Services;
 use App\Modules\Importer\Models\Importer\Importer;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEvent;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEventDto;
-use App\Modules\Importer\Models\ImporterEvents\ImporterEventEvent;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEventInstall;
 use App\Modules\Importer\Models\ImporterInterpreter\ImporterInterpreter;
 use Exception;
@@ -120,30 +119,5 @@ class ImporterEventService
         }
 
         return $importerEvent;
-    }
-
-    /**
-     * @param int $event
-     * @param Importer $importer
-     * @param array $params
-     * @param array $files
-     * @param array $processedData
-     */
-    public function executeEvent(
-        int $event,
-        Importer $importer,
-        array $params,
-        array $files,
-        array $processedData = [])
-    {
-        $eventEvent = new ImporterEventEvent($event);
-
-        $importerEvents = ImporterEvent::where('event', $eventEvent->getEvent())
-            ->where('importer_id', $importer->id)
-            ->orderBy('order')->get();
-
-        foreach ($importerEvents as $importerEvent) {
-            // TODO: do smth
-        }
     }
 }
