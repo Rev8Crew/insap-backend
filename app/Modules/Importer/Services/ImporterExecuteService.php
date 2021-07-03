@@ -37,6 +37,7 @@ class ImporterExecuteService
         ImporterEventParams $eventParams
     ): ImporterEventParams
     {
+
         $eventEvent = new ImporterEventEvent($event);
 
         $importerEvents = ImporterEvent::where('event', $eventEvent->getEvent())
@@ -48,6 +49,7 @@ class ImporterExecuteService
          */
         $importerParams = null;
         foreach ($importerEvents as $importerEvent) {
+
             /**
              *  First of all, we need to pass some params to importer directory (copy files, data, params)
              */
@@ -150,14 +152,16 @@ class ImporterExecuteService
         foreach ($files as $eventFile) {
             $file = $eventFile->getUploadedFile();
 
+            $extension = $file->getClientOriginalExtension() ?: $file->getExtension();
             $result[] = [
                 'name' => $file->hashName(),
-                'original' => $file->getClientOriginalName() . '.' . $file->getClientOriginalExtension(),
+                'original' => $file->getClientOriginalName() . '.' . $extension,
                 'mime' => $file->getMimeType(),
                 'type' => $eventFile->getType()
             ];
 
-            $file->storeAs($path, $file->hashName());
+            $fullPath = $path . DIRECTORY_SEPARATOR . $file->hashName();
+            File::put($fullPath, $file->getContent());
         }
 
         return $result;

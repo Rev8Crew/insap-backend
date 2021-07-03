@@ -10,7 +10,9 @@ use App\Modules\Importer\Models\ImporterEvents\ImporterEventEvent;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEventFile;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEventParams;
 use App\Modules\Project\Models\Record;
+use App\Modules\Project\Models\RecordInfo;
 use App\Modules\Project\Services\RecordService;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -66,7 +68,7 @@ class ImporterService
      * @param ImporterEventFile[] $files
      * @throws Throwable
      */
-    public function import(Importer $importer, Record $record, array $params = [], array $files = [])
+    public function import(Importer $importer, Record $record, array $params = [], array $files = []): bool
     {
         try {
             DB::beginTransaction();
@@ -94,8 +96,11 @@ class ImporterService
             // If smt goes wrong
             DB::rollBack();
             $this->recordService->delete($record);
+
+            throw new Exception("[ImporterService] Method import failed...", 0, $exception);
         }
 
+        return true;
     }
 
     /**
@@ -110,8 +115,9 @@ class ImporterService
             $array['record_id'] = $record->id;
 
             $chunk[] = $array;
-            if (count($chunk) == 1000) {
-                Record::insert($chunk);
+            if (count($chunk) == 10) {
+
+                RecordInfo::insert($chunk);
                 $chunk = [];
             }
 

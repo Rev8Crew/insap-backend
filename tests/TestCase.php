@@ -21,5 +21,10 @@ abstract class TestCase extends BaseTestCase
     private function clearFileDir() {
         $storage = Storage::disk('fileStore');
         $storage->delete($storage->allFiles());
+
+        $storage = Storage::disk('import');
+        foreach ($storage->allDirectories() as $directory) {
+            $storage->deleteDirectory($directory);
+        }
     }
 }
