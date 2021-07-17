@@ -24,8 +24,9 @@ class ImporterDto implements Arrayable
      * ImporterDto constructor.
      * @param string $name
      * @param Appliance $appliance
+     * @param string $description
      */
-    public function __construct(string $name, Appliance $appliance)
+    public function __construct(string $name, Appliance $appliance, string $description = '')
     {
         $this->name = $name;
         $this->appliance = $appliance;
