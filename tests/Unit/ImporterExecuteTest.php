@@ -13,9 +13,7 @@ use App\Modules\Importer\Models\ImporterEvents\ImporterEventFile;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEventInterpreter;
 use App\Modules\Importer\Models\ImporterInterpreter\ImporterInterpreterPython;
 use App\Modules\Importer\Services\ImporterEventService;
-use App\Modules\Importer\Services\ImporterExecuteService;
 use App\Modules\Importer\Services\ImporterService;
-use App\Modules\Project\Models\Project;
 use App\Modules\Project\Models\Record;
 use App\Modules\Project\Models\RecordData;
 use Carbon\Carbon;
@@ -26,15 +24,12 @@ use Tests\TestCase;
 
 class ImporterExecuteTest extends TestCase
 {
-    private Appliance $appliance;
     private Importer $importer;
     private ImporterEvent $importerEvent;
     private Record $record;
-    private RecordData $recordData;
 
     private ImporterService $importerService;
     private ImporterEventService $importerEventService;
-    private ImporterExecuteService $importerExecuteService;
 
     /**
      * @throws BindingResolutionException
@@ -45,15 +40,8 @@ class ImporterExecuteTest extends TestCase
 
         $this->importerService = $this->app->make(ImporterService::class);
         $this->importerEventService = $this->app->make(ImporterEventService::class);
-        $this->importerExecuteService = $this->app->make(ImporterExecuteService::class);
 
-        $this->appliance = Appliance::create(['id' => Appliance::APPLIANCE_TEST_ID, 'name' => 'test']);
-        $this->recordData = RecordData::create([
-            'id' => RecordData::TEST_RECORD_DATA_ID,
-            'name' => 'Test Journal',
-            'description' => 'description',
-            'project_id' => Project::TEST_PROJECT_ID
-        ]);
+        $appliance = Appliance::create(['id' => Appliance::APPLIANCE_TEST_ID, 'name' => 'test']);
 
         $this->record = Record::create([
             'id' => Record::TEST_RECORD_ID,
@@ -63,7 +51,7 @@ class ImporterExecuteTest extends TestCase
             'user_id' => User::TEST_USER_ID
         ]);
 
-        $this->importer = $this->importerService->create(new ImporterDto('testImporter', $this->appliance));
+        $this->importer = $this->importerService->create(new ImporterDto('testImporter', $appliance));
         $this->importerEvent = $this->createBasicImporterEvent(ImporterEventEvent::EVENT_IMPORT, ImporterInterpreterPython::class, 'test', 'importer_python_ctd.zip');
     }
 
