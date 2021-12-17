@@ -57,12 +57,13 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGO_DB_ROOT_PASSWORD}
       ME_CONFIG_MONGODB_SERVER: "insap_mongo"
 
-  insap-composer:
-    image: composer:2.0.13
-    volumes:
-      - ${WEB_ROOT_PATH}:/var/www/html/
-    working_dir: ${WEB_WORKING_DIR}
-    command: composer update --ignore-platform-reqs
+# To use, need PHP >= 8.0
+#  insap-composer:
+#    image: composer:2.0.13
+#    volumes:
+#      - ${WEB_ROOT_PATH}:/var/www/html/
+#    working_dir: ${WEB_WORKING_DIR}
+#    command: composer update --ignore-platform-reqs
 
   insap-phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
