@@ -6,7 +6,7 @@ class CommonController extends Controller
 {
     /**
      * @OA\Get (path="/",
-     *   tags={"web"},
+     *   tags={"web", "app"},
      *   summary="FrontEnd",
      *   description="Обрабатывает все фронт-енд запросы",
      *   @OA\Response(response=200, description="OK"),

@@ -31,7 +31,6 @@ class ImporterController extends Controller
      */
     public function __construct(ImporterService $importerService)
     {
-
         $this->importerService = $importerService;
     }
 

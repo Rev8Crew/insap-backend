@@ -19,8 +19,25 @@ use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     /**
-     *  Auth user via email and password
-     *
+     * @OA\Post (
+     *     path="web/auth/login",
+     *     tags={"auth", "web"},
+     *     summary="Login",
+     *     description="Аутентификация пользователя",
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/LoginRequest")
+     *     ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="Успешная авторизация",
+     *          @OA\JsonContent(ref="#/components/schemas/UserResource")
+     *     ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="Ошибка в авторизации"
+     *     )
+     * )
      * @param LoginRequest $request
      * @return Response
      */
@@ -45,6 +62,17 @@ class AuthController extends Controller
     }
 
     /**
+     * @OA\Post (
+     *     path="web/auth/logout",
+     *     tags={"auth", "web"},
+     *     summary="Logout",
+     *     description="Логаут пользователя",
+     *     @OA\Response(
+     *          response=200,
+     *          description="ОК"
+     *     )
+     * )
+     *
      * @return Response
      */
     public function logout(): Response
@@ -61,7 +89,18 @@ class AuthController extends Controller
     }
 
     /**
-     * Return info about current user
+     * @OA\Post (
+     *     path="web/auth/me",
+     *     tags={"auth", "web"},
+     *     summary="User Info",
+     *     description="Получение информации о пользователе",
+     *     @OA\Response(
+     *          response=200,
+     *          description="ОК",
+     *          @OA\JsonContent(ref="#/components/schemas/UserResource")
+     *     )
+     * )
+
      * @return Response
      */
     public function me() : Response {

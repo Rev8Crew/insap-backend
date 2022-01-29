@@ -2,10 +2,23 @@
 
 namespace App\Modules\User\Resources;
 
+use App\Models\User;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
 
-/** @mixin \App\Models\User */
+/**
+ * @OA\Schema(
+ *     schema="UserResource",
+ *     @OA\Property(property="id", type="integer"),
+ *     @OA\Property(property="name", type="string"),
+ *     @OA\Property(property="email", type="string"),
+ *     @OA\Property(property="created_at", type="string"),
+ *     @OA\Property(property="updated_at", type="string"),
+ *     @OA\Property(property="token", type="string", nullable=true)
+ * )
+ *
+ * @mixin User
+ */
 class UserResource extends JsonResource
 {
     private string $_token = '';
