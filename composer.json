@@ -27,6 +27,7 @@
     "laravel-admin-ext/summernote": "^1.0",
     "laravel/framework": "^8.12",
     "laravel/sanctum": "^2.9",
+    "laravel/telescope": "^4.7",
     "laravel/tinker": "^2.5",
     "mikehaertl/php-shellcommand": "^1.6",
     "nelexa/zip": "^4.0",
