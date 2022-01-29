@@ -3,17 +3,21 @@
 
 ## Technology stack:
 
-- Laravel(backend)
-- Vue(frontend)
+### BackEnd
+- Laravel
 - Docker
-- Laravel sanctum
 - RabbitMQ
 - Grafana + prometheus
 - MySQL + MongoDB
+- Swagger
+
+### FrontEnd
+- Vue
+
+## Laravel stack:
+- Laravel Sanctum
 - Laravel-permission
-
-## Plugin stack:
-
+- 
 ### Importer
 
 - PHP

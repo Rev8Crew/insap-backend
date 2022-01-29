@@ -20,7 +20,6 @@ RUN apt-get update && apt-get install -y \
         libcurl4-openssl-dev \
         pkg-config \
         libssl-dev \
-        supervisor \
         python3 \
         python3-pip \
     && a2enmod \
@@ -73,6 +72,9 @@ RUN apt-get autoremove -yqq --purge \
     /usr/share/doc-base
 
 #Supervisord
+RUN apt-get update && apt-get install -y supervisor
+RUN mkdir -p /var/log/supervisor
+RUN mkdir -p /var/www/html/storage/supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 #Php.ini
 ADD php.ini /usr/local/etc/php
@@ -85,5 +87,6 @@ WORKDIR /var/www/html
 USER root
 COPY default.conf /etc/apache2/sites-enabled/000-default.conf
 
-CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+#CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
+CMD ["/usr/bin/supervisord"]
 EXPOSE 80

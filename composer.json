@@ -12,6 +12,7 @@
     "ext-curl": "*",
     "ext-json": "*",
     "ext-zip": "*",
+    "darkaonline/l5-swagger": "^8.1",
     "encore/laravel-admin": "^1.8",
     "fideloper/proxy": "^4.4",
     "fruitcake/laravel-cors": "^2.0",
