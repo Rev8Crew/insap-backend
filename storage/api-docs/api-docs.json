@@ -1,0 +1,151 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "InSap OpenApi",
+        "description": "InSap Swagger OpenApi description",
+        "contact": {
+            "email": "dimaelik71@gmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/": {
+            "get": {
+                "tags": [
+                    "web",
+                    "app"
+                ],
+                "summary": "FrontEnd",
+                "description": "Обрабатывает все фронт-енд запросы",
+                "operationId": "e6f188a4ec6d872de97a9790b4a14a90",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "web/auth/login": {
+            "post": {
+                "tags": [
+                    "auth",
+                    "web"
+                ],
+                "summary": "Login",
+                "description": "Аутентификация пользователя",
+                "operationId": "b03d8b9f67fcc7c6dae78d62d1faf8e5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешная авторизация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Ошибка в авторизации"
+                    }
+                }
+            }
+        },
+        "web/auth/logout": {
+            "post": {
+                "tags": [
+                    "auth",
+                    "web"
+                ],
+                "summary": "Logout",
+                "description": "Логаут пользователя",
+                "operationId": "4f05bb01a340c2c63705f045fa5affd2",
+                "responses": {
+                    "200": {
+                        "description": "ОК"
+                    }
+                }
+            }
+        },
+        "web/auth/me": {
+            "post": {
+                "tags": [
+                    "auth",
+                    "web"
+                ],
+                "summary": "User Info",
+                "description": "Получение информации о пользователе",
+                "operationId": "b7ad97e7f1e2106700e2c7dd3b9db795",
+                "responses": {
+                    "200": {
+                        "description": "ОК",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserResource"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "LoginRequest": {
+                "description": "Class LoginRequest",
+                "properties": {
+                    "email": {
+                        "nullable": false,
+                        "description": "Пользовательский email",
+                        "type": "string"
+                    },
+                    "password": {
+                        "nullable": false,
+                        "description": "Пользовательский пароль",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "UserResource": {
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    },
+                    "token": {
+                        "nullable": true,
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "security": [
+        []
+    ]
+}

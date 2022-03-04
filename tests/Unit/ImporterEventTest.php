@@ -83,7 +83,7 @@ class ImporterEventTest extends TestCase
 
         $this->importerEvent = $this->createBasicImporterEvent($array['event'], $array['interpreter_class'], $array['name'], $filename);
 
-        $this->assertTrue($this->importerEvent instanceof ImporterEvent);
+        $this->assertInstanceOf(ImporterEvent::class, $this->importerEvent);
 
         $this->assertEquals($array['name'], $this->importerEvent->name);
         $this->assertEquals($array['event'], $this->importerEvent->event);
@@ -94,7 +94,7 @@ class ImporterEventTest extends TestCase
         return true;
     }
 
-    private function createBasicImporterEvent(int $event, string $interpreter, string $name = null, string $filename = 'importer_php.zip')
+    private function createBasicImporterEvent(int $event, string $interpreter, string $name = null, string $filename = 'importer_php.zip'): ImporterEvent
     {
         $storage = Storage::disk('examples');
         $uploadedFile = UploadedFile::fake()->createWithContent($filename, file_get_contents($storage->path($filename)));

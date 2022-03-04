@@ -13,8 +13,9 @@ use App\Modules\Importer\Models\ImporterEvents\ImporterEventParams;
 use App\Modules\Project\Models\Record;
 use App\Modules\Project\Models\RecordInfo;
 use App\Modules\Project\Services\RecordService;
-use Exception;
 use Illuminate\Support\Facades\DB;
+use Mts88\MongoGrid\Facades\MongoGrid;
+use Ramsey\Uuid\Uuid;
 use Throwable;
 
 /**
@@ -74,7 +75,7 @@ class ImporterService
         try {
             DB::beginTransaction();
 
-            PreImportEvent::dispatch();
+            PreImportEvent::dispatch($importer, $record, $params, $files);
 
             $eventParams = new ImporterEventParams($params);
             $eventParams->setFilesFromUploaded($files);
@@ -85,14 +86,31 @@ class ImporterService
             // Add to DB
             $this->addToDatabase($record, $eventParams->getData());
 
+            $fileIds = [];
+            $gridFsService = app(\Mts88\MongoGrid\Services\MongoGrid::class);
+            foreach ($eventParams->getFiles() as $file) {
+
+                $fileIds[] = $gridFsService->storeFile($file->getUploadedFile()->getContent(), Uuid::uuid4(), [
+                    'record_id' => $record->id,
+                    'importer_id' => $importer->id,
+                    'filename' => $file->getUploadedFile()->getClientOriginalName(),
+                    'extension' => $file->getUploadedFile()->getClientOriginalExtension(),
+                    'type' => $file->getType()
+                ]);
+
+            }
+
+            $record->files = $fileIds;
+            $record->params = $eventParams->getParams();
+
+            $record->save();
+
             DB::commit();
         } catch (Throwable $exception) {
-            // If smt goes wrong
             DB::rollBack();
-            // TODO: ???????????
             $this->recordService->deleteRecordsInfo($record);
 
-            throw new Exception("[ImporterService] Method import failed...", 0, $exception);
+            throw new \RuntimeException('[ImporterService] Import event failed <' . $exception->getMessage() . '>', null, $exception);
         }
 
         return true;

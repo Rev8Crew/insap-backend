@@ -41,13 +41,13 @@ RUN apt-get update && apt-get install -y \
         xdebug
 
 # Go Lang
-#RUN wget https://go.dev/dl/go$GOLANG_VERSION.linux-amd64.tar.gz  \
-#    && tar -C /usr/local -xzf go$GOLANG_VERSION.linux-amd64.tar.gz
+RUN wget https://go.dev/dl/go$GOLANG_VERSION.linux-amd64.tar.gz  \
+    && tar -C /usr/local -xzf go$GOLANG_VERSION.linux-amd64.tar.gz
 
-#ENV PATH=$PATH:/usr/local/go/bin
-#ENV GOPATH=$HOME/.go
+ENV PATH=$PATH:/usr/local/go/bin
+ENV GOPATH=$HOME/.go
 
-#RUN go version
+RUN go version
 
 # Add the user UID:1000, GID:1000, home at /app
 RUN groupadd -r app -g 1000 && useradd -u 1000 -r -g app -m -d /app -s /sbin/nologin -c "App user" app && \

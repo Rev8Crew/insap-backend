@@ -50,8 +50,7 @@ class Record extends Model
 {
     use HasFactory, LogsActivity;
 
-
-    const TEST_RECORD_ID = 1;
+    public const TEST_RECORD_ID = 1;
     /**
      *  Log all fillable attr
      * @var bool
@@ -65,7 +64,9 @@ class Record extends Model
         'name',
         'description',
         'order',
-        'is_active'
+        'is_active',
+        'files',
+        'params'
     ];
 
     protected $appends = [
@@ -74,6 +75,11 @@ class Record extends Model
 
     protected $attributes = [
         'is_active' => IsActiveHelper::ACTIVE_ACTIVE
+    ];
+
+    protected $casts = [
+        'files' => 'array',
+        'params' => 'array',
     ];
 
     /**

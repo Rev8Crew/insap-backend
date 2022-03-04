@@ -17,6 +17,9 @@ class CreateRecordsTable extends Migration
             $table->integer('order')->comment('Record order')->default(0 );
             $table->smallInteger('is_active')->comment('Is record active')->default(IsActiveHelper::ACTIVE_ACTIVE);
 
+            $table->json('files')->nullable();
+            $table->json('params')->nullable();
+
             $table->integer('record_data_id')->index()->default(0);
             $table->integer('user_id')->index()->default(0);
 

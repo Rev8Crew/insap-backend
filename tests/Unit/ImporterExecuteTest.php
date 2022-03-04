@@ -16,6 +16,7 @@ use App\Modules\Importer\Services\ImporterEventService;
 use App\Modules\Importer\Services\ImporterService;
 use App\Modules\Project\Models\Record;
 use App\Modules\Project\Models\RecordData;
+use App\Modules\Project\Services\RecordService;
 use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\UploadedFile;
@@ -30,6 +31,7 @@ class ImporterExecuteTest extends TestCase
 
     private ImporterService $importerService;
     private ImporterEventService $importerEventService;
+    private RecordService $recordService;
 
     /**
      * @throws BindingResolutionException
@@ -40,6 +42,7 @@ class ImporterExecuteTest extends TestCase
 
         $this->importerService = $this->app->make(ImporterService::class);
         $this->importerEventService = $this->app->make(ImporterEventService::class);
+        $this->recordService = $this->app->make(RecordService::class);
 
         $appliance = Appliance::create(['id' => Appliance::APPLIANCE_TEST_ID, 'name' => 'test']);
 
@@ -101,5 +104,7 @@ class ImporterExecuteTest extends TestCase
 
         $this->assertTrue($result);
         $this->assertTrue($this->record->records_info->count() > 0);
+        $this->recordService->deleteRecordsInfo($this->record);
+
     }
 }

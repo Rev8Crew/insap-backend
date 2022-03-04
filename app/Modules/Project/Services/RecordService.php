@@ -9,6 +9,7 @@ use App\Modules\Project\Models\Record;
 use App\Modules\Project\Models\RecordData;
 use App\Modules\Project\Models\RecordInfo;
 use Illuminate\Database\Eloquent\Model;
+use MongoDB\BSON\ObjectId;
 
 /**
  * Class RecordService
@@ -38,6 +39,15 @@ class RecordService
 
     public function deleteRecordsInfo(Record $record) : bool
     {
+        // MongoFS
+        foreach ($record->files ?? [] as $fileId) {
+            if (is_array($fileId)) {
+                \MongoGrid::delete( new ObjectId($fileId['$oid']));
+                continue;
+            }
+
+            \MongoGrid::delete( new ObjectId($fileId));
+        }
         return RecordInfo::where('record_id', $record->id)->delete();
     }
 }

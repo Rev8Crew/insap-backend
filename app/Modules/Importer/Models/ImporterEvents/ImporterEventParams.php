@@ -15,7 +15,7 @@ class ImporterEventParams
     /** @var array Request params */
     private array $params;
 
-    /** @var array Request files */
+    /** @var ImporterEventFile[] Request files */
     private array $files = [];
 
     /** @var array Processed data */

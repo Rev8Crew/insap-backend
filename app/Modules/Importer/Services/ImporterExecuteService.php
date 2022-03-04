@@ -42,7 +42,7 @@ class ImporterExecuteService
 
         $importerEvent = ImporterEvent::where('event', $eventEvent->getEvent())
             ->where('importer_id', $importer->id)
-            ->orderBy('order')->firstOrFail();
+            ->firstOrFail();
 
         /**
          *  First of all, we need to pass some params to importer directory (copy files, data, params)
