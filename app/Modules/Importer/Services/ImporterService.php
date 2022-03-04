@@ -4,6 +4,7 @@
 namespace App\Modules\Importer\Services;
 
 
+use App\Events\PreImportEvent;
 use App\Modules\Importer\Models\Importer\Importer;
 use App\Modules\Importer\Models\Importer\ImporterDto;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEventEvent;
@@ -73,29 +74,23 @@ class ImporterService
         try {
             DB::beginTransaction();
 
+            PreImportEvent::dispatch();
+
             $eventParams = new ImporterEventParams($params);
             $eventParams->setFilesFromUploaded($files);
-
-            // Event before import
-            $eventParams = $this->importerExecuteService->executeEvent(ImporterEventEvent::EVENT_PRE_IMPORT, $importer, $eventParams);
 
             // Processing data
             $eventParams = $this->importerExecuteService->executeEvent(ImporterEventEvent::EVENT_IMPORT, $importer, $eventParams);
 
-            // Event with processed data
-            $eventParams = $this->importerExecuteService->executeEvent(ImporterEventEvent::EVENT_POST_IMPORT_BEFORE_DB, $importer, $eventParams);
-
             // Add to DB
             $this->addToDatabase($record, $eventParams->getData());
-
-            // Event after DB
-            $this->importerExecuteService->executeEvent(ImporterEventEvent::EVENT_POST_IMPORT_AFTER_DB, $importer, $eventParams);
 
             DB::commit();
         } catch (Throwable $exception) {
             // If smt goes wrong
             DB::rollBack();
-            $this->recordService->delete($record);
+            // TODO: ???????????
+            $this->recordService->deleteRecordsInfo($record);
 
             throw new Exception("[ImporterService] Method import failed...", 0, $exception);
         }
@@ -115,7 +110,7 @@ class ImporterService
             $array['record_id'] = $record->id;
 
             $chunk[] = $array;
-            if (count($chunk) == 10) {
+            if (count($chunk) === 1000) {
 
                 RecordInfo::insert($chunk);
                 $chunk = [];

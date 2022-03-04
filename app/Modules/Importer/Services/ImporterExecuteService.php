@@ -40,47 +40,40 @@ class ImporterExecuteService
 
         $eventEvent = new ImporterEventEvent($event);
 
-        $importerEvents = ImporterEvent::where('event', $eventEvent->getEvent())
+        $importerEvent = ImporterEvent::where('event', $eventEvent->getEvent())
             ->where('importer_id', $importer->id)
-            ->orderBy('order')->get();
+            ->orderBy('order')->firstOrFail();
 
         /**
-         *  Execute all importer's by order
+         *  First of all, we need to pass some params to importer directory (copy files, data, params)
          */
-        $importerParams = null;
-        foreach ($importerEvents as $importerEvent) {
+        $this->passParamsToImporter($importerEvent, $eventParams);
 
-            /**
-             *  First of all, we need to pass some params to importer directory (copy files, data, params)
-             */
-            $this->passParamsToImporter($importerEvent, $eventParams);
+        /**
+         *  Execute importer app
+         */
+        $interpreter = $importerEvent->interpreter_class;
+        /** @var ImporterInterpreter $interpreter */
+        $interpreter = new $interpreter;
 
-            /**
-             *  Execute importer app
-             */
-            $interpreter = $importerEvent->interpreter_class;
-            /** @var ImporterInterpreter $interpreter */
-            $interpreter = new $interpreter;
-
-            $cd = 'cd ' . $importerEvent->getStoragePath();
-            try {
-                $exitCode = $interpreter->execute("$cd;{$interpreter->getAppCommand()}");
-                throw_if($exitCode > 0, new Exception('[executeEvent] Exit code greater then 0, [' . $exitCode . ']'));
-            } catch (Throwable $exception) {
-                Log::error('Importer failed to execute', [
-                    'event' => $event,
-                    'importerEvent' => $importerEvent->toArray(),
-                    'command' => "$cd;{$interpreter->getAppCommand()}",
-                    "error" => $exception->getMessage()
-                ]);
-                throw new Exception("[ExecuteEvent] Can't execute command", 0, $exception);
-            }
-
-            /**
-             *  Retrieve updated files from importer
-             */
-            $importerParams = $this->retrieveInformationFromImporter($importerEvent);
+        $cd = 'cd ' . $importerEvent->getStoragePath();
+        try {
+            $exitCode = $interpreter->execute("$cd;{$interpreter->getAppCommand()}");
+            throw_if($exitCode > 0, new Exception('[executeEvent] Exit code greater then 0, [' . $exitCode . ']'));
+        } catch (Throwable $exception) {
+            Log::error('Importer failed to execute', [
+                'event' => $event,
+                'importerEvent' => $importerEvent->toArray(),
+                'command' => "$cd;{$interpreter->getAppCommand()}",
+                "error" => $exception->getMessage()
+            ]);
+            throw new Exception("[ExecuteEvent] Can't execute command", 0, $exception);
         }
+
+        /**
+         *  Retrieve updated files from importer
+         */
+        $importerParams = $this->retrieveInformationFromImporter($importerEvent);
 
         return $importerParams ?? $eventParams;
     }
@@ -99,7 +92,6 @@ class ImporterExecuteService
 
         $paramsJsonFile = $importerDataPath . DIRECTORY_SEPARATOR . 'params.json';
         $filesJsonFile = $importerDataPath . DIRECTORY_SEPARATOR . 'files.json';
-        $dataJsonFile = $importerDataPath . DIRECTORY_SEPARATOR . 'data.json';
 
         $this->clearAndCreateDir($importerDataPath);
         $this->clearAndCreateDir($importerFilesPath);
@@ -110,11 +102,6 @@ class ImporterExecuteService
         // Files
         $copyFiles = $this->copyFilesToPath($eventParams->getFiles(), $importerFilesPath);
         $this->writeArrayToJsonFile($copyFiles, $filesJsonFile);
-
-        if ($eventParams->getData()) {
-            $this->writeArrayToJsonFile($eventParams->getData(), $dataJsonFile);
-        }
-
     }
 
     /**

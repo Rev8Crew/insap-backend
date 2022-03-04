@@ -35,4 +35,9 @@ class RecordService
 
         return $record->delete();
     }
+
+    public function deleteRecordsInfo(Record $record) : bool
+    {
+        return RecordInfo::where('record_id', $record->id)->delete();
+    }
 }

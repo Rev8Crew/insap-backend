@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\CommonController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,4 +22,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 
 // For public application
-Route::any('/{any}', [\App\Http\Controllers\CommonController::class, 'app'])->where('any', '^(?!api).*$');
+Route::any('/{any}', [CommonController::class, 'app'])->where('any', '^(?!api).*$');

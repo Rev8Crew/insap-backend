@@ -15,9 +15,10 @@
 - Vue
 
 ## Laravel stack:
-- Laravel Sanctum
+- Sanctum
 - Laravel-permission
-- 
+- Telescope
+
 ### Importer
 
 - PHP

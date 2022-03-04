@@ -15,8 +15,6 @@ class CreateImporterEventsTable extends Migration
             $table->string('name')->comment('name for event')->nullable();
             $table->smallInteger('event')->comment('list of events')->nullable();
 
-            $table->smallInteger('order')->nullable();
-
             $table->integer('is_active')->default(IsActiveHelper::ACTIVE_ACTIVE);
 
             $table->string('interpreter_class')->comment('Interpreter like PHP, python, go ...')->nullable();

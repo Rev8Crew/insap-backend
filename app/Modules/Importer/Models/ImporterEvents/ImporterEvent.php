@@ -22,7 +22,6 @@ use Storage;
  * @property int $id
  * @property string|null $name name for event
  * @property int|null $event list of events
- * @property int|null $order
  * @property int $is_active
  * @property string|null $interpreter_class Interpreter like PHP, python, go ...
  * @property int|null $importer_id
@@ -62,7 +61,6 @@ class ImporterEvent extends Model
         'name',
         'event',
         'interpreter_class',
-        'order',
         'is_active',
         'importer_id'
     ];
