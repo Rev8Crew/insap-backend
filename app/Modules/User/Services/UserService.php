@@ -73,7 +73,7 @@ class UserService
      * @param array $roles
      */
     public function attachRoles(User $user, array $roles) {
-        $user->roles()->attach( Role::whereIn('name', $roles)->get());
+        $user->roles()->syncWithoutDetaching( Role::whereIn('name', $roles)->get());
     }
 
     /**

@@ -14,6 +14,7 @@ use App\Modules\Importer\Models\ImporterEvents\ImporterEventInterpreter;
 use App\Modules\Importer\Models\ImporterInterpreter\ImporterInterpreterPython;
 use App\Modules\Importer\Services\ImporterEventService;
 use App\Modules\Importer\Services\ImporterService;
+use App\Modules\Plugins\Models\Plugin;
 use App\Modules\Project\Models\Record;
 use App\Modules\Project\Models\RecordData;
 use App\Modules\Project\Services\RecordService;
@@ -28,6 +29,7 @@ class ImporterExecuteTest extends TestCase
     private Importer $importer;
     private ImporterEvent $importerEvent;
     private Record $record;
+    private Appliance $appliance;
 
     private ImporterService $importerService;
     private ImporterEventService $importerEventService;
@@ -44,7 +46,7 @@ class ImporterExecuteTest extends TestCase
         $this->importerEventService = $this->app->make(ImporterEventService::class);
         $this->recordService = $this->app->make(RecordService::class);
 
-        $appliance = Appliance::create(['id' => Appliance::APPLIANCE_TEST_ID, 'name' => 'test']);
+        $this->appliance = Appliance::create(['id' => Appliance::APPLIANCE_TEST_ID, 'name' => 'test']);
 
         $this->record = Record::create([
             'id' => Record::TEST_RECORD_ID,
@@ -54,8 +56,10 @@ class ImporterExecuteTest extends TestCase
             'user_id' => User::TEST_USER_ID
         ]);
 
-        $this->importer = $this->importerService->create(new ImporterDto('testImporter', $appliance));
-        $this->importerEvent = $this->createBasicImporterEvent(ImporterEventEvent::EVENT_IMPORT, ImporterInterpreterPython::class, 'test', 'importer_python_ctd.zip');
+    }
+
+    private function createImporter(Appliance $appliance, bool $plugin = false) {
+        return $this->importerService->create(new ImporterDto('testImporter', $appliance, '', $plugin ? Plugin::first() : null));
     }
 
     private function createBasicImporterEvent(int $event, string $interpreter, string $name = null, string $filename = 'importer_php.zip')
@@ -77,8 +81,11 @@ class ImporterExecuteTest extends TestCase
         );
     }
 
-    public function testBasic()
+    public function testBasic(): void
     {
+        $this->importer = $this->createImporter($this->appliance, false);
+        $this->importerEvent = $this->createBasicImporterEvent(ImporterEventEvent::EVENT_IMPORT, ImporterInterpreterPython::class, 'test', 'importer_python_ctd.zip');
+
         $storage = Storage::disk('examples');
 
         $uploadedDataFile = UploadedFile::fake()->createWithContent('data', file_get_contents(
@@ -106,5 +113,40 @@ class ImporterExecuteTest extends TestCase
         $this->assertTrue($this->record->records_info->count() > 0);
         $this->recordService->deleteRecordsInfo($this->record);
 
+    }
+
+    public function testPlugin(): void
+    {
+        $this->importer = $this->createImporter($this->appliance, true);
+        $this->importerEvent = $this->createBasicImporterEvent(ImporterEventEvent::EVENT_IMPORT, ImporterInterpreterPython::class, 'test', 'importer_python_ctd.zip');
+
+        $storage = Storage::disk('examples');
+
+        $uploadedDataFile = UploadedFile::fake()->createWithContent('data', file_get_contents(
+            $storage->path('ctd' . DIRECTORY_SEPARATOR . '1' . DIRECTORY_SEPARATOR . '065668_20190801_1916.xlsx')
+        ));
+
+        $dataFile = new ImporterEventFile($uploadedDataFile, 'data');
+
+        $uploadedCoordinatesFile = UploadedFile::fake()->createWithContent('data', file_get_contents(
+            $storage->path('ctd' . DIRECTORY_SEPARATOR . '1' . DIRECTORY_SEPARATOR . 'Coordinates_065668_20190801_1916.xlsx')
+        ));
+
+        $uploadedDataFile->mimeType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        $uploadedCoordinatesFile->mimeType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+
+        $coordFile = new ImporterEventFile($uploadedCoordinatesFile, 'coordinates');
+
+        $params = [
+            'date_time' => Carbon::now()->format('Y-m-d H:i:s')
+        ];
+
+        $this->assertNotNull($this->importer->plugin);
+
+        $result = $this->importerService->import($this->importer, $this->record, $params, [$dataFile, $coordFile]);
+
+        $this->assertTrue($result);
+        $this->assertTrue($this->record->records_info->count() > 0);
+        $this->recordService->deleteRecordsInfo($this->record);
     }
 }

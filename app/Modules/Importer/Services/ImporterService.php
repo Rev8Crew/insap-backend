@@ -10,6 +10,7 @@ use App\Modules\Importer\Models\Importer\ImporterDto;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEventEvent;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEventFile;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEventParams;
+use App\Modules\Plugins\Models\PluginServiceInterface;
 use App\Modules\Project\Models\Record;
 use App\Modules\Project\Models\RecordInfo;
 use App\Modules\Project\Services\RecordService;
@@ -84,7 +85,13 @@ class ImporterService
             $eventParams = $this->importerExecuteService->executeEvent(ImporterEventEvent::EVENT_IMPORT, $importer, $eventParams);
 
             // Add to DB
-            $this->addToDatabase($record, $eventParams->getData());
+            if ($importer->plugin) {
+                $service = $this->getPluginService($importer->plugin);
+                $service->preprocess($record, $eventParams);
+            } else {
+                $this->addToDatabase($record, $eventParams->getData());
+            }
+
 
             $fileIds = [];
             $gridFsService = app(\Mts88\MongoGrid\Services\MongoGrid::class);
@@ -135,5 +142,16 @@ class ImporterService
             }
 
         }
+    }
+
+    protected function getPluginService(string $className) : PluginServiceInterface
+    {
+        $service = app($className);
+
+        if ( ($service instanceof PluginServiceInterface) === false) {
+            throw new \RuntimeException('Plugin class ' . $className . ' must be instance of PreProcessingInterface');
+        }
+
+        return $service;
     }
 }

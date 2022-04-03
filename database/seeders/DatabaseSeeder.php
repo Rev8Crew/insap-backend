@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
             FileSeeder::class,
             ProjectSeeder::class,
             RecordDataSeeder::class,
-            RecordSeeder::class
+            RecordSeeder::class,
+            PluginSeeder::class
         ]);
     }
 }

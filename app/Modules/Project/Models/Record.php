@@ -4,6 +4,7 @@ namespace App\Modules\Project\Models;
 
 use App\helpers\IsActiveHelper;
 use App\Models\User;
+use App\Modules\Plugins\Services\PluginService;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -87,6 +88,11 @@ class Record extends Model
      */
     public function getRecordsInfoAttribute(): ?Collection
     {
+        if ($this->plugin) {
+            $pluginService = app(PluginService::class);
+            return $pluginService->getPluginService($this->plugin)->getQueryBuilder($this)->get();
+        }
+
         return RecordInfo::where('record_id', $this->id)->get();
     }
 

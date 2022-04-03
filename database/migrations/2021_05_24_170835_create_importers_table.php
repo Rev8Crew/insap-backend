@@ -17,6 +17,7 @@ class CreateImportersTable extends Migration
             $table->string('description')->nullable();
 
             $table->integer('appliance_id')->index()->nullable();
+            $table->integer('plugin_id')->index()->nullable();
 
             $table->integer('is_active')->default(IsActiveHelper::ACTIVE_ACTIVE);
 

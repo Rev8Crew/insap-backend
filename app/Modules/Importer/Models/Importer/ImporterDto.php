@@ -4,8 +4,9 @@
 namespace App\Modules\Importer\Models\Importer;
 
 
-use App\helpers\IsActiveHelper;
+use App\Enums\ActiveStatus;
 use App\Modules\Appliance\Models\Appliance;
+use App\Modules\Plugins\Models\Plugin;
 use Illuminate\Contracts\Support\Arrayable;
 
 /**
@@ -16,9 +17,10 @@ class ImporterDto implements Arrayable
 {
     public string $description = ' ';
     private string $name;
-    private int $is_active = IsActiveHelper::ACTIVE_ACTIVE;
+    private int $is_active = ActiveStatus::ACTIVE;
 
     private Appliance $appliance;
+    private ?Plugin $plugin;
 
     /**
      * ImporterDto constructor.
@@ -26,10 +28,11 @@ class ImporterDto implements Arrayable
      * @param Appliance $appliance
      * @param string $description
      */
-    public function __construct(string $name, Appliance $appliance, string $description = '')
+    public function __construct(string $name, Appliance $appliance, string $description = '', Plugin $plugin = null)
     {
         $this->name = $name;
         $this->appliance = $appliance;
+        $this->plugin = $plugin;
     }
 
     /**
@@ -37,12 +40,18 @@ class ImporterDto implements Arrayable
      */
     public function toArray(): array
     {
-        return [
+        $array = [
             'name' => $this->getName(),
             'description' => $this->getDescription(),
             'is_active' => $this->getIsActive(),
-            'appliance_id' => $this->getApplianceId()
+            'appliance_id' => $this->getApplianceId(),
         ];
+
+        if ($this->plugin) {
+            $array['plugin_id'] = $this->plugin->id;
+        }
+
+        return $array;
     }
 
     public function getName(): string
@@ -63,5 +72,13 @@ class ImporterDto implements Arrayable
     public function getApplianceId(): int
     {
         return $this->appliance->id;
+    }
+
+    /**
+     * @return Plugin|null
+     */
+    public function getPlugin(): ?Plugin
+    {
+        return $this->plugin;
     }
 }

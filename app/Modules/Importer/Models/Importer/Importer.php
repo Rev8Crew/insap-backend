@@ -2,10 +2,11 @@
 
 namespace App\Modules\Importer\Models\Importer;
 
-use App\helpers\IsActiveHelper;
+use App\Enums\ActiveStatus;
 use App\Models\User;
 use App\Modules\Appliance\Models\Appliance;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEvent;
+use App\Modules\Plugins\Models\Plugin;
 use Eloquent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -47,16 +48,6 @@ use Spatie\Activitylog\Traits\LogsActivity;
  */
 class Importer extends Model
 {
-    use HasFactory, LogsActivity;
-
-    public const TEST_IMPORTER_ID = 1;
-
-    /**
-     *  Log all fillable attr
-     * @var bool
-     */
-    protected static $logFillable = true;
-
     /**
      * @var string[]
      */
@@ -64,23 +55,13 @@ class Importer extends Model
         'name',
         'description',
         'appliance_id',
+        'plugin_id',
         'is_active'
     ];
 
     protected $attributes = [
-        'is_active' => IsActiveHelper::ACTIVE_ACTIVE
+        'is_active' => ActiveStatus::ACTIVE
     ];
-
-    /**
-     * Return processed data
-     * @param array $params
-     * @param UploadedFile[] $files
-     * @return array
-     */
-    public function exec(array $params, array $files): array
-    {
-
-    }
 
     public function events(): HasMany
     {
@@ -95,5 +76,10 @@ class Importer extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function plugin(): BelongsTo
+    {
+        return $this->belongsTo(Plugin::class, 'plugin_id');
     }
 }

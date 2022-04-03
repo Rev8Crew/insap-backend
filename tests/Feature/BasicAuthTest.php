@@ -17,7 +17,7 @@ class BasicAuthTest extends TestCase
     {
         $response = $this->postJson('web/auth/login', [
             'email' => "admin@admin.com",
-            'password' => "rootadmin"
+            'password' => "admin"
         ]);
 
         $response->assertStatus(200);

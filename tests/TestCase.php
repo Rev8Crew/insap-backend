@@ -3,8 +3,10 @@
 namespace Tests;
 
 use App\Models\UserInfo;
+use App\Modules\Plugins\Models\Plugin;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
 abstract class TestCase extends BaseTestCase
@@ -17,6 +19,8 @@ abstract class TestCase extends BaseTestCase
 
         $this->clearFileDir();
         $this->clearUserInfos();
+
+        Artisan::call('migrate:plugin', ['slug' => Plugin::TEST_PLUGIN_SLUG]);
         $this->seed();
     }
 
