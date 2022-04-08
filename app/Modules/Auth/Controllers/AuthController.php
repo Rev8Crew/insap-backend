@@ -3,13 +3,12 @@
 namespace App\Modules\Auth\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Response\Response;
-use App\Models\Response\ResponseErrorStatus;
-use App\Models\Response\ResponseStatus;
+use App\Models\Common\Response;
 use App\Models\User;
 use App\Modules\Auth\Requests\LoginRequest;
 use App\Modules\User\Resources\UserResource;
 use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 
 /**
  * Class AuthController
@@ -45,8 +44,8 @@ class AuthController extends Controller
     {
         $response = new Response();
 
-        if ( !Auth::attempt($request->only('email', 'password'))) {
-            return $response->withError( ResponseErrorStatus::ERROR_UNAUTHORIZED, trans('auth.failed'));
+        if (!auth()->attempt($request->only('email', 'password'))) {
+            return $response->withError(SymfonyResponse::HTTP_BAD_REQUEST, trans('auth.failed'));
         }
 
         /**
@@ -85,7 +84,7 @@ class AuthController extends Controller
             Auth::logout();
         }
 
-        return $response->withStatus(ResponseStatus::STATUS_OK);
+        return $response->success();
     }
 
     /**

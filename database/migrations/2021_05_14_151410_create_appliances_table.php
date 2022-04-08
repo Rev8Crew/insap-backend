@@ -18,7 +18,7 @@ class CreateAppliancesTable extends Migration
 
             $table->string('name')->nullable();
             $table->string('description')->nullable();
-            $table->smallInteger('is_active')->comment('Is project active')->default(\App\helpers\IsActiveHelper::ACTIVE_ACTIVE);
+            $table->smallInteger('is_active')->comment('Is project active');
 
             $table->timestamps();
         });

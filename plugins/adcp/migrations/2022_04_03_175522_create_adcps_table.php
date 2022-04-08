@@ -12,6 +12,7 @@ class CreateAdcpsTable extends Migration
             $table->id();
 
             $table->bigInteger('step_id')->index()->nullable();
+            $table->integer('expedition_number')->index()->nullable();
 
             $table->double('latitude')->nullable();
             $table->double('longitude')->nullable();
@@ -19,7 +20,7 @@ class CreateAdcpsTable extends Migration
             $table->double('speed')->index()->nullable();
             $table->double('max_depth')->nullable();
 
-            $table->json('depth_values')->nullable();
+            $table->json('depths')->nullable();
 
             $table->dateTime('date')->index();
             $table->integer('record_id')->index()->default(0);

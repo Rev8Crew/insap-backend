@@ -2,9 +2,9 @@
 
 namespace App\Modules\Appliance\Models;
 
+use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Traits\LogsActivity;
 
 
 /**
@@ -16,8 +16,6 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property int $is_active Is project active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection|\Spatie\Activitylog\Models\Activity[] $activities
- * @property-read int|null $activities_count
  * @method static \Illuminate\Database\Eloquent\Builder|Appliance newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Appliance newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Appliance query()
@@ -31,15 +29,9 @@ use Spatie\Activitylog\Traits\LogsActivity;
  */
 class Appliance extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory;
 
-    const APPLIANCE_TEST_ID = 1;
-
-    /**
-     *  Log all fillable attr
-     * @var bool
-     */
-    protected static $logFillable = true;
+    public const APPLIANCE_TEST_ID = 1;
 
     /**
      * @var string[]
@@ -48,5 +40,9 @@ class Appliance extends Model
         'name',
         'description',
         'is_active'
+    ];
+
+    protected $attributes = [
+        'is_active' => ActiveStatus::ACTIVE
     ];
 }

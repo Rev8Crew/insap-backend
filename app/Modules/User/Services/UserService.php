@@ -2,7 +2,7 @@
 
 namespace App\Modules\User\Services;
 
-use App\helpers\IsActiveHelper;
+use App\Enums\ActiveStatus;
 use App\Models\User;
 use App\Models\UserInfo;
 use App\Services\File\FileService;
@@ -88,14 +88,14 @@ class UserService
      * @param User $user
      */
     public function activate(User $user) {
-        $user->update(['is_active' => IsActiveHelper::ACTIVE_ACTIVE]);
+        $user->update(['is_active' => ActiveStatus::ACTIVE]);
     }
 
     /**
      * @param User $user
      */
     public function deactivate(User $user) {
-        $user->update(['is_active' => IsActiveHelper::ACTIVE_INACTIVE]);
+        $user->update(['is_active' => ActiveStatus::INACTIVE]);
     }
 
 

@@ -4,10 +4,8 @@
 namespace App\Modules\Project\Services;
 
 
-use App\helpers\IsActiveHelper;
 use App\Models\User;
 use App\Modules\Project\Models\Project;
-use App\Modules\Project\Models\RecordData;
 use App\Services\File\FileService;
 use Illuminate\Http\UploadedFile;
 
@@ -35,24 +33,6 @@ class ProjectService
             $params
         );
 
-        return $project;
-    }
-
-    /**
-     * @param Project $project
-     * @return Project
-     */
-    public function deactivate(Project $project) : Project {
-        $project->update(['is_active' => IsActiveHelper::ACTIVE_INACTIVE]);
-        return $project;
-    }
-
-    /**
-     * @param Project $project
-     * @return Project
-     */
-    public function activate(Project $project) : Project {
-        $project->update(['is_active' => IsActiveHelper::ACTIVE_ACTIVE]);
         return $project;
     }
 

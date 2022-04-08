@@ -4,7 +4,6 @@
 namespace App\Services\File;
 
 
-use App\helpers\IsActiveHelper;
 use App\Models\File;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -27,7 +26,6 @@ class FileService
             'path' => $file->hashName(),
             'url' => $storage->url($file->getRealPath()),
             'mime' => $file->getMimeType(),
-            'is_active' => IsActiveHelper::ACTIVE_ACTIVE,
             'user_id' => $user->id
         ]);
     }

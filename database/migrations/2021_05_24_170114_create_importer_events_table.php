@@ -1,6 +1,5 @@
 <?php
 
-use App\helpers\IsActiveHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +14,7 @@ class CreateImporterEventsTable extends Migration
             $table->string('name')->comment('name for event')->nullable();
             $table->smallInteger('event')->comment('list of events')->nullable();
 
-            $table->integer('is_active')->default(IsActiveHelper::ACTIVE_ACTIVE);
+            $table->integer('is_active');
 
             $table->string('interpreter_class')->comment('Interpreter like PHP, python, go ...')->nullable();
             $table->integer('importer_id')->index()->nullable();

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Response\ResponseStatus;
+use App\Enums\ResponseStatus;
 use App\Models\User;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Tests\TestCase;
@@ -30,7 +30,8 @@ class BasicAuthTest extends TestCase
 
     }
 
-    public function testBasicMe() {
+    public function testBasicMe(): void
+    {
         $user = User::find(User::ROOT_USER_ID);
         $response = $this->actingAs($user)->getJson('web/auth/me');
 
@@ -49,7 +50,7 @@ class BasicAuthTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson(fn(AssertableJson $json) =>
-        $json->where('status', ResponseStatus::STATUS_OK)
+        $json->where('status', ResponseStatus::SUCCESS)
             ->etc()
         );
     }

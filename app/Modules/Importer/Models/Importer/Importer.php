@@ -7,17 +7,10 @@ use App\Models\User;
 use App\Modules\Appliance\Models\Appliance;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEvent;
 use App\Modules\Plugins\Models\Plugin;
-use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Carbon;
-use Spatie\Activitylog\Models\Activity;
-use Spatie\Activitylog\Traits\LogsActivity;
+
 
 /**
  * App\Modules\Importer\Models\Importer\Importer
@@ -26,25 +19,27 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property string|null $name
  * @property string|null $description
  * @property int|null $appliance_id
+ * @property int|null $plugin_id
  * @property int $is_active
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Collection|Activity[] $activities
- * @property-read int|null $activities_count
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read Appliance|null $appliance
- * @property-read User $user
- * @property-read ImporterEvent[] $events
- * @method static Builder|Importer newModelQuery()
- * @method static Builder|Importer newQuery()
- * @method static Builder|Importer query()
- * @method static Builder|Importer whereApplianceId($value)
- * @method static Builder|Importer whereCreatedAt($value)
- * @method static Builder|Importer whereDescription($value)
- * @method static Builder|Importer whereId($value)
- * @method static Builder|Importer whereIsActive($value)
- * @method static Builder|Importer whereName($value)
- * @method static Builder|Importer whereUpdatedAt($value)
- * @mixin Eloquent
+ * @property-read \Illuminate\Database\Eloquent\Collection|ImporterEvent[] $events
+ * @property-read int|null $events_count
+ * @property-read Plugin|null $plugin
+ * @property-read User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Importer newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Importer newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Importer query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Importer whereApplianceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Importer whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Importer whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Importer whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Importer whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Importer whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Importer wherePluginId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Importer whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class Importer extends Model
 {

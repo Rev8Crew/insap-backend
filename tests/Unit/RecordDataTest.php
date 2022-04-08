@@ -2,16 +2,12 @@
 
 namespace Tests\Unit;
 
-use App\helpers\IsActiveHelper;
+use App\Enums\ActiveStatus;
 use App\Models\User;
-use App\Models\UserInfo;
 use App\Modules\Project\Models\Project;
 use App\Modules\Project\Models\RecordData;
-use App\Modules\Project\Services\ProjectService;
 use App\Modules\Project\Services\RecordDataService;
-use App\Modules\User\Services\UserService;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -45,7 +41,7 @@ class RecordDataTest extends TestCase
 
         $this->assertEquals($array['name'], $this->recordData->name);
         $this->assertEquals($array['description'], $this->recordData->description);
-        $this->assertEquals(IsActiveHelper::ACTIVE_ACTIVE, $this->recordData->is_active);
+        $this->assertEquals(ActiveStatus::ACTIVE, $this->recordData->is_active);
     }
 
     public function testBasicDelete() {
@@ -54,18 +50,6 @@ class RecordDataTest extends TestCase
         $this->recordDataService->delete($this->recordData);
 
         $this->assertNull(RecordData::find($id));
-    }
-
-    public function testBasicActivate() {
-        $this->recordDataService->activate($this->recordData);
-
-        $this->assertEquals(IsActiveHelper::ACTIVE_ACTIVE, $this->recordData->is_active);
-    }
-
-    public function testBasicDeactivate() {
-        $this->recordDataService->deactivate($this->recordData);
-
-        $this->assertEquals(IsActiveHelper::ACTIVE_INACTIVE, $this->recordData->is_active);
     }
 
     public function testChangeImage() {

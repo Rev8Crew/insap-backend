@@ -6,6 +6,7 @@ use App\Modules\Importer\Models\ImporterEvents\ImporterEventParams;
 use App\Modules\Plugins\Models\PluginServiceInterface;
 use App\Modules\Project\Models\Record;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Plugins\adcp\Models\Adcp;
 
 class ProcessingService implements PluginServiceInterface
@@ -16,14 +17,24 @@ class ProcessingService implements PluginServiceInterface
         $data = collect($eventParams->getData());
 
         $data = $data->map( function ($item) use ($record) {
+            $item['depths'] = is_array($item['depths']) ? json_encode($item['depths'], JSON_THROW_ON_ERROR) : $item['depths'];
             $item['record_id'] = $record->id;
             return $item;
         });
 
         $this->validateData($data->first());
 
-        foreach ($data->chunk(1000) as $chunk) {
-            Adcp::insert($chunk->toArray());
+        try {
+            DB::beginTransaction();
+
+            /** @var Collection $chunk */
+            foreach ($data->chunk(10) as $chunk) {
+                Adcp::insert($chunk->toArray());
+            }
+
+            DB::commit();
+        } catch (\Throwable $throwable) {
+            DB::rollBack();
         }
     }
 

@@ -2,16 +2,10 @@
 
 namespace App\Models;
 
-use App\helpers\IsActiveHelper;
-use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
+use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-use Spatie\Activitylog\Models\Activity;
-use Spatie\Activitylog\Traits\LogsActivity;
 
 
 /**
@@ -24,37 +18,28 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property string|null $mime
  * @property int $is_active
  * @property int|null $user_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Collection|Activity[] $activities
- * @property-read int|null $activities_count
- * @property-read User|null $user
- * @method static Builder|File newModelQuery()
- * @method static Builder|File newQuery()
- * @method static Builder|File query()
- * @method static Builder|File whereCreatedAt($value)
- * @method static Builder|File whereId($value)
- * @method static Builder|File whereIsActive($value)
- * @method static Builder|File whereMime($value)
- * @method static Builder|File whereName($value)
- * @method static Builder|File wherePath($value)
- * @method static Builder|File whereUpdatedAt($value)
- * @method static Builder|File whereUrl($value)
- * @method static Builder|File whereUserId($value)
- * @mixin Eloquent
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder|File newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|File newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|File query()
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereMime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File wherePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|File whereUserId($value)
+ * @mixin \Eloquent
  */
 class File extends Model
 {
-    use HasFactory, LogsActivity;
+    use HasFactory;
 
-    const TEST_FILE_ID = 1;
-
-    /**
-     *  Log all fillable attr
-     * @var bool
-     */
-    protected static $logFillable = true;
-
+    public const TEST_FILE_ID = 1;
     /**
      * @var string[]
      */
@@ -68,7 +53,7 @@ class File extends Model
     ];
 
     protected $attributes = [
-        'is_active' => IsActiveHelper::ACTIVE_ACTIVE
+        'is_active' => ActiveStatus::ACTIVE
     ];
 
     public function user(): BelongsTo

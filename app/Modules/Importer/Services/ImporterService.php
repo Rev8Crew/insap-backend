@@ -11,6 +11,7 @@ use App\Modules\Importer\Models\ImporterEvents\ImporterEventEvent;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEventFile;
 use App\Modules\Importer\Models\ImporterEvents\ImporterEventParams;
 use App\Modules\Plugins\Models\PluginServiceInterface;
+use App\Modules\Plugins\Services\PluginService;
 use App\Modules\Project\Models\Record;
 use App\Modules\Project\Models\RecordInfo;
 use App\Modules\Project\Services\RecordService;
@@ -30,17 +31,25 @@ class ImporterService
 
     private RecordService $recordService;
 
+    private PluginService $pluginService;
+
     /**
      * ImporterService constructor.
      * @param ImporterEventService $importerEventService
      * @param RecordService $recordService
      * @param ImporterExecuteService $importerExecuteService
      */
-    public function __construct(ImporterEventService $importerEventService, RecordService $recordService, ImporterExecuteService $importerExecuteService)
+    public function __construct(
+        ImporterEventService $importerEventService,
+        RecordService $recordService,
+        ImporterExecuteService $importerExecuteService,
+        PluginService $pluginService
+    )
     {
         $this->importerEventService = $importerEventService;
         $this->recordService = $recordService;
         $this->importerExecuteService = $importerExecuteService;
+        $this->pluginService = $pluginService;
     }
 
     public function create(ImporterDto $dto): Importer
@@ -73,6 +82,7 @@ class ImporterService
      */
     public function import(Importer $importer, Record $record, array $params = [], array $files = []): bool
     {
+        ini_set('memory_limit', '1G');
         try {
             DB::beginTransaction();
 
@@ -86,7 +96,7 @@ class ImporterService
 
             // Add to DB
             if ($importer->plugin) {
-                $service = $this->getPluginService($importer->plugin);
+                $service = $this->pluginService->getPluginService($importer->plugin);
                 $service->preprocess($record, $eventParams);
             } else {
                 $this->addToDatabase($record, $eventParams->getData());
@@ -109,6 +119,7 @@ class ImporterService
 
             $record->files = $fileIds;
             $record->params = $eventParams->getParams();
+            $record->importer()->associate($importer);
 
             $record->save();
 
@@ -142,16 +153,5 @@ class ImporterService
             }
 
         }
-    }
-
-    protected function getPluginService(string $className) : PluginServiceInterface
-    {
-        $service = app($className);
-
-        if ( ($service instanceof PluginServiceInterface) === false) {
-            throw new \RuntimeException('Plugin class ' . $className . ' must be instance of PreProcessingInterface');
-        }
-
-        return $service;
     }
 }

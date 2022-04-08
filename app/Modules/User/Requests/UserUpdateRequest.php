@@ -15,7 +15,6 @@ class UserUpdateRequest extends FormRequest
         return [
             'email' => 'string|email|unique:users',
             'name' => 'string|min:3',
-            'is_active' => ['integer', new IsActive]
         ];
     }
 

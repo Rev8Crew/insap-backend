@@ -2,14 +2,11 @@
 
 namespace Tests\Unit;
 
-use App\helpers\IsActiveHelper;
+use App\Enums\ActiveStatus;
 use App\Models\User;
-use App\Models\UserInfo;
 use App\Modules\Project\Models\Project;
 use App\Modules\Project\Services\ProjectService;
-use App\Modules\User\Services\UserService;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -43,7 +40,7 @@ class ProjectTest extends TestCase
 
         $this->assertEquals($array['name'], $this->project->name);
         $this->assertEquals($array['description'], $this->project->description);
-        $this->assertEquals(IsActiveHelper::ACTIVE_ACTIVE, $this->project->is_active);
+        $this->assertEquals(ActiveStatus::ACTIVE, $this->project->is_active);
     }
 
     public function testBasicDelete() {
@@ -52,18 +49,6 @@ class ProjectTest extends TestCase
         $this->projectService->delete($this->project);
 
         $this->assertNull(Project::find($projectId));
-    }
-
-    public function testBasicActivate() {
-        $this->projectService->activate($this->project);
-
-        $this->assertEquals(IsActiveHelper::ACTIVE_ACTIVE, $this->project->is_active);
-    }
-
-    public function testBasicDeactivate() {
-        $this->projectService->deactivate($this->project);
-
-        $this->assertEquals(IsActiveHelper::ACTIVE_INACTIVE, $this->project->is_active);
     }
 
     public function testBasicAddUser() {

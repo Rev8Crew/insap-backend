@@ -2,17 +2,11 @@
 
 namespace App\Modules\Importer\Models\ImporterEvents;
 
-use App\helpers\IsActiveHelper;
+use App\Enums\ActiveStatus;
 use App\Modules\Importer\Models\Importer\Importer;
-use Eloquent;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
-use Spatie\Activitylog\Models\Activity;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Storage;
 
 
@@ -25,34 +19,25 @@ use Storage;
  * @property int $is_active
  * @property string|null $interpreter_class Interpreter like PHP, python, go ...
  * @property int|null $importer_id
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property-read Collection|Activity[] $activities
- * @property-read int|null $activities_count
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read Importer|null $importer
- * @method static Builder|ImporterEvent newModelQuery()
- * @method static Builder|ImporterEvent newQuery()
- * @method static Builder|ImporterEvent query()
- * @method static Builder|ImporterEvent whereCreatedAt($value)
- * @method static Builder|ImporterEvent whereEvent($value)
- * @method static Builder|ImporterEvent whereId($value)
- * @method static Builder|ImporterEvent whereImporterId($value)
- * @method static Builder|ImporterEvent whereInterpreterClass($value)
- * @method static Builder|ImporterEvent whereIsActive($value)
- * @method static Builder|ImporterEvent whereName($value)
- * @method static Builder|ImporterEvent whereOrder($value)
- * @method static Builder|ImporterEvent whereUpdatedAt($value)
- * @mixin Eloquent
+ * @method static \Illuminate\Database\Eloquent\Builder|ImporterEvent newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ImporterEvent newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ImporterEvent query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ImporterEvent whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ImporterEvent whereEvent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ImporterEvent whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ImporterEvent whereImporterId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ImporterEvent whereInterpreterClass($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ImporterEvent whereIsActive($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ImporterEvent whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ImporterEvent whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class ImporterEvent extends Model
 {
-    use HasFactory, LogsActivity;
-
-    /**
-     *  Log all fillable attr
-     * @var bool
-     */
-    protected static $logFillable = true;
+    use HasFactory;
 
     /**
      * @var string[]
@@ -66,7 +51,7 @@ class ImporterEvent extends Model
     ];
 
     protected $attributes = [
-        'is_active' => IsActiveHelper::ACTIVE_ACTIVE
+        'is_active' => ActiveStatus::ACTIVE
     ];
 
     public function importer(): BelongsTo

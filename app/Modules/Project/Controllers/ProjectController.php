@@ -3,8 +3,7 @@
 namespace App\Modules\Project\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Response\Response;
-use App\Models\Response\ResponseStatus;
+use App\Models\Common\Response;
 use App\Modules\Project\Models\Project;
 use App\Modules\Project\Requests\ProjectCreateRequest;
 use App\Modules\Project\Resources\ProjectResource;
@@ -38,7 +37,7 @@ class ProjectController extends Controller
         $projectService = app(ProjectService::class);
         $projectService->create($request->except(['image']), $request->file('image'), $request->user());
 
-        return $response->withStatus(ResponseStatus::STATUS_OK);
+        return $response->success();
     }
 
     /**
@@ -66,6 +65,6 @@ class ProjectController extends Controller
         $projectService = app(ProjectService::class);
         $projectService->delete($project);
 
-        return $response->withStatus(ResponseStatus::STATUS_OK);
+        return $response->success();
     }
 }

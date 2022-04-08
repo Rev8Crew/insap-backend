@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\helpers\IsActiveHelper;
+use App\Enums\ActiveStatus;
 use App\Models\File;
 use App\Models\User;
 use App\Services\File\FileService;
@@ -33,7 +33,7 @@ class FileTest extends TestCase
 
         $this->assertEquals( $uploadedFile->getClientOriginalName(), $this->file->name);
         $this->assertEquals( $uploadedFile->getMimeType(), $this->file->mime);
-        $this->assertEquals( IsActiveHelper::ACTIVE_ACTIVE, $this->file->is_active);
+        $this->assertEquals( ActiveStatus::ACTIVE, $this->file->is_active);
         $this->assertEquals( $this->user->id, $this->file->user->id);
 
         $this->assertNotNull($this->file->user);

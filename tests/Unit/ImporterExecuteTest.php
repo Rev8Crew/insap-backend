@@ -22,6 +22,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Plugins\adcp\Models\Adcp;
 use Tests\TestCase;
 
 class ImporterExecuteTest extends TestCase
@@ -81,6 +82,41 @@ class ImporterExecuteTest extends TestCase
         );
     }
 
+    public function testPlugin(): void
+    {
+        $this->importer = $this->createImporter($this->appliance, true);
+        $this->importerEvent = $this->createBasicImporterEvent(ImporterEventEvent::EVENT_IMPORT, ImporterInterpreterPython::class, 'test', 'importer_python_adcp.zip');
+
+        $storage = Storage::disk('examples');
+
+        $uploadedDataFile = UploadedFile::fake()->createWithContent('data', file_get_contents(
+            $storage->path('adcp' . DIRECTORY_SEPARATOR . '1' . DIRECTORY_SEPARATOR . '19_07_30_1_kaliningrad_0_000_data.TXT')
+        ));
+        $uploadedDataFile->mimeType('text/plain');
+
+        $dataFile = new ImporterEventFile($uploadedDataFile, 'data');
+
+        $uploadedRefFile = UploadedFile::fake()->createWithContent('data', file_get_contents(
+            $storage->path('adcp' . DIRECTORY_SEPARATOR . '1' . DIRECTORY_SEPARATOR . '19_07_30_1_kaliningrad_0_000_ref.TXT')
+        ));
+        $uploadedRefFile->mimeType('text/plain');
+
+        $refFile = new ImporterEventFile($uploadedRefFile, 'ref');
+
+        $params = [
+            'date_time' => Carbon::now()->format('Y-m-d H:i:s'),
+            'expedition_number' => 1
+        ];
+
+        $this->assertNotNull($this->importer->plugin);
+
+        $result = $this->importerService->import($this->importer, $this->record, $params, [$dataFile, $refFile]);
+
+        $this->assertTrue($result);
+        $this->assertTrue($this->recordService->getRecordInfo($this->record)->count() > 0);
+        $this->recordService->deleteRecordsInfo($this->record);
+    }
+
     public function testBasic(): void
     {
         $this->importer = $this->createImporter($this->appliance, false);
@@ -110,43 +146,8 @@ class ImporterExecuteTest extends TestCase
         $result = $this->importerService->import($this->importer, $this->record, $params, [$dataFile, $coordFile]);
 
         $this->assertTrue($result);
-        $this->assertTrue($this->record->records_info->count() > 0);
+        $this->assertTrue($this->recordService->getRecordInfo($this->record)->count() > 0);
         $this->recordService->deleteRecordsInfo($this->record);
 
-    }
-
-    public function testPlugin(): void
-    {
-        $this->importer = $this->createImporter($this->appliance, true);
-        $this->importerEvent = $this->createBasicImporterEvent(ImporterEventEvent::EVENT_IMPORT, ImporterInterpreterPython::class, 'test', 'importer_python_ctd.zip');
-
-        $storage = Storage::disk('examples');
-
-        $uploadedDataFile = UploadedFile::fake()->createWithContent('data', file_get_contents(
-            $storage->path('ctd' . DIRECTORY_SEPARATOR . '1' . DIRECTORY_SEPARATOR . '065668_20190801_1916.xlsx')
-        ));
-
-        $dataFile = new ImporterEventFile($uploadedDataFile, 'data');
-
-        $uploadedCoordinatesFile = UploadedFile::fake()->createWithContent('data', file_get_contents(
-            $storage->path('ctd' . DIRECTORY_SEPARATOR . '1' . DIRECTORY_SEPARATOR . 'Coordinates_065668_20190801_1916.xlsx')
-        ));
-
-        $uploadedDataFile->mimeType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        $uploadedCoordinatesFile->mimeType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-
-        $coordFile = new ImporterEventFile($uploadedCoordinatesFile, 'coordinates');
-
-        $params = [
-            'date_time' => Carbon::now()->format('Y-m-d H:i:s')
-        ];
-
-        $this->assertNotNull($this->importer->plugin);
-
-        $result = $this->importerService->import($this->importer, $this->record, $params, [$dataFile, $coordFile]);
-
-        $this->assertTrue($result);
-        $this->assertTrue($this->record->records_info->count() > 0);
-        $this->recordService->deleteRecordsInfo($this->record);
     }
 }

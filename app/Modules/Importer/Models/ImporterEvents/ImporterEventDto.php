@@ -4,7 +4,7 @@
 namespace App\Modules\Importer\Models\ImporterEvents;
 
 
-use App\helpers\IsActiveHelper;
+use App\Enums\ActiveStatus;
 use App\Modules\Importer\Models\Importer\Importer;
 use Illuminate\Contracts\Support\Arrayable;
 
@@ -12,7 +12,7 @@ class ImporterEventDto implements Arrayable
 {
     private ?string $name = null;
     private ImporterEventEvent $event;
-    private int $isActive = IsActiveHelper::ACTIVE_ACTIVE;
+    private int $isActive = ActiveStatus::ACTIVE;
     private ImporterEventInterpreter $interpreter;
     private Importer $importer;
 

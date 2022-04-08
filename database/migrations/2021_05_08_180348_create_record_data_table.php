@@ -1,6 +1,5 @@
 <?php
 
-use App\helpers\IsActiveHelper;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,7 +14,7 @@ class CreateRecordDataTable extends Migration
             $table->string('name')->comment('Record data name');
             $table->string('description')->comment('Record data description')->default('');
             $table->integer('order')->comment('Record data order')->default(0 );
-            $table->smallInteger('is_active')->comment('Is record data active')->default(IsActiveHelper::ACTIVE_ACTIVE);
+            $table->smallInteger('is_active')->comment('Is record data active');
 
             $table->integer('project_id')->index()->default(0);
             $table->integer('image_id')->comment('Record data image')->index()->nullable();

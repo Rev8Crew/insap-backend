@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Response\ResponseStatus;
+use App\Enums\ResponseStatus;
 use App\Models\User;
 use App\Modules\Project\Models\Project;
 use Illuminate\Http\UploadedFile;
@@ -28,7 +28,7 @@ class ProjectTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson(fn(AssertableJson $json) =>
-        $json->where('status', ResponseStatus::STATUS_OK)
+        $json->where('status', ResponseStatus::SUCCESS)
             ->etc()
         );
 
@@ -46,7 +46,7 @@ class ProjectTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJson(fn(AssertableJson $json) =>
-        $json->where('status', ResponseStatus::STATUS_OK)
+        $json->where('status', ResponseStatus::SUCCESS)
             ->etc()
         );
 

@@ -3,8 +3,7 @@
 namespace App\Modules\User\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\Response\Response;
-use App\Models\Response\ResponseStatus;
+use App\Models\Common\Response;
 use App\Models\User;
 use App\Modules\User\Requests\UserCreateRequest;
 use App\Modules\User\Requests\UserUpdateRequest;
@@ -52,7 +51,7 @@ class UserController extends Controller
         $userService = app(UserService::class);
         $userService->create( $request->all() );
 
-        return $response->withStatus(ResponseStatus::STATUS_OK);
+        return $response->success();
     }
 
     /**
@@ -68,7 +67,7 @@ class UserController extends Controller
         $userService = app(UserService::class);
         $userService->delete($user);
 
-        return $response->withStatus(ResponseStatus::STATUS_OK);
+        return $response->success();
     }
 
     /**
@@ -84,7 +83,7 @@ class UserController extends Controller
         $userService = app(UserService::class);
         $userService->update( $user, $request->all() );
 
-        return $response->withStatus(ResponseStatus::STATUS_OK);
+        return $response->success();
     }
 
     /**
@@ -100,7 +99,7 @@ class UserController extends Controller
         $userService = app(UserService::class);
         $userService->activate($user);
 
-        return $response->withStatus(ResponseStatus::STATUS_OK);
+        return $response->success();
     }
 
     /**
@@ -116,6 +115,6 @@ class UserController extends Controller
         $userService = app(UserService::class);
         $userService->deactivate($user);
 
-        return $response->withStatus(ResponseStatus::STATUS_OK);
+        return $response->success();
     }
 }

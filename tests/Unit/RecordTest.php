@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\helpers\IsActiveHelper;
+use App\Enums\ActiveStatus;
 use App\Models\User;
 use App\Modules\Project\Models\Record;
 use App\Modules\Project\Models\RecordData;
@@ -39,7 +39,7 @@ class RecordTest extends TestCase
 
         $this->assertEquals($array['name'], $this->record->name);
         $this->assertEquals($array['description'], $this->record->description);
-        $this->assertEquals(IsActiveHelper::ACTIVE_ACTIVE, $this->record->is_active);
+        $this->assertEquals(ActiveStatus::ACTIVE, $this->record->is_active);
     }
 
     public function testDelete() {

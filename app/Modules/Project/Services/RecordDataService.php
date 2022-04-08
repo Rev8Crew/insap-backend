@@ -2,7 +2,6 @@
 
 namespace App\Modules\Project\Services;
 
-use App\helpers\IsActiveHelper;
 use App\Models\User;
 use App\Modules\Project\Models\RecordData;
 use App\Services\File\FileService;
@@ -34,28 +33,6 @@ class RecordDataService
         $this->deleteImage($recordData);
 
         $recordData->delete();
-    }
-
-    /**
-     * @param RecordData $recordData
-     *
-     * @return RecordData
-     */
-    public function activate(RecordData $recordData): RecordData
-    {
-        $recordData->update(['is_active' => IsActiveHelper::ACTIVE_ACTIVE]);
-        return $recordData;
-    }
-
-    /**
-     * @param RecordData $recordData
-     *
-     * @return RecordData
-     */
-    public function deactivate(RecordData $recordData): RecordData
-    {
-        $recordData->update(['is_active' => IsActiveHelper::ACTIVE_INACTIVE]);
-        return $recordData;
     }
 
     /**

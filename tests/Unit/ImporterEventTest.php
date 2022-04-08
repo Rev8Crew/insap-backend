@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\helpers\IsActiveHelper;
+use App\Enums\ActiveStatus;
 use App\Modules\Appliance\Models\Appliance;
 use App\Modules\Importer\Models\Importer\Importer;
 use App\Modules\Importer\Models\Importer\ImporterDto;
@@ -88,7 +88,7 @@ class ImporterEventTest extends TestCase
         $this->assertEquals($array['name'], $this->importerEvent->name);
         $this->assertEquals($array['event'], $this->importerEvent->event);
         $this->assertEquals($array['interpreter_class'], $this->importerEvent->interpreter_class);
-        $this->assertEquals(IsActiveHelper::ACTIVE_ACTIVE, $this->importerEvent->is_active);
+        $this->assertEquals(ActiveStatus::ACTIVE, $this->importerEvent->is_active);
 
         Storage::disk('import')->assertExists($this->importerEvent->id)->deleteDirectory($this->importerEvent->id);
         return true;

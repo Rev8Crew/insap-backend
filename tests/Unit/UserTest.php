@@ -2,7 +2,7 @@
 
 namespace Tests\Unit;
 
-use App\helpers\IsActiveHelper;
+use App\Enums\ActiveStatus;
 use App\Models\User;
 use App\Models\UserInfo;
 use App\Modules\User\Services\UserService;
@@ -40,7 +40,7 @@ class UserTest extends TestCase
 
         $this->assertEquals($array['name'], $this->_user->name);
         $this->assertEquals($array['email'], $this->_user->email);
-        $this->assertEquals(IsActiveHelper::ACTIVE_ACTIVE, $this->_user->is_active);
+        $this->assertEquals(ActiveStatus::ACTIVE, $this->_user->is_active);
         $this->assertTrue(Hash::check($array['password'], $this->_user->password));
 
         $this->assertNotNull($this->_user->user_info);
@@ -60,7 +60,7 @@ class UserTest extends TestCase
         $updatesParams = [
             'name' => 'test_test_2',
             'email' => 'testtest2@mail.com',
-            'is_active' => IsActiveHelper::ACTIVE_INACTIVE,
+            'is_active' => ActiveStatus::INACTIVE,
         ];
 
         $updatesInfoParams = [
@@ -103,7 +103,7 @@ class UserTest extends TestCase
     public function testBasicActivateUser() {
         $this->_userService->activate($this->_user);
 
-        $this->assertEquals(IsActiveHelper::ACTIVE_ACTIVE, $this->_user->is_active);
+        $this->assertEquals(ActiveStatus::ACTIVE, $this->_user->is_active);
     }
 
     public function testChangeImage() {

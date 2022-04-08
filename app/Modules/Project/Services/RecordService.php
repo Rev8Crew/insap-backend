@@ -5,10 +5,12 @@ namespace App\Modules\Project\Services;
 
 
 use App\Models\User;
+use App\Modules\Plugins\Services\PluginService;
 use App\Modules\Project\Models\Record;
 use App\Modules\Project\Models\RecordData;
 use App\Modules\Project\Models\RecordInfo;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use MongoDB\BSON\ObjectId;
 
 /**
@@ -17,6 +19,13 @@ use MongoDB\BSON\ObjectId;
  */
 class RecordService
 {
+    private PluginService $pluginService;
+
+    public function __construct(PluginService $pluginService)
+    {
+        $this->pluginService = $pluginService;
+    }
+
     /**
      * @param array $input
      * @param RecordData $recordData
@@ -49,5 +58,14 @@ class RecordService
             \MongoGrid::delete( new ObjectId($fileId));
         }
         return RecordInfo::where('record_id', $record->id)->delete();
+    }
+
+    public function getRecordInfo(Record $record) : Collection
+    {
+        if ($record->importer->plugin) {
+            return $this->pluginService->getPluginService($record->importer->plugin)->getQueryBuilder($record)->get();
+        }
+
+        return RecordInfo::where('record_id', $record->id)->get();
     }
 }
