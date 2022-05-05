@@ -62,8 +62,8 @@ class RecordService
 
     public function getRecordInfo(Record $record) : Collection
     {
-        if ($record->importer->plugin) {
-            return $this->pluginService->getPluginService($record->importer->plugin)->getQueryBuilder($record)->get();
+        if ($record->process->plugin) {
+            return $this->pluginService->getPluginService($record->process->plugin)->getQueryBuilder($record)->get();
         }
 
         return RecordInfo::where('record_id', $record->id)->get();

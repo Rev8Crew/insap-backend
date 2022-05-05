@@ -2,8 +2,8 @@
 
 namespace App\Events;
 
-use App\Modules\Importer\Models\Importer\Importer;
-use App\Modules\Importer\Models\ImporterEvents\ImporterEventFile;
+use App\Modules\Processing\Models\Dto\ProcessFileDto;
+use App\Modules\Processing\Models\Process;
 use App\Modules\Project\Models\Record;
 use Illuminate\Foundation\Events\Dispatchable;
 
@@ -11,15 +11,16 @@ class PreImportEvent
 {
     use Dispatchable;
 
-    public Importer $importer;
+    public Process $process;
     public Record $record;
     public array $params;
-    /** @var ImporterEventFile[]  */
+
+    /** @var ProcessFileDto[] */
     public array $files;
 
-    public function __construct(Importer $importer,Record $record, array $params, array $files)
+    public function __construct(Process $importer, Record $record, array $params, array $files)
     {
-        $this->importer = $importer;
+        $this->process = $importer;
         $this->record = $record;
         $this->params = $params;
         $this->files = $files;

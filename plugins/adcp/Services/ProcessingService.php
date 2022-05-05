@@ -4,6 +4,7 @@ namespace Plugins\adcp\Services;
 
 use App\Modules\Importer\Models\ImporterEvents\ImporterEventParams;
 use App\Modules\Plugins\Models\PluginServiceInterface;
+use App\Modules\Processing\Models\Dto\ProcessParamsDto;
 use App\Modules\Project\Models\Record;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -12,11 +13,11 @@ use Plugins\adcp\Models\Adcp;
 class ProcessingService implements PluginServiceInterface
 {
 
-    public function preprocess(Record $record, ImporterEventParams $eventParams)
+    public function preprocess(Record $record, ProcessParamsDto $paramsDto)
     {
-        $data = collect($eventParams->getData());
+        $data = collect($paramsDto->getData());
 
-        $data = $data->map( function ($item) use ($record) {
+        $data = $data->map(function ($item) use ($record) {
             $item['depths'] = is_array($item['depths']) ? json_encode($item['depths'], JSON_THROW_ON_ERROR) : $item['depths'];
             $item['record_id'] = $record->id;
             return $item;

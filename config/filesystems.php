@@ -51,23 +51,29 @@ return [
 
         'examples' => [
             'driver'     => 'local',
-            'root'       => storage_path('app/examples'),
+            'root' => storage_path('app/examples'),
             'visibility' => 'public',
         ],
 
         'import' => [
-            'driver'     => 'local',
-            'root'       => storage_path('apps/import'),
+            'driver' => 'local',
+            'root' => storage_path('apps/import'),
+            'visibility' => 'public',
+        ],
+
+        'process' => [
+            'driver' => 'local',
+            'root' => storage_path('apps/process'),
             'visibility' => 'public',
         ],
 
         's3' => [
-            'driver'   => 's3',
-            'key'      => env('AWS_ACCESS_KEY_ID'),
-            'secret'   => env('AWS_SECRET_ACCESS_KEY'),
-            'region'   => env('AWS_DEFAULT_REGION'),
-            'bucket'   => env('AWS_BUCKET'),
-            'url'      => env('AWS_URL'),
+            'driver' => 's3',
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'url' => env('AWS_URL'),
             'endpoint' => env('AWS_ENDPOINT'),
         ],
 

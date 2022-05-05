@@ -21,7 +21,7 @@ class CreateRecordsTable extends Migration
 
             $table->integer('record_data_id')->index()->default(0);
             $table->integer('user_id')->index()->default(0);
-            $table->integer('importer_id')->index()->default(0);
+            $table->integer('process_id')->index()->default(0);
 
             //$table->foreign('record_data_id')->references('id')->on('record_data')->onDelete('cascade');
             //$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

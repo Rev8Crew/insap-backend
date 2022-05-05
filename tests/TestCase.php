@@ -28,7 +28,7 @@ abstract class TestCase extends BaseTestCase
         $storage = Storage::disk('fileStore');
         $storage->delete($storage->allFiles());
 
-        $storage = Storage::disk('import');
+        $storage = Storage::disk('process');
         foreach ($storage->allDirectories() as $directory) {
             $storage->deleteDirectory($directory);
         }

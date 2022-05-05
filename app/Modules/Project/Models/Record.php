@@ -5,6 +5,7 @@ namespace App\Modules\Project\Models;
 use App\Enums\ActiveStatus;
 use App\Models\User;
 use App\Modules\Importer\Models\Importer\Importer;
+use App\Modules\Processing\Models\Process;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -25,7 +26,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $importer_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read Importer|null $importer
  * @property-read \App\Modules\Project\Models\RecordData|null $recordData
  * @property-read User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|Record newModelQuery()
@@ -44,6 +44,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Record whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Record whereUserId($value)
  * @mixin \Eloquent
+ * @property int $process_id
+ * @property-read Process|null $process
+ * @method static \Illuminate\Database\Eloquent\Builder|Record whereProcessId($value)
  */
 class Record extends Model
 {
@@ -63,7 +66,7 @@ class Record extends Model
         'params',
         'record_data_id',
         'user_id',
-        'importer_id'
+        'process_id'
     ];
 
     protected $appends = [
@@ -89,8 +92,8 @@ class Record extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function importer(): BelongsTo
+    public function process(): BelongsTo
     {
-        return $this->belongsTo(Importer::class, 'importer_id');
+        return $this->belongsTo(Process::class, 'process_id');
     }
 }
