@@ -7,11 +7,13 @@ use App\Enums\Process\ProcessType;
 use App\Models\User;
 use App\Modules\Appliance\Models\Appliance;
 use App\Modules\Plugins\Models\Plugin;
+use App\Modules\Processing\Factories\ProcessTypeFactory;
 use App\Modules\Processing\Models\Dto\ProcessDto;
 use App\Modules\Processing\Models\Dto\ProcessFileDto;
+use App\Modules\Processing\Models\Dto\ProcessParamsDto;
+use App\Modules\Processing\Models\Interpreter\InterpreterPhp;
 use App\Modules\Processing\Models\Interpreter\InterpreterPython;
 use App\Modules\Processing\Models\Process;
-use App\Modules\Processing\Services\ImporterService;
 use App\Modules\Processing\Services\ProcessService;
 use App\Modules\Processing\Services\ProcessServiceInterface;
 use App\Modules\Project\Models\Record;
@@ -31,6 +33,7 @@ class ProcessExecuteTest extends \Tests\TestCase
     private RecordService $recordService;
 
     private ProcessServiceInterface $importerService;
+    private ProcessServiceInterface $exporterService;
 
     /**
      * @throws BindingResolutionException
@@ -42,7 +45,9 @@ class ProcessExecuteTest extends \Tests\TestCase
         $this->processService = $this->app->make(ProcessService::class);
         $this->recordService = $this->app->make(RecordService::class);
 
-        $this->importerService = $this->app->make(ImporterService::class);
+        $this->importerService = $this->app->make(ProcessTypeFactory::class)->create(ProcessType::create(ProcessType::IMPORTER));
+        $this->exporterService = $this->app->make(ProcessTypeFactory::class)->create(ProcessType::create(ProcessType::EXPORTER));
+
 
         $this->appliance = Appliance::create(['id' => Appliance::APPLIANCE_TEST_ID, 'name' => 'test']);
 
@@ -140,6 +145,45 @@ class ProcessExecuteTest extends \Tests\TestCase
         $this->assertTrue($result);
         $this->assertNotNull($this->record->process);
         $this->assertTrue($this->recordService->getRecordInfo($this->record)->count() > 0);
+        $this->recordService->deleteRecordsInfo($this->record);
+    }
+
+    public function testExportBasic()
+    {
+        $importProcess = $this->createWithInterpreter(InterpreterPython::class, 'importer_python_adcp.zip', Plugin::first());
+
+        $storage = Storage::disk('examples');
+
+        $dataFileDto = $this->getProcessFileDto('data',
+            $storage->path('adcp' . DIRECTORY_SEPARATOR . '1' . DIRECTORY_SEPARATOR . '1597842707_data.txt'),
+            'text/plain');
+
+        $refFileDto = $this->getProcessFileDto('ref',
+            $storage->path('adcp' . DIRECTORY_SEPARATOR . '1' . DIRECTORY_SEPARATOR . '1597842707_ref.txt'),
+            'text/plain');
+
+        $params = [
+            'date_time' => Carbon::now()->format('Y-m-d H:i:s'),
+            'expedition_number' => 1
+        ];
+
+        $this->importerService->executeProcess($importProcess, $this->record, $params, [$dataFileDto, $refFileDto]);
+
+        $exportProcess = $this->createWithInterpreter(InterpreterPhp::class, 'exporter_php_adcp.zip', Plugin::first());
+
+        $params = [
+            'speed' => 2,
+            'average' => 50
+        ];
+
+        /** @var ProcessParamsDto $result */
+        $result = $this->exporterService->executeProcess($exportProcess, $this->record, $params, []);
+
+        $this->assertTrue($result instanceof ProcessParamsDto);
+        $this->assertTrue($result->getFiles()->count() === 0);
+        $this->assertTrue($result->getParams()->count() > 0);
+        $this->assertTrue($result->getData()->count() > 0);
+
         $this->recordService->deleteRecordsInfo($this->record);
     }
 }

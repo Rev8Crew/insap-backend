@@ -49,6 +49,9 @@ use Illuminate\Support\Facades\Storage;
  */
 class Process extends Model
 {
+    public const REQUIREMENTS_FILE_NAME = 'requirements.json';
+    public const OPTIONS_FILE_NAME = 'process.json';
+
     /**
      * @var string[]
      */
@@ -60,11 +63,16 @@ class Process extends Model
         'appliance_id',
         'plugin_id',
         'user_id',
-        'is_active'
+        'is_active',
+        'options'
     ];
 
     protected $attributes = [
         'is_active' => ActiveStatus::ACTIVE
+    ];
+
+    protected $casts = [
+        'options' => 'array'
     ];
 
     public function appliance(): BelongsTo

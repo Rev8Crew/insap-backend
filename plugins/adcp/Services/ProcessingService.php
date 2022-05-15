@@ -54,6 +54,6 @@ class ProcessingService implements PluginServiceInterface
 
     public function getQueryBuilder(Record $record)
     {
-        return Adcp::query()->whereRecordId($record->id);
+        return Adcp::query()->whereRecordId($record->id)->orderBy('step_id');
     }
 }

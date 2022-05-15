@@ -46,26 +46,32 @@ class RecordService
         return $record->delete();
     }
 
-    public function deleteRecordsInfo(Record $record) : bool
+    public function deleteRecordFiles(Record $record)
     {
         // MongoFS
         foreach ($record->files ?? [] as $fileId) {
             if (is_array($fileId)) {
-                \MongoGrid::delete( new ObjectId($fileId['$oid']));
+                \MongoGrid::delete(new ObjectId($fileId['$oid']));
                 continue;
             }
 
-            \MongoGrid::delete( new ObjectId($fileId));
+            \MongoGrid::delete(new ObjectId($fileId));
         }
+    }
+
+    public function deleteRecordsInfo(Record $record): bool
+    {
+        $this->deleteRecordFiles($record);
+
         return RecordInfo::where('record_id', $record->id)->delete();
     }
 
-    public function getRecordInfo(Record $record) : Collection
+    public function getRecordInfo(Record $record): Collection
     {
         if ($record->process->plugin) {
             return $this->pluginService->getPluginService($record->process->plugin)->getQueryBuilder($record)->get();
         }
 
-        return RecordInfo::where('record_id', $record->id)->get();
+        return RecordInfo::where('record_id', $record->id)->orderBy('step_id')->get();
     }
 }

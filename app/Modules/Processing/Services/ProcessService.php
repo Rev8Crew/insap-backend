@@ -16,7 +16,6 @@ use PhpZip\ZipFile;
 
 class ProcessService
 {
-    public const REQUIREMENTS_FILE_NAME = 'requirements.json';
 
     protected RecordService $recordService;
     protected PluginService $pluginService;
@@ -75,7 +74,7 @@ class ProcessService
         $interpreter = $process->getInterpreter();
 
         /** Install requirements */
-        $requirementsJsonFile = $path . DIRECTORY_SEPARATOR . self::REQUIREMENTS_FILE_NAME;
+        $requirementsJsonFile = $path . DIRECTORY_SEPARATOR . Process::REQUIREMENTS_FILE_NAME;
         if (file_exists($requirementsJsonFile)) {
             /**
              *  Parse commands from json
@@ -91,6 +90,13 @@ class ProcessService
                 }
 
             }
+        }
+
+        $optionsJsonFile = $path . DIRECTORY_SEPARATOR . Process::OPTIONS_FILE_NAME;
+
+        if (file_exists($optionsJsonFile)) {
+            $process->options = file_get_contents($optionsJsonFile);
+            $process->save();
         }
 
         /** Execute Test Command */

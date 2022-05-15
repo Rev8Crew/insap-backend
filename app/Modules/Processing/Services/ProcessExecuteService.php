@@ -3,6 +3,7 @@
 namespace App\Modules\Processing\Services;
 
 use App\Enums\Process\ProcessType;
+use App\Exceptions\ProcessException;
 use App\Modules\Processing\Models\Dto\ProcessFileDto;
 use App\Modules\Processing\Models\Dto\ProcessParamsDto;
 use App\Modules\Processing\Models\Process;
@@ -14,6 +15,9 @@ use Throwable;
 
 class ProcessExecuteService
 {
+    /**
+     * @throws ProcessException
+     */
     public function execute(
         ProcessType      $processType,
         Process          $process,
@@ -35,16 +39,32 @@ class ProcessExecuteService
             $exitCode = $interpreter->execute("$cd;{$interpreter->getAppCommand()}");
             throw_if($exitCode > 0, new \RuntimeException('[executeEvent] Exit code greater then 0, [' . $exitCode . ']'));
         } catch (Throwable $exception) {
+
+            // Если есть ошибки с импортера берем их
+            $importerErrors = $this->getErrorFromImporter($process);
+
             Log::error('Process execute failed', [
                 'processType' => $processType->getValue(),
                 'process' => $process->toArray(),
                 'command' => "$cd;{$interpreter->getAppCommand()}",
                 "error" => $exception->getMessage(),
-                "trace" => $exception->getTrace()
+                "trace" => $exception->getTrace(),
+                "importer_Errors" => $importerErrors
             ]);
 
             $this->clearAppDir($process);
+
+            if ($importerErrors) {
+                throw new ProcessException("[ExecuteEvent] Error from process", 0, $exception, implode(";", $importerErrors));
+            }
+
             throw new \RuntimeException("[ExecuteEvent] Can't execute command", 0, $exception);
+        }
+
+        $importerErrors = $this->getErrorFromImporter($process);
+
+        if ($importerErrors) {
+            throw new ProcessException("Error from importer after script command", 0, null, implode(";", $importerErrors));
         }
 
         /**
@@ -57,19 +77,44 @@ class ProcessExecuteService
     {
         $path = $process->getStoragePath();
 
-        $importerDataPath = $path . DIRECTORY_SEPARATOR . 'data';
-        $importerFilesPath = $importerDataPath . DIRECTORY_SEPARATOR . 'files';
+        $dataPath = $path . DIRECTORY_SEPARATOR . 'data';
+        $importerFilesPath = $dataPath . DIRECTORY_SEPARATOR . 'files';
 
-        $paramsJsonFile = $importerDataPath . DIRECTORY_SEPARATOR . 'params.json';
-        $filesJsonFile = $importerDataPath . DIRECTORY_SEPARATOR . 'files.json';
+        $paramsJsonFile = $dataPath . DIRECTORY_SEPARATOR . 'params.json';
+        $filesJsonFile = $dataPath . DIRECTORY_SEPARATOR . 'files.json';
+        $dataJsonFile = $dataPath . DIRECTORY_SEPARATOR . 'data.json';
 
         $this->clearAppDir($process);
 
-        $this->writeArrayToJsonFile($paramsDto->getParams(), $paramsJsonFile);
+        $this->writeArrayToJsonFile($paramsDto->getParams()->all(), $paramsJsonFile);
 
         // Files
-        $copyFiles = $this->copyFilesToPath($paramsDto->getFiles(), $importerFilesPath);
+        $copyFiles = $this->copyFilesToPath($paramsDto->getFiles()->all(), $importerFilesPath);
         $this->writeArrayToJsonFile($copyFiles, $filesJsonFile);
+
+        if ($paramsDto->getData()->all()) {
+            $this->writeArrayToJsonFile($paramsDto->getData()->all(), $dataJsonFile);
+        }
+    }
+
+    private function getErrorFromImporter(Process $process): array
+    {
+        $path = $process->getStoragePath();
+
+        $resultPath = $path . DIRECTORY_SEPARATOR . 'result';
+        $errorJsonFile = $resultPath . DIRECTORY_SEPARATOR . 'errors.json';
+
+        // Если импортер сгенерировал файл с ошибками, то выводим их
+        if (file_exists($errorJsonFile)) {
+            $errors = $this->decodeJsonToArray($errorJsonFile);
+
+            if ($errors) {
+                return $errors;
+            }
+
+        }
+
+        return [];
     }
 
     private function clearAppDir(Process $process)
@@ -137,6 +182,9 @@ class ProcessExecuteService
         return $result;
     }
 
+    /**
+     * @throws ProcessException
+     */
     private function retrieveInformationFromImporter(Process $process): ProcessParamsDto
     {
         $path = $process->getStoragePath();

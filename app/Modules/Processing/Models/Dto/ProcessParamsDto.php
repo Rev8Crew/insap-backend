@@ -3,17 +3,21 @@
 namespace App\Modules\Processing\Models\Dto;
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 
 class ProcessParamsDto
 {
-    /** @var array Request params */
-    private array $params;
+    /** @var array|Collection Request params */
+    private Collection $params;
 
-    /** @var ProcessFileDto[] Request files */
-    private array $files = [];
+    /** @var ProcessFileDto[]|Collection Request files */
+    private Collection $files;
 
-    /** @var array Processed data */
-    private array $data;
+    /** @var array|Collection Processed data */
+    private Collection $data;
+
+    /** @var array|Collection Errors */
+    private Collection $errors;
 
     /**
      * ImporterEventParams constructor.
@@ -22,8 +26,9 @@ class ProcessParamsDto
      */
     public function __construct(array $params, array $data = [])
     {
-        $this->params = $params;
-        $this->data = $data;
+        $this->data = collect($data);
+        $this->params = collect($params);
+        $this->files = collect();
     }
 
     /**
@@ -32,7 +37,7 @@ class ProcessParamsDto
      */
     public function addFileFromUploaded(UploadedFile $uploadedFile, string $type)
     {
-        $this->files[] = new ProcessFileDto($uploadedFile, $type);
+        $this->files->push(new ProcessFileDto($uploadedFile, $type));
     }
 
     /**
@@ -40,30 +45,46 @@ class ProcessParamsDto
      */
     public function setFilesFromUploaded(array $files)
     {
-        $this->files = $files;
+        $this->files = collect($files);
     }
 
     /**
-     * @return array
+     * @return array|Collection
      */
-    public function getParams(): array
+    public function getParams(): Collection
     {
         return $this->params;
     }
 
     /**
-     * @return array
+     * @return ProcessFileDto[]|Collection
      */
-    public function getFiles(): array
+    public function getFiles(): Collection
     {
         return $this->files;
     }
 
     /**
-     * @return array
+     * @return array|Collection
      */
-    public function getData(): array
+    public function getData(): Collection
     {
         return $this->data;
+    }
+
+    /**
+     * @param array|Collection $errors
+     */
+    public function setErrors(array $errors): void
+    {
+        $this->errors = collect($errors);
+    }
+
+    /**
+     * @param array|Collection $data
+     */
+    public function setData(array $data): void
+    {
+        $this->data = collect($data);
     }
 }

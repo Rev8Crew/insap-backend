@@ -13,11 +13,14 @@ class CreateRecordsTable extends Migration
 
             $table->string('name')->comment('Record name');
             $table->string('description')->comment('Record description')->default('');
-            $table->integer('order')->comment('Record order')->default(0 );
+            $table->integer('order')->comment('Record order')->default(0);
             $table->smallInteger('is_active')->comment('Is record active');
 
             $table->json('files')->nullable();
             $table->json('params')->nullable();
+
+            $table->smallInteger('import_status');
+            $table->text('import_error')->nullable();
 
             $table->integer('record_data_id')->index()->default(0);
             $table->integer('user_id')->index()->default(0);

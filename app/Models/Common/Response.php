@@ -167,6 +167,11 @@ class Response implements Arrayable
         return $this;
     }
 
+    public function file(string $fileName): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        return response()->download($fileName);
+    }
+
     /**
      * @return array
      */

@@ -17,6 +17,7 @@ class CreateProcessesTable extends Migration
 
             $table->integer('type'); // Import | Export
             $table->string('interpreter')->comment('Interpreter like PHP, python, go ...')->nullable();
+            $table->json('options')->nullable();
 
             $table->integer('appliance_id')->index()->nullable();
             $table->integer('plugin_id')->index()->nullable();

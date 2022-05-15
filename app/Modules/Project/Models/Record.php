@@ -3,6 +3,7 @@
 namespace App\Modules\Project\Models;
 
 use App\Enums\ActiveStatus;
+use App\Enums\ImportStatus;
 use App\Models\User;
 use App\Modules\Importer\Models\Importer\Importer;
 use App\Modules\Processing\Models\Process;
@@ -64,6 +65,8 @@ class Record extends Model
         'is_active',
         'files',
         'params',
+        'import_status',
+        'import_error',
         'record_data_id',
         'user_id',
         'process_id'
@@ -74,7 +77,8 @@ class Record extends Model
     ];
 
     protected $attributes = [
-        'is_active' => ActiveStatus::ACTIVE
+        'is_active' => ActiveStatus::ACTIVE,
+        'import_status' => ImportStatus::INITIAL
     ];
 
     protected $casts = [
