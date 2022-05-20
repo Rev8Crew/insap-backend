@@ -34,7 +34,7 @@
         "nelexa/zip": "^4.0",
         "rap2hpoutre/laravel-log-viewer": "^1.7",
         "spatie/laravel-activitylog": "^3.17",
-        "spatie/laravel-permission": "^4.0",
+        "spatie/laravel-permission": "^5.5",
         "stechstudio/laravel-zipstream": "^4.8",
         "vladimir-yuldashev/laravel-queue-rabbitmq": "^11.2",
         "vluzrmos/language-detector": "^2.3"

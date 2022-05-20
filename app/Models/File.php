@@ -6,6 +6,7 @@ use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Permission\Traits\HasRoles;
 
 
 /**
@@ -37,7 +38,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class File extends Model
 {
-    use HasFactory;
+    use HasFactory, HasRoles;
 
     public const TEST_FILE_ID = 1;
     /**
