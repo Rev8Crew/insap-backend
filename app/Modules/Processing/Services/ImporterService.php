@@ -15,12 +15,11 @@ use App\Modules\Project\Models\RecordInfo;
 use App\Modules\Project\Services\RecordService;
 use Illuminate\Support\Facades\DB;
 use Mts88\MongoGrid\Services\MongoGrid;
-use Plugins\adcp\Services\ProcessingService;
 use Ramsey\Uuid\Uuid;
 use RuntimeException;
 use Throwable;
 
-class ImporterService extends ProcessingService implements ProcessServiceInterface
+class ImporterService implements ProcessServiceInterface
 {
     protected RecordService $recordService;
     protected PluginService $pluginService;

@@ -5,6 +5,7 @@ namespace App\Modules\User\Services;
 use App\Enums\ActiveStatus;
 use App\Models\User;
 use App\Models\UserInfo;
+use App\Modules\Project\Models\Project;
 use App\Services\File\FileService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
@@ -45,20 +46,12 @@ class UserService
         return $user;
     }
 
-    /**
-     * @param User $user
-     * @param array $userParams
-     * @param array $userInfoParams
-     */
     public function update(User $user, array $userParams = [], array $userInfoParams = [])
     {
         $user->update($userParams);
         $user->user_info->update($userInfoParams);
     }
 
-    /**
-     * @param User $user
-     */
     public function delete(User $user) {
         $this->deleteImage($user);
 
@@ -68,36 +61,28 @@ class UserService
         $user->delete();
     }
 
-    /**
-     * @param User $user
-     * @param array $roles
-     */
     public function attachRoles(User $user, array $roles) {
         $user->roles()->syncWithoutDetaching( Role::whereIn('name', $roles)->get());
     }
 
-    /**
-     * @param User $user
-     * @param array $roles
-     */
     public function removeRoles(User $user, array $roles) {
         $user->roles()->detach(Role::whereIn('name', $roles)->get());
     }
 
-    /**
-     * @param User $user
-     */
-    public function activate(User $user) {
+    public function activate(User $user)
+    {
         $user->update(['is_active' => ActiveStatus::ACTIVE]);
     }
 
-    /**
-     * @param User $user
-     */
-    public function deactivate(User $user) {
+    public function deactivate(User $user)
+    {
         $user->update(['is_active' => ActiveStatus::INACTIVE]);
     }
 
+    public function addUserToProject(User $user, Project $project)
+    {
+        $user->projects()->attach($user->id);
+    }
 
     /**
      * @param User $user

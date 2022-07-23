@@ -6,6 +6,8 @@
 /vendor
 /public/assets
 /resources/views/app.blade.php
+/public/app/
+
 .env
 .env.backup
 .phpunit.result.cache
