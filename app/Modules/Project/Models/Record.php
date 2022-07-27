@@ -7,6 +7,7 @@ use App\Enums\ImportStatus;
 use App\Models\User;
 use App\Modules\Importer\Models\Importer\Importer;
 use App\Modules\Processing\Models\Process;
+use App\Scopes\ActiveScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -51,7 +52,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class Record extends Model
 {
-    use HasFactory;
+    use HasFactory, ActiveScope;
 
     public const TEST_RECORD_ID = 1;
 
@@ -63,7 +64,7 @@ class Record extends Model
         'description',
         'order',
         'is_active',
-        'files',
+        'files', // FileIds from MongoFS
         'params',
         'import_status',
         'import_error',

@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
 
 /**
@@ -44,7 +45,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class RecordData extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     public const TEST_RECORD_DATA_ID = 1;
 

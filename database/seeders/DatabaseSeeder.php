@@ -21,7 +21,8 @@ class DatabaseSeeder extends Seeder
             ProjectSeeder::class,
             RecordDataSeeder::class,
             RecordSeeder::class,
-            PluginSeeder::class
+            PluginSeeder::class,
+            #StageSeeder::class
         ]);
     }
 }

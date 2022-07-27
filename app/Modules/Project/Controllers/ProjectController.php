@@ -15,6 +15,13 @@ use App\Modules\Project\Services\ProjectService;
  */
 class ProjectController extends Controller
 {
+    private ProjectService $projectService;
+
+    public function __construct(ProjectService $projectService)
+    {
+        $this->projectService = $projectService;
+    }
+
     /**
      * @return Response
      */
@@ -24,6 +31,14 @@ class ProjectController extends Controller
         $resource = ProjectResource::collection( Project::all() );
 
         return $response->withData( $resource->toArray(request()) );
+    }
+
+    public function getProjectsByUser(): Response
+    {
+        $response = new Response();
+        $projects = $this->projectService->getProjectsByUser(request()->user());
+
+        return $response->withData( ProjectResource::collection($projects) );
     }
 
     /**

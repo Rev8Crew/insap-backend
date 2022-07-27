@@ -23,6 +23,7 @@ class CreateProjectsTable extends Migration
 
             $table->integer('image_id')->comment('Project image')->index()->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

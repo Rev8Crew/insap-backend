@@ -19,6 +19,7 @@ class CreateRecordDataTable extends Migration
             $table->integer('project_id')->index()->default(0);
             $table->integer('image_id')->comment('Record data image')->index()->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

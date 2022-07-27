@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             'id' => User::ROOT_USER_ID,
             'name' => 'root',
             'email' => 'admin@admin.com',
-            'password' => 'admin'
+            'password' => 'katawa'
         ]);
 
         $root->assignRole('super-admin');

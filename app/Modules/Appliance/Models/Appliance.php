@@ -3,33 +3,21 @@
 namespace App\Modules\Appliance\Models;
 
 use App\Enums\ActiveStatus;
+use App\Models\User;
+use App\Modules\Project\Models\Project;
+use Eloquent;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Carbon;
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
 
-/**
- * App\Modules\Appliance\Models\Appliance
- *
- * @property int $id
- * @property string|null $name
- * @property string|null $description
- * @property int $is_active Is project active
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Appliance newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Appliance newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Appliance query()
- * @method static \Illuminate\Database\Eloquent\Builder|Appliance whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Appliance whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Appliance whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Appliance whereIsActive($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Appliance whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Appliance whereUpdatedAt($value)
- * @mixin \Eloquent
- */
 class Appliance extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     public const APPLIANCE_TEST_ID = 1;
 
@@ -39,10 +27,21 @@ class Appliance extends Model
     protected $fillable = [
         'name',
         'description',
-        'is_active'
+        'is_active',
+        'user_id'
     ];
 
     protected $attributes = [
         'is_active' => ActiveStatus::ACTIVE
     ];
+
+    public function creatorUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function projects(): BelongsToMany
+    {
+        return $this->belongsToMany(Project::class);
+    }
 }

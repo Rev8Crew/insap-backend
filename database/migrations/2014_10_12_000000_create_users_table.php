@@ -14,8 +14,7 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            // Reserve first 100 ids
-            $table->id()->startingValue(100);
+            $table->id();
             $table->string('name')->comment('User login');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
@@ -25,6 +24,7 @@ class CreateUsersTable extends Migration
             $table->integer('image_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

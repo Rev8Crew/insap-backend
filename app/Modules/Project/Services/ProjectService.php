@@ -7,7 +7,9 @@ namespace App\Modules\Project\Services;
 use App\Models\User;
 use App\Modules\Project\Models\Project;
 use App\Services\File\FileService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Collection;
 
 class ProjectService
 {
@@ -98,6 +100,13 @@ class ProjectService
 
         $file = $this->fileService->buildFromUploadedFile($uploadedFile, $user);
         return $project->update(['image_id' => $file->id]);
+    }
+
+    public function getProjectsByUser(User $user): Collection
+    {
+        return Project::whereHas('users', function (Builder $query) use ($user) {
+            $query->where('user_id', $user->id);
+        })->orderBy('order')->active()->get();
     }
 
     /**

@@ -6,11 +6,14 @@ use App\Enums\ActiveStatus;
 use App\helpers\ImageHelper;
 use App\Models\File;
 use App\Models\User;
+use App\Modules\Appliance\Models\Appliance;
+use App\Scopes\ActiveScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Jenssegers\Mongodb\Eloquent\SoftDeletes;
 
 
 /**
@@ -45,7 +48,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Project extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, ActiveScope;
 
     public const TEST_PROJECT_ID = 1;
 
@@ -86,4 +89,10 @@ class Project extends Model
     {
         return $this->belongsToMany(User::class, 'user_project');
     }
+
+    public function appliances(): BelongsToMany
+    {
+        return $this->belongsToMany(Appliance::class);
+    }
+
 }

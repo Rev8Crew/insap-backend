@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('projects')->group(function () {
     Route::post('/', [ProjectController::class, 'get']);
 
+    Route::post('/by-user', [ProjectController::class, 'getProjectsByUser']);
+
     Route::post('create', [ProjectController::class, 'create']);
     Route::post('delete/{project}', [ProjectController::class, 'delete']);
     Route::post('view/{project}', [ProjectController::class, 'view']);

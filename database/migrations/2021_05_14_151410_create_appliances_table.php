@@ -20,7 +20,10 @@ class CreateAppliancesTable extends Migration
             $table->string('description')->nullable();
             $table->smallInteger('is_active')->comment('Is project active');
 
+            $table->integer('user_id')->index()->nullable();
+
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
