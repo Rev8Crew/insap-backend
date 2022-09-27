@@ -41,7 +41,7 @@ class FileService
     }
 
     public function delete(File $file) {
-        if (!\Storage::disk('fileStore')->delete($file->path)) {
+        if ( \Storage::disk('fileStore')->exists($file->path) && !\Storage::disk('fileStore')->delete($file->path)) {
             throw new \Exception("Can't delete file: " . $file->path);
         }
         return $file->delete();

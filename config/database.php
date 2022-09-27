@@ -97,6 +97,45 @@ return [
             'options' => [
                 'database' => env('MONGO_DB_DATABASE'),
             ],
+
+        ],
+
+        'mysql_test' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('MYSQL_HOST', '127.0.0.1'),
+            'port' => env('MYSQL_PORT', '3306'),
+            'database' => env('MYSQL_DATABASE_TEST', 'forge'),
+            'username' => env('MYSQL_USERNAME', 'forge'),
+            'password' => env('MYSQL_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => env('MYSQL_DATABASE_CHARSET', 'utf8mb4'),
+            'collation' => env('MYSQL_DATABASE_COLLATION', 'utf8mb4_unicode_ci'),
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'mongodb_test' => [
+            'driver' => 'mongodb',
+//            'dsn' => 'mongodb://' . env('MONGO_DB_USERNAME') . ':'
+//                . env('MONGO_DB_PASSWORD') . '@'
+//                . env('MONGO_DB_HOST', 'localhost') . ':'
+//                . env('MONGO_DB_PORT', 27017) . '/'
+//                . env('MONGO_DB_DATABASE', 'ProductDb'),
+            'host' => env('MONGO_DB_HOST', 'localhost'),
+            'port' => env('MONGO_DB_PORT', 27017),
+            'database' => env('MONGO_DB_DATABASE_TEST', 'ProductDb'),
+            'username' => env('MONGO_DB_USERNAME'),
+            'password' => env('MONGO_DB_PASSWORD'),
+            'options' => [
+                'database' => env('MONGO_DB_DATABASE_TEST'),
+            ],
+
         ],
 
     ],
@@ -152,4 +191,5 @@ return [
 
     ],
 
+    'mongodb_test_connection' => ''
 ];

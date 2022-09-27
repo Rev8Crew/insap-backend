@@ -4,6 +4,7 @@ services:
 
   insap-web:
     build: ./docker/web
+    container_name: insap_web
     env_file:
       - .env
     environment:
@@ -19,7 +20,7 @@ services:
 
   insap-mysql:
     image: library/mysql:8.0
-    container_name: "insap_mysql"
+    container_name: insap_mysql
     volumes:
       - ${MYSQL_PATH}:/var/lib/mysql
     ports:
@@ -32,7 +33,7 @@ services:
 
   insap-mongo:
     image: mongo:4.0-xenial
-    container_name: "insap_mongo"
+    container_name: insap_mongo
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_DB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_DB_ROOT_PASSWORD}

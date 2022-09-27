@@ -17,7 +17,7 @@ class BasicAuthTest extends TestCase
     {
         $response = $this->postJson('web/auth/login', [
             'email' => "admin@admin.com",
-            'password' => "admin"
+            'password' => "katawa"
         ]);
 
         $response->assertStatus(200);
@@ -33,7 +33,7 @@ class BasicAuthTest extends TestCase
     public function testBasicMe(): void
     {
         $user = User::find(User::ROOT_USER_ID);
-        $response = $this->actingAs($user)->getJson('web/auth/me');
+        $response = $this->actingAs($user)->postJson('web/auth/me');
 
         $response->assertStatus(200);
         $response->assertJson(fn(AssertableJson $json) =>

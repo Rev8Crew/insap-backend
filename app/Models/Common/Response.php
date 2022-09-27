@@ -3,9 +3,11 @@
 namespace App\Models\Common;
 
 use App\Enums\ResponseStatus;
+use App\Traits\Makeable;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Support\Carbon;
+use Laravel\Telescope\Telescope;
 use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 use Throwable;
 
@@ -17,6 +19,8 @@ use Throwable;
  */
 class Response implements Arrayable
 {
+    use Makeable;
+
     protected ResponseStatus $status;
 
     /**
@@ -103,7 +107,9 @@ class Response implements Arrayable
      */
     public function catch(Throwable $throwable): Response
     {
-        $code = $throwable->getCode() ?: SymfonyResponse::HTTP_INTERNAL_SERVER_ERROR;
+        Telescope::catch($throwable);
+
+        $code = (int)$throwable->getCode() ?: SymfonyResponse::HTTP_INTERNAL_SERVER_ERROR;
         return $this->withError($code, $throwable->getMessage());
     }
 

@@ -5,7 +5,6 @@ namespace App\Modules\Project\Models;
 use App\Enums\ActiveStatus;
 use App\Enums\ImportStatus;
 use App\Models\User;
-use App\Modules\Importer\Models\Importer\Importer;
 use App\Modules\Processing\Models\Process;
 use App\Scopes\ActiveScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -60,9 +59,9 @@ class Record extends Model
      * @var string[]
      */
     protected $fillable = [
-        'name',
-        'description',
-        'order',
+        'name', // Название записи
+        'description', // Описание
+        'order', // Порядок отображения
         'is_active',
         'files', // FileIds from MongoFS
         'params',

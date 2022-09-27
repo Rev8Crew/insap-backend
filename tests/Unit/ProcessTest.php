@@ -12,6 +12,7 @@ use App\Modules\Processing\Models\Interpreter\InterpreterPhp;
 use App\Modules\Processing\Models\Interpreter\InterpreterPython;
 use App\Modules\Processing\Models\Process;
 use App\Modules\Processing\Services\ProcessService;
+use App\Modules\Project\Models\Project;
 use Illuminate\Http\UploadedFile;
 use Storage;
 use Tests\TestCase;
@@ -20,6 +21,8 @@ class ProcessTest extends TestCase
 {
     private ?ProcessService $processService = null;
     private ?Appliance $appliance = null;
+
+    private ?Project $project = null;
 
     public function setUp(): void
     {
@@ -30,6 +33,8 @@ class ProcessTest extends TestCase
 
         // Create all services
         $this->processService = $this->app->make(ProcessService::class);
+
+        $this->project = Project::find(Project::TEST_PROJECT_ID);
     }
 
     private function createWithInterpreter(string $interpreter = ProcessInterpreter::PHP, string $filename = 'importer_php.zip'): bool
@@ -44,11 +49,13 @@ class ProcessTest extends TestCase
         ];
 
         // Create Entities
-        $processDto = $this->app->make(ProcessDto::class)
+        $processDto = ProcessDto::make(
+            $array['type'],
+            $array['interpreter'],
+            $this->project->id
+        )
             ->setName($array['name'])
-            ->setProcessType($array['type'])
-            ->setAppliance($this->appliance)
-            ->setProcessInterpreter($array['interpreter'])
+            ->setApplianceId($this->appliance->id)
             ->setActiveStatus(ActiveStatus::create(ActiveStatus::ACTIVE));
 
         $process = $this->processService->create($processDto, $uploadedFile);
@@ -83,11 +90,13 @@ class ProcessTest extends TestCase
         ];
 
         // Create Entities
-        $processDto = $this->app->make(ProcessDto::class)
+        $processDto = ProcessDto::make(
+            $array['type'],
+            $array['interpreter'],
+            $this->project->id
+        )
             ->setName($array['name'])
-            ->setProcessType($array['type'])
-            ->setAppliance($this->appliance)
-            ->setProcessInterpreter($array['interpreter'])
+            ->setApplianceId($this->appliance->id)
             ->setActiveStatus(ActiveStatus::create(ActiveStatus::ACTIVE));
 
         $process = $this->processService->create($processDto, $uploadedFile);

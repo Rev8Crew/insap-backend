@@ -49,6 +49,7 @@ class UserService
     public function update(User $user, array $userParams = [], array $userInfoParams = [])
     {
         $user->update($userParams);
+
         $user->user_info->update($userInfoParams);
     }
 

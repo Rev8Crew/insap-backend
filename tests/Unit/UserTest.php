@@ -48,7 +48,16 @@ class UserTest extends TestCase
     }
 
     public function testBasicDelete() {
+        $array = [
+            'name' => 'TestTest',
+            'email' => 'testtest@mail.com',
+            'password' => 'testtest'
+        ];
+
+        $this->_user = $this->_userService->create($array);
+
         $userId = $this->_user->id;
+
         // Delete
         $this->_userService->delete($this->_user);
 

@@ -71,4 +71,8 @@ class RecordDataService
             $this->fileService->delete($recordData->imageFile);
         }
     }
+
+    public function getRecordDataById(int $id): ?RecordData {
+        return RecordData::whereId($id)->first();
+    }
 }

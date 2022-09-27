@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Modules\Appliance\Models\Appliance;
 use App\Modules\Plugins\Models\Plugin;
 use App\Modules\Processing\Models\Interpreter\InterpreterInterface;
+use App\Modules\Project\Models\Project;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -50,7 +51,7 @@ use Illuminate\Support\Facades\Storage;
 class Process extends Model
 {
     public const REQUIREMENTS_FILE_NAME = 'requirements.json';
-    public const OPTIONS_FILE_NAME = 'process.json';
+    public const OPTIONS_FILE_NAME = 'options.json';
 
     /**
      * @var string[]
@@ -64,7 +65,8 @@ class Process extends Model
         'plugin_id',
         'user_id',
         'is_active',
-        'options'
+        'options',
+        'project_id'
     ];
 
     protected $attributes = [
@@ -93,6 +95,11 @@ class Process extends Model
     public function fields(): HasMany
     {
         return $this->hasMany(ProcessFieldType::class);
+    }
+
+    public function project(): BelongsTo
+    {
+        return $this->belongsTo(Project::class);
     }
 
     /**

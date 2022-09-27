@@ -11,7 +11,7 @@ use Jenssegers\Mongodb\Eloquent\Model;
  *
  * @package App\Models
  */
-class UserInfo extends Model
+class UserInfo extends BaseMongoModel
 {
     /**
      * @var string Collection name

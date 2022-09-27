@@ -3,6 +3,7 @@
 namespace App\Modules\Appliance\Resources;
 
 use App\Modules\Appliance\Models\Appliance;
+use App\Modules\Processing\Resources\ProcessResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
 
@@ -28,6 +29,8 @@ class ApplianceResource extends JsonResource
             'description' => $this->description,
             'created_at' => Carbon::parse($this->created_at)->format('d.m.Y H:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->format('d.m.Y H:i:s'),
+
+            'processes' => ProcessResource::collection($this->whenLoaded('processes'))
         ];
     }
 }

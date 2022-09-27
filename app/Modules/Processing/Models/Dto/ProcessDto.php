@@ -8,20 +8,33 @@ use App\Enums\Process\ProcessType;
 use App\Models\User;
 use App\Modules\Appliance\Models\Appliance;
 use App\Modules\Plugins\Models\Plugin;
+use App\Modules\Processing\Requests\ProcessCreateRequest;
+use App\Traits\Makeable;
 use Illuminate\Contracts\Support\Arrayable;
 
 class ProcessDto implements Arrayable
 {
-    public ?string $name = null;
-    public ?string $description = null;
+    use Makeable;
+
     public ProcessType $processType;
     public ProcessInterpreter $processInterpreter;
     public ActiveStatus $activeStatus;
+    public int $projectId;
 
-    // TODO
-    public Appliance $appliance;
-    public ?Plugin $plugin = null;
-    public ?User $user = null;
+    public ?string $name = null;
+    public ?string $description = null;
+
+    public ?int $applianceId = null;
+    public ?int $pluginId = null;
+    public ?int $userId = null;
+
+    public function __construct(ProcessType $processType, ProcessInterpreter $processInterpreter, int $projectId)
+    {
+        $this->processType = $processType;
+        $this->processInterpreter = $processInterpreter;
+        $this->activeStatus = ActiveStatus::create(ActiveStatus::ACTIVE);
+        $this->projectId = $projectId;
+    }
 
     public function toArray(): array
     {
@@ -32,88 +45,75 @@ class ProcessDto implements Arrayable
             'interpreter' => $this->processInterpreter->getValue(),
             'is_active' => $this->activeStatus->getValue(),
 
-            'plugin_id' => optional($this->plugin)->id,
-            'user_id' => optional($this->user)->id,
+            'appliance_id' => $this->applianceId,
+            'plugin_id' => $this->pluginId,
+            'user_id' => $this->userId,
+            'project_id' => $this->projectId,
         ];
     }
 
     /**
-     * @param ProcessType $processType
-     * @return ProcessDto
+     * @param ProcessCreateRequest $request
+     * @return static
      */
+    public static function createFromRequest($request) : self
+    {
+        $processType = ProcessType::create((int)$request->input('type'));
+        $processInterpreter = ProcessInterpreter::create((string)$request->input('interpreter'));
+
+        return (new self( $processType, $processInterpreter, (int)$request->input('project_id')))
+            ->setName($request->input('name'))
+            ->setDescription($request->input('description'))
+            ->setUserId(optional($request->user())->id)
+            ->setApplianceId($request->input('appliance_id'))
+            ->setPluginId($request->input('plugin_id'));
+    }
+
+    public function setApplianceId(?int $applianceId): ProcessDto
+    {
+        $this->applianceId = $applianceId;
+        return $this;
+    }
+
+    public function setPluginId(?int $pluginId): ProcessDto
+    {
+        $this->pluginId = $pluginId;
+        return $this;
+    }
+
+    public function setUserId(?int $userId): ProcessDto
+    {
+        $this->userId = $userId;
+        return $this;
+    }
+
     public function setProcessType(ProcessType $processType): ProcessDto
     {
         $this->processType = $processType;
         return $this;
     }
 
-    /**
-     * @param string|null $name
-     * @return ProcessDto
-     */
     public function setName(?string $name): ProcessDto
     {
         $this->name = $name;
         return $this;
     }
 
-    /**
-     * @param string|null $description
-     * @return ProcessDto
-     */
     public function setDescription(?string $description): ProcessDto
     {
         $this->description = $description;
         return $this;
     }
 
-    /**
-     * @param ProcessInterpreter $processInterpreter
-     * @return ProcessDto
-     */
     public function setProcessInterpreter(ProcessInterpreter $processInterpreter): ProcessDto
     {
         $this->processInterpreter = $processInterpreter;
         return $this;
     }
 
-    /**
-     * @param ActiveStatus $activeStatus
-     * @return ProcessDto
-     */
     public function setActiveStatus(ActiveStatus $activeStatus): ProcessDto
     {
         $this->activeStatus = $activeStatus;
-        return $this;
-    }
-
-    /**
-     * @param Plugin|null $plugin
-     * @return ProcessDto
-     */
-    public function setPlugin(?Plugin $plugin): ProcessDto
-    {
-        $this->plugin = $plugin;
-        return $this;
-    }
-
-    /**
-     * @param User|null $user
-     * @return ProcessDto
-     */
-    public function setUser(?User $user): ProcessDto
-    {
-        $this->user = $user;
-        return $this;
-    }
-
-    /**
-     * @param Appliance $appliance
-     * @return ProcessDto
-     */
-    public function setAppliance(Appliance $appliance): ProcessDto
-    {
-        $this->appliance = $appliance;
         return $this;
     }
 }

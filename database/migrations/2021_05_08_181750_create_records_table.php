@@ -12,7 +12,7 @@ class CreateRecordsTable extends Migration
             $table->bigIncrements('id');
 
             $table->string('name')->comment('Record name');
-            $table->string('description')->comment('Record description')->default('');
+            $table->text('description')->comment('Record description')->nullable();
             $table->integer('order')->comment('Record order')->default(0);
             $table->smallInteger('is_active')->comment('Is record active');
 

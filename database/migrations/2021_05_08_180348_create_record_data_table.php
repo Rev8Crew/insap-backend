@@ -12,12 +12,14 @@ class CreateRecordDataTable extends Migration
             $table->bigIncrements('id');
 
             $table->string('name')->comment('Record data name');
-            $table->string('description')->comment('Record data description')->default('');
+            $table->text('description')->comment('Record data description')->nullable();
             $table->integer('order')->comment('Record data order')->default(0 );
             $table->smallInteger('is_active')->comment('Is record data active');
 
             $table->integer('project_id')->index()->default(0);
             $table->integer('image_id')->comment('Record data image')->index()->nullable();
+            $table->integer('creator_user_id')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
         });

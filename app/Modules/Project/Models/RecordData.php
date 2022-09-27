@@ -5,6 +5,8 @@ namespace App\Modules\Project\Models;
 use App\Enums\ActiveStatus;
 use App\helpers\ImageHelper;
 use App\Models\File;
+use App\Models\User;
+use Database\Factories\RecordDataFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -57,7 +59,8 @@ class RecordData extends Model
         'description',
         'order',
         'is_active',
-        'image_id'
+        'image_id',
+        'creator_user_id',
     ];
 
     protected $attributes = [
@@ -74,16 +77,26 @@ class RecordData extends Model
         return $this->hasMany(Record::class);
     }
 
+    public function imageFile(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'image_id');
+    }
+
+    public function creatorUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'creator_user_id');
+    }
+
+    protected static function newFactory()
+    {
+        return app()->make(RecordDataFactory::class);
+    }
+
     /**
      * Return URL of the image
      * @return string
      */
     public function getImageAttribute() : string {
         return $this->image_id ? File::find($this->image_id)->url : ImageHelper::getAvatarImage($this->name);
-    }
-
-    public function imageFile(): BelongsTo
-    {
-        return $this->belongsTo(File::class, 'image_id');
     }
 }

@@ -18,4 +18,12 @@ class ProcessType
             self::EXPORTER
         ];
     }
+
+    public static function labels(): array
+    {
+        return [
+            self::IMPORTER => 'importer',
+            self::EXPORTER => 'exporter',
+        ];
+    }
 }

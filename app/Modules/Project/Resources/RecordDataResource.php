@@ -4,10 +4,23 @@ namespace App\Modules\Project\Resources;
 
 use App\Modules\Project\Models\Project;
 use App\Modules\Project\Models\RecordData;
+use App\Modules\User\Resources\UserResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
 
-/** @mixin RecordData */
+/**
+ * @OA\Schema(
+ *     schema="RecordDataResource",
+ *     @OA\Property(property="id", type="integer"),
+ *     @OA\Property(property="name", type="string"),
+ *     @OA\Property(property="description", type="string"),
+ *     @OA\Property(property="order", type="integer"),
+ *     @OA\Property(property="created_at", type="string"),
+ *     @OA\Property(property="updated_at", type="string"),
+ * )
+ *
+ * @mixin RecordData
+ */
 class RecordDataResource extends JsonResource
 {
     public function toArray($request): array
@@ -18,7 +31,8 @@ class RecordDataResource extends JsonResource
             'description' => $this->description,
             'order' => $this->order,
 
-            'is_active' => $this->is_active,
+            'creator_user' => UserResource::make($this->whenLoaded('creatorUser')),
+
             'created_at' => Carbon::parse($this->created_at)->format('d.m.Y H:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->format('d.m.Y H:i:s'),
         ];

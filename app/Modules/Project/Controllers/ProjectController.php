@@ -37,11 +37,13 @@ class ProjectController extends Controller
     {
         $response = new Response();
         $projects = $this->projectService->getProjectsByUser(request()->user());
+        $projects->load(['recordsData', 'recordsData.records', 'recordsData.creatorUser']);
 
         return $response->withData( ProjectResource::collection($projects) );
     }
 
     /**
+     * @param ProjectCreateRequest $request
      * @return Response
      */
     public function create(ProjectCreateRequest $request): Response

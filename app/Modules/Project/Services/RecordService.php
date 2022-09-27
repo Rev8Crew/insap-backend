@@ -4,13 +4,15 @@
 namespace App\Modules\Project\Services;
 
 
+use App\Enums\ActiveStatus;
 use App\Models\User;
 use App\Modules\Plugins\Services\PluginService;
 use App\Modules\Project\Models\Record;
 use App\Modules\Project\Models\RecordData;
 use App\Modules\Project\Models\RecordInfo;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use MongoDB\BSON\ObjectId;
 
 /**
@@ -73,5 +75,13 @@ class RecordService
         }
 
         return RecordInfo::where('record_id', $record->id)->orderBy('step_id')->get();
+    }
+
+    public function getRecordsByRecordData(RecordData $recordData): Collection
+    {
+        return Record::whereHas('recordData', function (Builder $builder) use ($recordData) {
+            $builder->where('id', $recordData->id);
+            $builder->where('is_active', ActiveStatus::ACTIVE);
+        })->where('is_active', ActiveStatus::ACTIVE)->orderByDesc('order')->get();
     }
 }

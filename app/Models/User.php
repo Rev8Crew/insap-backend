@@ -106,14 +106,18 @@ class User extends Authenticatable
         'userInfo'
     ];
 
-    public function getUserInfoAttribute() : ?UserInfo {
-
-        return isset($this->id) ? UserInfo::where(['user_id' => $this->id])->first() : null;
-    }
-
     public function projects(): BelongsToMany
     {
         return $this->belongsToMany(Project::class, 'user_project')->orderByPivot('order');
+    }
+
+    public function getCurrentProjectAttribute(): ?Project {
+        return $this->projects()->wherePivot('current', true)->first();
+    }
+
+    public function getUserInfoAttribute() : ?UserInfo {
+
+        return isset($this->id) ? UserInfo::where(['user_id' => $this->id])->first() : null;
     }
 
     /**

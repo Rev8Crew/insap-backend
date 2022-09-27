@@ -50,7 +50,7 @@ class ProjectTest extends TestCase
             ->etc()
         );
 
-        $this->assertDatabaseMissing('projects', [ 'id' => Project::TEST_PROJECT_ID]);
+        $this->assertNull(Project::whereId(Project::TEST_PROJECT_ID)->first());
         Storage::disk('fileStore')->assertMissing($image);
     }
 }

@@ -5,7 +5,7 @@ namespace App\Modules\Plugins\Services;
 use App\Enums\ActiveStatus;
 use App\Modules\Plugins\Models\Plugin;
 use App\Modules\Plugins\Models\PluginServiceInterface;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 
 class PluginService
 {
@@ -23,6 +23,11 @@ class PluginService
             'is_active' => $activeStatus->getValue(),
             'settings' => $settings
         ]);
+    }
+
+    public function getAll(): Collection
+    {
+        return Plugin::where('is_active', ActiveStatus::ACTIVE)->get();
     }
 
     public function getPluginService(Plugin $plugin) : PluginServiceInterface

@@ -23,4 +23,31 @@ class ProcessInterpreter
             self::GO
         ];
     }
+
+    public static function labels(): array
+    {
+        return [
+            self::PHP => 'PHP',
+            self::PYTHON => 'Python',
+            self::GO => 'Golang',
+        ];
+    }
+
+    public static function labelsArray(): array
+    {
+        return [
+            [
+                'text' => 'PHP',
+                'value' => self::PHP
+            ],
+            [
+                'text' => 'Python',
+                'value' => self::PYTHON
+            ],
+            [
+                'text' => 'Golang',
+                'value' => self::GO
+            ],
+        ];
+    }
 }

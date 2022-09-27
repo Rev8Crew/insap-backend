@@ -17,7 +17,7 @@ class CreateProjectsTable extends Migration
             $table->id();
 
             $table->string('name')->comment('Project name');
-            $table->string('description')->comment('Project description')->default('');
+            $table->text('description')->comment('Project description')->nullable();
             $table->integer('order')->comment('Project order')->default(0 );
             $table->smallInteger('is_active')->comment('Is project active');
 

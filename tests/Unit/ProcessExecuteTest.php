@@ -16,6 +16,7 @@ use App\Modules\Processing\Models\Interpreter\InterpreterPython;
 use App\Modules\Processing\Models\Process;
 use App\Modules\Processing\Services\ProcessService;
 use App\Modules\Processing\Services\ProcessServiceInterface;
+use App\Modules\Project\Models\Project;
 use App\Modules\Project\Models\Record;
 use App\Modules\Project\Models\RecordData;
 use App\Modules\Project\Services\RecordService;
@@ -34,6 +35,8 @@ class ProcessExecuteTest extends \Tests\TestCase
 
     private ProcessServiceInterface $importerService;
     private ProcessServiceInterface $exporterService;
+
+    private ?Project $project = null;
 
     /**
      * @throws BindingResolutionException
@@ -59,6 +62,7 @@ class ProcessExecuteTest extends \Tests\TestCase
             'user_id' => User::TEST_USER_ID
         ]);
 
+        $this->project = Project::find(Project::TEST_PROJECT_ID);
     }
 
     public function testBasic(): void
@@ -98,12 +102,15 @@ class ProcessExecuteTest extends \Tests\TestCase
         ];
 
         // Create Entities
-        $processDto = $this->app->make(ProcessDto::class)
+        $processDto = ProcessDto::make(
+            $array['type'],
+            $array['interpreter'],
+            $this->project->id
+        )
             ->setName($array['name'])
-            ->setProcessType($array['type'])
-            ->setAppliance($this->appliance)
+            ->setApplianceId($this->appliance->id)
             ->setProcessInterpreter($array['interpreter'])
-            ->setPlugin($plugin)
+            ->setPluginId(optional($plugin)->id)
             ->setActiveStatus(ActiveStatus::create(ActiveStatus::ACTIVE));
 
         return $this->processService->create($processDto, $uploadedFile);

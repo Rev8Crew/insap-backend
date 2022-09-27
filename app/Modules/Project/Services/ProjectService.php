@@ -8,8 +8,8 @@ use App\Models\User;
 use App\Modules\Project\Models\Project;
 use App\Services\File\FileService;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Collection;
 
 class ProjectService
 {
@@ -19,12 +19,6 @@ class ProjectService
         $this->fileService = $fileService;
     }
 
-    /**
-     * @param array $params
-     * @param ?UploadedFile $file
-     * @param User|null $user
-     * @return Project
-     */
     public function create(array $params, ?UploadedFile $file = null, ?User $user = null): Project
     {
         if ($file) {
@@ -38,48 +32,27 @@ class ProjectService
         return $project;
     }
 
-    /**
-     * @param Project $project
-     * @param string  $name
-     *
-     * @return Project
-     */
     public function changeName(Project $project, string $name) : Project {
         $project->update(['name' => $name]);
         return $project;
     }
 
-    /**
-     * @param Project $project
-     * @param User $user
-     * @return Project
-     */
-    public function addUserToProject(Project $project, User $user): Project
+    public function addUserToProject(Project $project, User $user, bool $current = false): Project
     {
-        $project->users()->attach($user);
+        $project->users()->attach($user, compact('current'));
+        $project->save();
 
         return $project;
     }
 
-    /**
-     * @param Project $project
-     * @param User    $user
-     *
-     * @return Project
-     */
     public function removeUserFromProject(Project $project, User $user): Project
     {
         $project->users()->detach($user);
+        $project->save();
 
         return $project;
     }
 
-    /**
-     * @param Project $project
-     *
-     * @return Project
-     * @throws \Exception
-     */
     public function delete(Project $project): Project
     {
         $this->deleteImage($project);
@@ -87,13 +60,6 @@ class ProjectService
         return $project;
     }
 
-    /**
-     * @param Project $project
-     * @param UploadedFile $uploadedFile
-     * @param User $user
-     * @return bool
-     * @throws \Exception
-     */
     public function changeImage(Project $project, UploadedFile $uploadedFile, User $user): bool
     {
         $this->deleteImage($project);
@@ -109,10 +75,6 @@ class ProjectService
         })->orderBy('order')->active()->get();
     }
 
-    /**
-     * @param Project $project
-     * @throws \Exception
-     */
     private function deleteImage(Project $project) {
         // If already exists
         if ($project->image_id) {

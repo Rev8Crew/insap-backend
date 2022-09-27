@@ -82,7 +82,7 @@ class Project extends Model
 
     public function recordsData(): HasMany
     {
-        return $this->hasMany(RecordData::class);
+        return $this->hasMany(RecordData::class)->orderBy('order')->orderBy('id');
     }
 
     public function users(): BelongsToMany

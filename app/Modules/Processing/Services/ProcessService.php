@@ -5,8 +5,11 @@ namespace App\Modules\Processing\Services;
 use App\Modules\Plugins\Services\PluginService;
 use App\Modules\Processing\Models\Dto\ProcessDto;
 use App\Modules\Processing\Models\Process;
+use App\Modules\Processing\Models\ProcessFieldType;
+use App\Modules\Project\Models\Project;
 use App\Modules\Project\Services\RecordService;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
@@ -28,18 +31,29 @@ class ProcessService
         $this->processExecuteService = $processExecuteService;
     }
 
-    /**
-     * @throws Exception
-     */
-    public function create(ProcessDto $dto, UploadedFile $archive)
+    public function getAllByProject(Project $project): Collection
     {
+        return Process::whereProjectId($project->id)->get();
+    }
+
+    /**
+     * @throws Exception|\Throwable
+     */
+    public function create(ProcessDto $dto, UploadedFile $archive): Process
+    {
+        \DB::beginTransaction();
         $process = Process::create($dto->toArray());
 
         try {
             $this->install($process, $archive);
+
+            \DB::commit();
         } catch (\Throwable $throwable) {
             $this->delete($process);
-            throw new Exception('[Create] Process service create failed ...', 0, $throwable);
+
+            $process = null;
+            \DB::rollBack();
+            throw $throwable;
         }
 
         return $process;
@@ -95,8 +109,11 @@ class ProcessService
         $optionsJsonFile = $path . DIRECTORY_SEPARATOR . Process::OPTIONS_FILE_NAME;
 
         if (file_exists($optionsJsonFile)) {
-            $process->options = file_get_contents($optionsJsonFile);
+            $process->options = json_decode(file_get_contents($optionsJsonFile));
             $process->save();
+
+            // Try to import fields from json file
+            $this->importFieldsFromOptions($process);
         }
 
         /** Execute Test Command */
@@ -104,6 +121,22 @@ class ProcessService
         $cdCommand = 'cd ' . $path;
         $exitCode = $interpreter->execute("$cdCommand;{$interpreter->getAppCommand()}");
         throw_if($exitCode > 0, new \RuntimeException('[Install] Test command exit code greater then 0, [' . $exitCode . ']'));
+    }
+
+    private function importFieldsFromOptions(Process $process)
+    {
+        $fields = $process->options['fields'] ?? [];
+
+        if (!$fields) {
+            return;
+        }
+
+        $processFields = collect();
+        foreach ($fields as $field) {
+            $processFields->push(ProcessFieldType::create($field));
+        }
+
+        $process->fields()->saveMany($processFields);
     }
 
     public function delete(Process $process): ?bool
@@ -124,6 +157,7 @@ class ProcessService
     public function updateApp(Process $process, UploadedFile $archive): Process
     {
         $this->deleteApp($process);
+        $process->fields()->delete();
         $this->install($process, $archive);
 
         return $process;

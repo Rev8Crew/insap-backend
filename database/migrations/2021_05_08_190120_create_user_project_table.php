@@ -15,6 +15,7 @@ class CreateUserProjectTable extends Migration
             $table->integer('user_id')->index();
 
             $table->integer('order')->default(0);
+            $table->boolean('current')->default(false);
 
             $table->timestamps();
         });

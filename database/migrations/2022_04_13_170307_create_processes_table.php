@@ -13,7 +13,7 @@ class CreateProcessesTable extends Migration
 
             //
             $table->string('name')->nullable();
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
 
             $table->integer('type'); // Import | Export
             $table->string('interpreter')->comment('Interpreter like PHP, python, go ...')->nullable();
@@ -22,6 +22,7 @@ class CreateProcessesTable extends Migration
             $table->integer('appliance_id')->index()->nullable();
             $table->integer('plugin_id')->index()->nullable();
             $table->integer('user_id')->index()->nullable();
+            $table->integer('project_id')->index();
 
             $table->integer('is_active');
 

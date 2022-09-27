@@ -6,14 +6,20 @@ use App\Modules\Project\Models\Project;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
 
-/** @mixin Project */
+/**
+ * @OA\Schema(
+ *     schema="ProjectResource",
+ *     @OA\Property(property="id", type="integer"),
+ *     @OA\Property(property="name", type="string"),
+ *     @OA\Property(property="description", type="string"),
+ *     @OA\Property(property="created_at", type="string"),
+ *     @OA\Property(property="updated_at", type="string"),
+ * )
+ *
+ * @mixin Project
+ */
 class ProjectResource extends JsonResource
 {
-
-    /**
-     * @param \Illuminate\Http\Request $request
-     * @return array
-     */
     public function toArray($request): array
     {
         return [
@@ -21,7 +27,6 @@ class ProjectResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
 
-            'is_active' => $this->is_active,
             'created_at' => Carbon::parse($this->created_at)->format('d.m.Y H:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->format('d.m.Y H:i:s'),
 

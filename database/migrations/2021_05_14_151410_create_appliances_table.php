@@ -17,7 +17,7 @@ class CreateAppliancesTable extends Migration
             $table->id();
 
             $table->string('name')->nullable();
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->smallInteger('is_active')->comment('Is project active');
 
             $table->integer('user_id')->index()->nullable();

@@ -73,6 +73,7 @@ class ApplianceController extends Controller
         $project = Project::find($request->input('project_id'));
         $appliances = $this->applianceService->getAllAppliancesByProjectAndUser($project, request()->user());
 
+        $appliances->load(['processes', 'processes.user']);
         return $response->withData( ApplianceResource::collection($appliances) );
     }
 }

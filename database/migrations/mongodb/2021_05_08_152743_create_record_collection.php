@@ -13,7 +13,7 @@ class CreateRecordCollection extends Migration
      */
     public function up()
     {
-        Schema::connection('mongodb')->create('records', function (Blueprint $collection) {
+        Schema::create('records', function (Blueprint $collection) {
             $collection->index('record_id');
         });
     }

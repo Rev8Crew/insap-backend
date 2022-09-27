@@ -11,19 +11,18 @@ class CreateProcessFieldTypesTable extends Migration
         Schema::create('process_field_types', function (Blueprint $table) {
             $table->id();
 
-            $table->integer('field_type');
+            $table->string('field_type')->comment('Example: text, number, dateTime, etc...');
             $table->string('alias');
 
             $table->string('title');
-            $table->string('description');
+            $table->text('description');
             $table->string('icon');
 
             $table->integer('order');
 
             $table->smallInteger('is_active');
 
-
-            $table->integer('process_id')->index();
+            $table->integer('process_id')->nullable()->index();
 
             $table->timestamps();
         });

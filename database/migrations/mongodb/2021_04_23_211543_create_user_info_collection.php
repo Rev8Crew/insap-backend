@@ -11,7 +11,7 @@ class CreateUserInfoCollection extends Migration
      */
     public function up()
     {
-        Schema::connection('mongodb')->create('user_infos', function (Blueprint $collection) {
+        Schema::create('user_infos', function (Blueprint $collection) {
             $collection->index('user_id');
         });
     }

@@ -8,7 +8,8 @@ use App\Models\User;
 use App\Modules\Appliance\Models\Appliance;
 use App\Modules\Project\Models\Project;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 class ApplianceService
 {
@@ -32,7 +33,7 @@ class ApplianceService
         })->get();
     }
 
-    public function addApplianceToProject(Appliance $appliance, Project $project): \Illuminate\Database\Eloquent\Model
+    public function addApplianceToProject(Appliance $appliance, Project $project): Model
     {
         return $appliance->projects()->save($project);
     }

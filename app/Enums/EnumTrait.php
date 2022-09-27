@@ -19,7 +19,7 @@ trait EnumTrait
     {
         if (false === \in_array($value, static::variants(), true)) {
             throw new InvalidArgumentException(
-                \sprintf('Invalid enumeration argument "$value". Allowed arguments are "%s"', \implode(',', static::variants()))
+                \sprintf('Invalid enumeration argument "%s". Allowed arguments are "%s"', $value, \implode(',', static::variants()))
             );
         }
 

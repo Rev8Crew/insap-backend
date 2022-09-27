@@ -2,23 +2,60 @@
 
 namespace App\Modules\Processing\Controllers;
 
+use App\Enums\Process\ProcessInterpreter;
+use App\Http\Controllers\Controller;
 use App\Models\Common\Response;
-use App\Modules\Appliance\Models\Appliance;
-use App\Modules\Importer\Models\Importer\Importer;
-use App\Modules\Importer\Models\Importer\ImporterDto;
-use App\Modules\Importer\Requests\ImporterCreateRequest;
-use App\Modules\Importer\Requests\ImporterDeleteRequest;
-use App\Modules\Importer\Requests\ImporterImportRequest;
-use App\Modules\Project\Models\Record;
-use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
+use App\Modules\Processing\Models\Dto\ProcessDto;
+use App\Modules\Processing\Requests\ProcessCreateRequest;
+use App\Modules\Processing\Resources\ProcessResource;
+use App\Modules\Processing\Services\ProcessService;
 
-class ProcessController
+class ProcessController extends Controller
 {
-    /**
-     * @param ImporterCreateRequest $request
-     * @return Response
-     */
-    public function create(ImporterCreateRequest $request): Response
+    private ProcessService $processService;
+
+    public function __construct(ProcessService $processService)
+    {
+        $this->processService = $processService;
+    }
+
+    public function getProcessesTypeList(): Response
+    {
+        $response = Response::make();
+
+        return $response->withData(ProcessInterpreter::labelsArray());
+    }
+    public function getInterpretersList(): Response
+    {
+        $response = Response::make();
+
+        return $response->withData(ProcessInterpreter::labelsArray());
+    }
+
+    public function createProcess(ProcessCreateRequest $request): Response
+    {
+        $response = Response::make();
+
+        try {
+            $dto = ProcessDto::createFromRequest($request);
+            $this->processService->create($dto, $request->file('archive'));
+        } catch (\Throwable $throwable) {
+            return $response->catch($throwable);
+        }
+
+        return $response->success();
+    }
+
+    public function getAllByUserDefaultProject(): Response
+    {
+        $response = Response::make();
+        $user = request()->user();
+
+        $data = $this->processService->getAllByProject($user->current_project);
+
+        return $response->withData(ProcessResource::collection($data));
+    }
+/*    public function create(ImporterCreateRequest $request): Response
     {
         $response = new Response();
 
@@ -32,10 +69,6 @@ class ProcessController
         return $response->success();
     }
 
-    /**
-     * @param ImporterDeleteRequest $request
-     * @return Response
-     */
     public function delete(ImporterDeleteRequest $request): Response
     {
         $response = new Response();
@@ -61,5 +94,5 @@ class ProcessController
 
         $this->importerService->import($importer, $record, $request->input('params'), []);
         return $response->success();
-    }
+    }*/
 }
