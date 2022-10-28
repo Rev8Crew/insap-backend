@@ -61,10 +61,18 @@ class RecordData extends Model
         'is_active',
         'image_id',
         'creator_user_id',
+        'project_id',
+        'date_start',
+        'date_end'
     ];
 
     protected $attributes = [
         'is_active' => ActiveStatus::ACTIVE,
+    ];
+
+    protected $casts = [
+        'date_start' => 'datetime',
+        'date_end' => 'datetime'
     ];
 
     public function project(): BelongsTo

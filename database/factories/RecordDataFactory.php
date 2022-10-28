@@ -22,6 +22,8 @@ class RecordDataFactory extends Factory
             'order' => $this->faker->randomNumber(),
             'is_active' => ActiveStatus::create(ActiveStatus::ACTIVE)->getValue(),
             'creator_user_id' => User::inRandomOrder()->first()->id,
+            'date_start' => Carbon::now(),
+            'date_end' => null,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ];

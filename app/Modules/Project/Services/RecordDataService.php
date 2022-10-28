@@ -21,8 +21,9 @@ class RecordDataService
      * @return RecordData
      */
     public function create(array $input, ?UploadedFile $file = null, ?User $user = null) : RecordData {
+
         if ($file) {
-            $input['image_id'] = $this->fileService->buildFromUploadedFile($file, $user)->id;
+            $input['image_id'] = $this->fileService->createFromUploadedImage($file, $user)->id;
         }
 
         $recordData = RecordData::create($input);
@@ -57,7 +58,7 @@ class RecordDataService
     public function changeImage(RecordData $recordData, UploadedFile $uploadedFile, User $user): bool
     {
         $this->deleteImage($recordData);
-        $file = $this->fileService->buildFromUploadedFile($uploadedFile, $user);
+        $file = $this->fileService->createFromUploadedFile($uploadedFile, $user);
         return $recordData->update(['image_id' => $file->id]);
     }
 

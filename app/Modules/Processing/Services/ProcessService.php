@@ -2,13 +2,17 @@
 
 namespace App\Modules\Processing\Services;
 
+use App\Models\User;
+use App\Modules\Plugins\Models\Plugin;
 use App\Modules\Plugins\Services\PluginService;
 use App\Modules\Processing\Models\Dto\ProcessDto;
 use App\Modules\Processing\Models\Process;
 use App\Modules\Processing\Models\ProcessFieldType;
 use App\Modules\Project\Models\Project;
 use App\Modules\Project\Services\RecordService;
+use App\Services\File\FileService;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
@@ -23,12 +27,14 @@ class ProcessService
     protected RecordService $recordService;
     protected PluginService $pluginService;
     protected ProcessExecuteService $processExecuteService;
+    private FileService $fileService;
 
-    public function __construct(RecordService $recordService, PluginService $pluginService, ProcessExecuteService $processExecuteService)
+    public function __construct(RecordService $recordService, PluginService $pluginService, ProcessExecuteService $processExecuteService, FileService $fileService)
     {
         $this->recordService = $recordService;
         $this->pluginService = $pluginService;
         $this->processExecuteService = $processExecuteService;
+        $this->fileService = $fileService;
     }
 
     public function getAllByProject(Project $project): Collection
@@ -46,6 +52,9 @@ class ProcessService
 
         try {
             $this->install($process, $archive);
+
+            $file = $this->fileService->createFromUploadedFile($archive, User::whereId($dto->userId)->first());
+            $process->archiveFile()->associate($file)->save();
 
             \DB::commit();
         } catch (\Throwable $throwable) {
@@ -142,6 +151,15 @@ class ProcessService
     public function delete(Process $process): ?bool
     {
         $this->deleteApp($process);
+
+        if ($process->imageFile) {
+            $this->fileService->delete($process->imageFile);
+        }
+
+        if ($process->archiveFile) {
+            $this->fileService->delete($process->archiveFile);
+        }
+
         return $process->delete();
 
     }
@@ -149,6 +167,28 @@ class ProcessService
     public function deleteApp(Process $process): bool
     {
         return Storage::disk('process')->deleteDirectory($process->id);
+    }
+
+    public function update(Process $process, ?string $name, ?string $description, ?Plugin $plugin): bool
+    {
+        if ($name && $process->name !== $name) {
+            $process->fill(['name' => $name]);
+        }
+
+        if ($description && $process->description !== $description) {
+            $process->fill(['description' => $description]);
+        }
+
+        if ($plugin) {
+            $process->plugin()->associate($plugin);
+        }
+
+        if ($plugin === null) {
+            $process->plugin()->delete();
+        }
+
+
+        return $process->save();
     }
 
     /**
@@ -161,6 +201,13 @@ class ProcessService
         $this->install($process, $archive);
 
         return $process;
+    }
+
+    public function getFieldsByProcess(Process $process): Collection
+    {
+        return ProcessFieldType::whereHas('process', function (Builder $query) use ($process) {
+            $query->where('id', $process->id);
+        })->active()->orderBy('order')->get();
     }
 
 }

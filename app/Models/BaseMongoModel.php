@@ -9,6 +9,7 @@ class BaseMongoModel extends Model
 {
     public function getConnection()
     {
+        /** Для тестов */
         if (config('database.mongodb_test_connection') || app()->environment('testing')) {
             return static::resolveConnection('mongodb_test');
         }

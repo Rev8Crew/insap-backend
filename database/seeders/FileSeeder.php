@@ -20,6 +20,6 @@ class FileSeeder extends Seeder
         $user = User::find(User::TEST_USER_ID);
 
         $fileService = app(FileService::class);
-        $fileService->buildFromUploadedFile($fakeImage, $user);
+        $fileService->createFromUploadedFile($fakeImage, $user);
     }
 }

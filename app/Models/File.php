@@ -49,6 +49,7 @@ class File extends Model
         'url',
         'name',
         'mime',
+        'size',
         'is_active',
         'user_id'
     ];

@@ -29,7 +29,7 @@ class FileTest extends TestCase
     {
         $uploadedFile = UploadedFile::fake()->image('test.png', 100, 100);
 
-        $this->file = $this->fileService->buildFromUploadedFile($uploadedFile, $this->user);
+        $this->file = $this->fileService->createFromUploadedFile($uploadedFile, $this->user);
 
         $this->assertEquals( $uploadedFile->getClientOriginalName(), $this->file->name);
         $this->assertEquals( $uploadedFile->getMimeType(), $this->file->mime);

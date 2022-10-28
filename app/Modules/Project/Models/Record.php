@@ -4,6 +4,8 @@ namespace App\Modules\Project\Models;
 
 use App\Enums\ActiveStatus;
 use App\Enums\ImportStatus;
+use App\helpers\ImageHelper;
+use App\Models\File;
 use App\Models\User;
 use App\Modules\Processing\Models\Process;
 use App\Scopes\ActiveScope;
@@ -69,7 +71,9 @@ class Record extends Model
         'import_error',
         'record_data_id',
         'user_id',
-        'process_id'
+        'process_id',
+        'date',
+        'image_id'
     ];
 
     protected $appends = [
@@ -99,5 +103,18 @@ class Record extends Model
     public function process(): BelongsTo
     {
         return $this->belongsTo(Process::class, 'process_id');
+    }
+
+    public function imageFile(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'image_id');
+    }
+
+    /**
+     * Return URL of the image
+     * @return string
+     */
+    public function getImageAttribute() : string {
+        return $this->image_id ? File::find($this->image_id)->url : ImageHelper::getAvatarImage($this->name);
     }
 }

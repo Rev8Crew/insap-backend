@@ -31,6 +31,11 @@ class RecordDataResource extends JsonResource
             'description' => $this->description,
             'order' => $this->order,
 
+            'date_start' => $this->date_start ? Carbon::parse($this->date_start)->format('d.m.Y H:i:s') : null,
+            'date_end' => $this->date_end ? Carbon::parse($this->date_end)->format('d.m.Y H:i:s') : null,
+
+            'image' => $this->image,
+
             'creator_user' => UserResource::make($this->whenLoaded('creatorUser')),
 
             'created_at' => Carbon::parse($this->created_at)->format('d.m.Y H:i:s'),

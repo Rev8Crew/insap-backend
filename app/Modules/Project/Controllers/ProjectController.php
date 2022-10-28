@@ -39,6 +39,8 @@ class ProjectController extends Controller
         $projects = $this->projectService->getProjectsByUser(request()->user());
         $projects->load(['recordsData', 'recordsData.records', 'recordsData.creatorUser']);
 
+        $data = $projects->first()->recordsData;
+
         return $response->withData( ProjectResource::collection($projects) );
     }
 

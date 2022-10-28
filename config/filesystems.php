@@ -45,7 +45,7 @@ return [
         'fileStore' => [
             'driver'     => 'local',
             'root'       => storage_path('app/files'),
-            'url'        => env('APP_URL') . '/storage/files',
+            'url'        => env('APP_URL') . '/files',
             'visibility' => 'public',
         ],
 
@@ -92,6 +92,7 @@ return [
 
     'links' => [
         public_path('storage') => storage_path('app/public'),
+        public_path('files') => storage_path('app/files'),
     ],
 
 ];

@@ -24,6 +24,9 @@ class CreateProcessesTable extends Migration
             $table->integer('user_id')->index()->nullable();
             $table->integer('project_id')->index();
 
+            $table->integer('image_id')->index()->nullable();
+            $table->integer('archive_id')->index()->nullable();
+
             $table->integer('is_active');
 
             $table->timestamps();

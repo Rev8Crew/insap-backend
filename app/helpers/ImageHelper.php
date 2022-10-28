@@ -14,6 +14,7 @@ class ImageHelper {
      */
     public static function getAvatarImage($name ): string
     {
-        return 'https://avatars.dicebear.com/v2/initials/' . preg_replace('/[^a-z0-9 _.-]+/i', '', $name) . '.svg';
+
+        return 'https://avatars.dicebear.com/v2/initials/' . $name . '.svg';
     }
 }

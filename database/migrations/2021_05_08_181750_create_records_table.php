@@ -13,6 +13,9 @@ class CreateRecordsTable extends Migration
 
             $table->string('name')->comment('Record name');
             $table->text('description')->comment('Record description')->nullable();
+
+            $table->dateTime('date')->nullable();
+
             $table->integer('order')->comment('Record order')->default(0);
             $table->smallInteger('is_active')->comment('Is record active');
 
@@ -25,10 +28,12 @@ class CreateRecordsTable extends Migration
             $table->integer('record_data_id')->index()->default(0);
             $table->integer('user_id')->index()->default(0);
             $table->integer('process_id')->index()->default(0);
+            $table->integer('image_id')->index()->default(0);
 
             //$table->foreign('record_data_id')->references('id')->on('record_data')->onDelete('cascade');
             //$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

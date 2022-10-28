@@ -22,7 +22,7 @@ class ProjectService
     public function create(array $params, ?UploadedFile $file = null, ?User $user = null): Project
     {
         if ($file) {
-            $params['image_id'] = $this->fileService->buildFromUploadedFile($file, $user)->id;
+            $params['image_id'] = $this->fileService->createFromUploadedFile($file, $user)->id;
         }
 
         $project = Project::create(
@@ -64,7 +64,7 @@ class ProjectService
     {
         $this->deleteImage($project);
 
-        $file = $this->fileService->buildFromUploadedFile($uploadedFile, $user);
+        $file = $this->fileService->createFromUploadedFile($uploadedFile, $user);
         return $project->update(['image_id' => $file->id]);
     }
 

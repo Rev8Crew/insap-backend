@@ -34,10 +34,18 @@ class ProcessResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
+            'image' => $this->image,
 
             'process_type' => ProcessType::labels()[$this->type],
+            'process_type_id' => $this->type,
+
             'process_interpreter' => ProcessInterpreter::labels()[$this->interpreter],
+            'process_interpreter_class' => $this->interpreter,
+
             'options' => $this->options,
+
+            'appliance_id' => $this->appliance_id,
+            'plugin_id' => $this->plugin_id,
 
             'created_at' => Carbon::parse($this->created_at)->format('d.m.Y H:i:s'),
             'updated_at' => Carbon::parse($this->updated_at)->format('d.m.Y H:i:s'),
@@ -46,7 +54,9 @@ class ProcessResource extends JsonResource
             'user' => UserResource::make($this->whenLoaded('user')),
 
             'fields' => $this->whenLoaded('fields'),
-            'plugin' => $this->whenLoaded('plugin')
+            'plugin' => $this->whenLoaded('plugin'),
+
+            'archive' => $this->whenLoaded('archiveFile')
         ];
     }
 }

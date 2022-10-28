@@ -30,7 +30,7 @@ class UserService
     public function create(array $userParams, array $userInfoParams = [], ?UploadedFile $file = null, ?User $user = null): User
     {
         if ($file) {
-            $userParams['image_id'] = $this->fileService->buildFromUploadedFile($file, $user)->id;
+            $userParams['image_id'] = $this->fileService->createFromUploadedFile($file, $user)->id;
         }
 
         $userParams['password'] = Hash::make($userParams['password']);
@@ -96,7 +96,7 @@ class UserService
     {
         $this->deleteImage($user);
 
-        $file = $this->fileService->buildFromUploadedFile($uploadedFile, $userChange);
+        $file = $this->fileService->createFromUploadedFile($uploadedFile, $userChange);
         return $user->update(['image_id' => $file->id]);
     }
 

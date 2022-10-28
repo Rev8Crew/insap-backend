@@ -21,6 +21,8 @@ Route::prefix('projects')->middleware('auth:sanctum')->group(function () {
     Route::post('delete/{project}', [ProjectController::class, 'delete']);
 
     Route::prefix('records-data')->group(function () {
+        Route::post('create', [ RecordController::class, 'createRecordData' ])->name('records-data.create');
+
         Route::prefix('records')->group(function () {
             Route::post('get-records-by-record-data', [RecordController::class, 'getRecordsByRecordData']);
         });

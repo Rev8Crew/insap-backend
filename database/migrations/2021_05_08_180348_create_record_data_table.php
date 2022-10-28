@@ -20,6 +20,9 @@ class CreateRecordDataTable extends Migration
             $table->integer('image_id')->comment('Record data image')->index()->nullable();
             $table->integer('creator_user_id')->nullable();
 
+            $table->dateTime('date_start')->nullable();
+            $table->dateTime('date_end')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
         });

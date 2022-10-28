@@ -18,9 +18,10 @@ class RecordResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'order' => $this->order,
+            'date' => $this->date,
 
-            'files' => $this->whenLoaded('files'),
-            'params' => $this->whenLoaded('params'),
+            'files' => $this->files,
+            'params' => $this->params,
 
             'import_status' => $this->import_status,
             'import_error' => $this->import_error,

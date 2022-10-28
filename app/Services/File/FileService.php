@@ -4,30 +4,43 @@
 namespace App\Services\File;
 
 
+use App\Enums\ActiveStatus;
 use App\Models\File;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 class FileService
 {
-    /**
-     * @param UploadedFile $file
-     * @param User $user
-     * @return File
-     */
-    public function buildFromUploadedFile(UploadedFile $file, User $user): File
+
+    public function createFromUploadedFile(UploadedFile $file, ?User $user = null): File
     {
         $storage = Storage::disk('fileStore');
-        $file->move( $storage->path(''), $file->hashName());
+        $name = $file->getClientOriginalName();
+        $path = $file->hashName();
+        $mime = $file->getMimeType();
+        $hashName = $file->hashName();
+        $size = $file->getSize();
+
+        $file->move( $storage->path(''), $hashName);
+
 
         return $this->create([
-            'name' => $file->getClientOriginalName(),
-            'path' => $file->hashName(),
-            'url' => $storage->url($file->getRealPath()),
-            'mime' => $file->getMimeType(),
-            'user_id' => $user->id
+            'name' => $name,
+            'path' => $path,
+            'size' => $size,
+            'url' => $storage->url($hashName),
+            'mime' => $mime,
+            'is_active' => ActiveStatus::ACTIVE,
+            'user_id' => optional($user)->id
         ]);
+    }
+
+    public function createFromUploadedImage(UploadedFile $file, ?User $user = null): File
+    {
+        ImageOptimizer::optimize($file->getRealPath());
+        return $this->createFromUploadedFile($file, $user);
     }
 
     /**

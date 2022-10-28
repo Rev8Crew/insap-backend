@@ -3,6 +3,8 @@
 namespace App\Modules\Processing\Models;
 
 use App\Enums\ActiveStatus;
+use App\helpers\ImageHelper;
+use App\Models\File;
 use App\Models\User;
 use App\Modules\Appliance\Models\Appliance;
 use App\Modules\Plugins\Models\Plugin;
@@ -66,7 +68,9 @@ class Process extends Model
         'user_id',
         'is_active',
         'options',
-        'project_id'
+        'project_id',
+        'image_id',
+        'archive_id'
     ];
 
     protected $attributes = [
@@ -100,6 +104,24 @@ class Process extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    public function imageFile(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'image_id');
+    }
+
+    public function archiveFile(): BelongsTo
+    {
+        return $this->belongsTo(File::class, 'archive_id');
+    }
+
+    /**
+     * Return URL of the image
+     * @return string
+     */
+    public function getImageAttribute() : string {
+        return $this->image_id ? File::find($this->image_id)->url : ImageHelper::getAvatarImage($this->name);
     }
 
     /**
