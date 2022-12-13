@@ -4,7 +4,7 @@ namespace App\Modules\Project\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class GetRecordsByRecordData extends FormRequest
+class RecordDataRequest extends FormRequest
 {
     /**
      * @return string[]

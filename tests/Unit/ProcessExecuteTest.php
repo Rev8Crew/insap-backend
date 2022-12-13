@@ -14,7 +14,7 @@ use App\Modules\Processing\Models\Dto\ProcessParamsDto;
 use App\Modules\Processing\Models\Interpreter\InterpreterPhp;
 use App\Modules\Processing\Models\Interpreter\InterpreterPython;
 use App\Modules\Processing\Models\Process;
-use App\Modules\Processing\Services\ProcessService;
+use App\Modules\Processing\Services\ProcessAppService;
 use App\Modules\Processing\Services\ProcessServiceInterface;
 use App\Modules\Project\Models\Project;
 use App\Modules\Project\Models\Record;
@@ -30,7 +30,7 @@ class ProcessExecuteTest extends \Tests\TestCase
     private Record $record;
     private Appliance $appliance;
 
-    private ?ProcessService $processService = null;
+    private ?ProcessAppService $processService = null;
     private RecordService $recordService;
 
     private ProcessServiceInterface $importerService;
@@ -45,7 +45,7 @@ class ProcessExecuteTest extends \Tests\TestCase
     {
         \Tests\TestCase::setUp();
 
-        $this->processService = $this->app->make(ProcessService::class);
+        $this->processService = $this->app->make(ProcessAppService::class);
         $this->recordService = $this->app->make(RecordService::class);
 
         $this->importerService = $this->app->make(ProcessTypeFactory::class)->create(ProcessType::create(ProcessType::IMPORTER));
@@ -113,7 +113,7 @@ class ProcessExecuteTest extends \Tests\TestCase
             ->setPluginId(optional($plugin)->id)
             ->setActiveStatus(ActiveStatus::create(ActiveStatus::ACTIVE));
 
-        return $this->processService->create($processDto, $uploadedFile);
+        return $this->processService->createWithApp($processDto, $uploadedFile);
     }
 
     private function getProcessFileDto(string $alias, string $path, string $mime): ProcessFileDto

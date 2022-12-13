@@ -76,10 +76,6 @@ class Record extends Model
         'image_id'
     ];
 
-    protected $appends = [
-        'records_info'
-    ];
-
     protected $attributes = [
         'is_active' => ActiveStatus::ACTIVE,
         'import_status' => ImportStatus::INITIAL

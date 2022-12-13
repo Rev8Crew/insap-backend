@@ -11,7 +11,7 @@ use App\Modules\Processing\Models\Interpreter\InterpreterGo;
 use App\Modules\Processing\Models\Interpreter\InterpreterPhp;
 use App\Modules\Processing\Models\Interpreter\InterpreterPython;
 use App\Modules\Processing\Models\Process;
-use App\Modules\Processing\Services\ProcessService;
+use App\Modules\Processing\Services\ProcessAppService;
 use App\Modules\Project\Models\Project;
 use Illuminate\Http\UploadedFile;
 use Storage;
@@ -19,7 +19,7 @@ use Tests\TestCase;
 
 class ProcessTest extends TestCase
 {
-    private ?ProcessService $processService = null;
+    private ?ProcessAppService $processService = null;
     private ?Appliance $appliance = null;
 
     private ?Project $project = null;
@@ -32,7 +32,7 @@ class ProcessTest extends TestCase
         $this->appliance = Appliance::create(['id' => Appliance::APPLIANCE_TEST_ID, 'name' => 'test']);
 
         // Create all services
-        $this->processService = $this->app->make(ProcessService::class);
+        $this->processService = $this->app->make(ProcessAppService::class);
 
         $this->project = Project::find(Project::TEST_PROJECT_ID);
     }
@@ -58,7 +58,7 @@ class ProcessTest extends TestCase
             ->setApplianceId($this->appliance->id)
             ->setActiveStatus(ActiveStatus::create(ActiveStatus::ACTIVE));
 
-        $process = $this->processService->create($processDto, $uploadedFile);
+        $process = $this->processService->createWithApp($processDto, $uploadedFile);
 
         $this->assertInstanceOf(Process::class, $process);
 
@@ -99,7 +99,7 @@ class ProcessTest extends TestCase
             ->setApplianceId($this->appliance->id)
             ->setActiveStatus(ActiveStatus::create(ActiveStatus::ACTIVE));
 
-        $process = $this->processService->create($processDto, $uploadedFile);
+        $process = $this->processService->createWithApp($processDto, $uploadedFile);
 
         $id = $process->id;
         $this->processService->delete($process);

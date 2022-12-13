@@ -10,6 +10,7 @@ use App\Modules\Appliance\Models\Appliance;
 use App\Modules\Plugins\Models\Plugin;
 use App\Modules\Processing\Models\Interpreter\InterpreterInterface;
 use App\Modules\Project\Models\Project;
+use App\Modules\Project\Models\Record;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -114,6 +115,11 @@ class Process extends Model
     public function archiveFile(): BelongsTo
     {
         return $this->belongsTo(File::class, 'archive_id');
+    }
+
+    public function records(): HasMany
+    {
+        return $this->hasMany(Record::class);
     }
 
     /**

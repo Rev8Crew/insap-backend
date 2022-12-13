@@ -14,13 +14,13 @@ use App\Modules\Processing\Requests\ProcessGetFieldsRequest;
 use App\Modules\Processing\Requests\ProcessUpdateArchiveRequest;
 use App\Modules\Processing\Requests\ProcessUpdateRequest;
 use App\Modules\Processing\Resources\ProcessResource;
-use App\Modules\Processing\Services\ProcessService;
+use App\Modules\Processing\Services\ProcessAppService;
 
 class ProcessController extends Controller
 {
-    private ProcessService $processService;
+    private ProcessAppService $processService;
 
-    public function __construct(ProcessService $processService)
+    public function __construct(ProcessAppService $processService)
     {
         $this->processService = $processService;
     }
@@ -52,7 +52,7 @@ class ProcessController extends Controller
 
         try {
             $dto = ProcessDto::createFromRequest($request);
-            $this->processService->create($dto, $request->file('archive'));
+            $this->processService->createWithApp($dto, $request->file('archive'));
         } catch (\Throwable $throwable) {
             return $response->catch($throwable);
         }
@@ -78,7 +78,12 @@ class ProcessController extends Controller
         $process = Process::find($request->input('process_id'));
         $plugin = $request->input('plugin_id') ? Plugin::findOrFail($request->input('plugin_id')) : null;
 
-        $this->processService->update($process, $request->input('name'), $request->input('description'), $plugin);
+        try {
+            $this->processService->update($process, $request->input('name'), $request->input('description'), $plugin);
+        } catch (\Throwable $throwable) {
+            return $response->catch($throwable);
+        }
+
 
         return $response->success();
     }

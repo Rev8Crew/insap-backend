@@ -2,10 +2,13 @@
 
 namespace App\Modules\Processing\Models\Dto;
 
+use App\Traits\Makeable;
 use Illuminate\Http\UploadedFile;
 
 class ProcessFileDto
 {
+    use Makeable;
+
     private UploadedFile $uploadedFile;
 
     private string $alias;

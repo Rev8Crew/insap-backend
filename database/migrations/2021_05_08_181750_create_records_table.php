@@ -25,10 +25,10 @@ class CreateRecordsTable extends Migration
             $table->smallInteger('import_status');
             $table->text('import_error')->nullable();
 
-            $table->integer('record_data_id')->index()->default(0);
-            $table->integer('user_id')->index()->default(0);
-            $table->integer('process_id')->index()->default(0);
-            $table->integer('image_id')->index()->default(0);
+            $table->integer('record_data_id')->index()->nullable();
+            $table->integer('user_id')->index()->nullable();
+            $table->integer('process_id')->index()->nullable();
+            $table->integer('image_id')->index()->nullable();
 
             //$table->foreign('record_data_id')->references('id')->on('record_data')->onDelete('cascade');
             //$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

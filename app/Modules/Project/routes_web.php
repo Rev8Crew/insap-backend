@@ -4,6 +4,7 @@ use App\Models\User;
 use App\Modules\Auth\Controllers\AuthController;
 use App\Modules\Project\Controllers\ProjectController;
 use App\Modules\Project\Controllers\RecordController;
+use App\Modules\Project\Controllers\RecordDataController;
 use Illuminate\Support\Facades\Route;
 
 /**
@@ -14,16 +15,18 @@ Route::prefix('projects')->middleware('auth:sanctum')->group(function () {
 
     Route::post('/by-user', [ProjectController::class, 'getProjectsByUser']);
 
-    Route::post('create', [ProjectController::class, 'create']);
-    Route::post('delete/{project}', [ProjectController::class, 'delete']);
-    Route::post('view/{project}', [ProjectController::class, 'view']);
-
-    Route::post('delete/{project}', [ProjectController::class, 'delete']);
-
     Route::prefix('records-data')->group(function () {
-        Route::post('create', [ RecordController::class, 'createRecordData' ])->name('records-data.create');
+        Route::post('create', [ RecordDataController::class, 'createRecordData' ])->name('records-data.create');
 
-        Route::prefix('records')->group(function () {
+        Route::post('get-by-id', [RecordDataController::class, 'getRecordDataById'])->name('records-data.get-by-id');
+
+            Route::prefix('records')->group(function () {
+            Route::post('create', [RecordController::class, 'create']);
+            Route::post('update', [RecordController::class, 'update']);
+
+            Route::post('import', [RecordController::class, 'import']);
+
+            Route::post('get-by-id', [RecordController::class, 'getById']);
             Route::post('get-records-by-record-data', [RecordController::class, 'getRecordsByRecordData']);
         });
     });

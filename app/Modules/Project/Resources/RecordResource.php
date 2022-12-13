@@ -20,11 +20,15 @@ class RecordResource extends JsonResource
             'order' => $this->order,
             'date' => $this->date,
 
+            'image' => $this->image,
+
             'files' => $this->files,
             'params' => $this->params,
 
             'import_status' => $this->import_status,
             'import_error' => $this->import_error,
+
+            'process_id' => $this->process_id,
 
             'user' => UserResource::make($this->whenLoaded('user')),
             'process' => ProcessResource::make($this->whenLoaded('process')),

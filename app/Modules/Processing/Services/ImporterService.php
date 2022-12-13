@@ -76,7 +76,7 @@ class ImporterService implements ProcessServiceInterface
             }
 
             $record->files = $fileIds;
-            $record->params = $processParamsDto->getParams();
+            $record->params = $processParamsDto->getParams()->all();
             $record->import_status = ImportStatus::SUCCESS;
             $record->process()->associate($process);
 
@@ -99,7 +99,7 @@ class ImporterService implements ProcessServiceInterface
 
             $this->recordService->deleteRecordFiles($record);
 
-            throw new RuntimeException('[ImporterService] Import event failed <' . $exception->getMessage() . '>', null, $exception);
+            throw $exception;
         }
 
         return true;

@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Modules\Project\Models\RecordData;
 use App\Services\File\FileService;
 use Illuminate\Http\UploadedFile;
+use Webmozart\Assert\Assert;
 
 class RecordDataService
 {
@@ -74,6 +75,11 @@ class RecordDataService
     }
 
     public function getRecordDataById(int $id): ?RecordData {
-        return RecordData::whereId($id)->first();
+
+        $object = RecordData::whereId($id)->first();
+
+        Assert::notNull($object);
+
+        return $object;
     }
 }

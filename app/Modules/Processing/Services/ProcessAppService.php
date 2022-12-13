@@ -20,10 +20,10 @@ use Illuminate\Support\Facades\Storage;
 use JsonMachine\JsonMachine;
 use PhpZip\Exception\ZipException;
 use PhpZip\ZipFile;
+use Webmozart\Assert\Assert;
 
-class ProcessService
+class ProcessAppService
 {
-
     protected RecordService $recordService;
     protected PluginService $pluginService;
     protected ProcessExecuteService $processExecuteService;
@@ -45,13 +45,13 @@ class ProcessService
     /**
      * @throws Exception|\Throwable
      */
-    public function create(ProcessDto $dto, UploadedFile $archive): Process
+    public function createWithApp(ProcessDto $dto, UploadedFile $archive): Process
     {
         \DB::beginTransaction();
         $process = Process::create($dto->toArray());
 
         try {
-            $this->install($process, $archive);
+            $this->installApp($process, $archive);
 
             $file = $this->fileService->createFromUploadedFile($archive, User::whereId($dto->userId)->first());
             $process->archiveFile()->associate($file)->save();
@@ -71,7 +71,7 @@ class ProcessService
     /**
      * @throws Exception|\Throwable
      */
-    public function install(Process $process, UploadedFile $archive)
+    public function installApp(Process $process, UploadedFile $archive)
     {
         $storage = Storage::disk('process');
         $storage->makeDirectory($process->id);
@@ -179,11 +179,14 @@ class ProcessService
             $process->fill(['description' => $description]);
         }
 
-        if ($plugin) {
+        if ($plugin && $plugin->id !== $process->plugin_id) {
+            Assert::eq(0, $process->records()->count(), trans('process.change_plugin_while_has_record'));
             $process->plugin()->associate($plugin);
         }
 
-        if ($plugin === null) {
+        if ($plugin === null && $process->plugin_id) {
+            Assert::eq(0, $process->records()->count(), trans('process.change_plugin_while_has_record'));
+
             $process->plugin()->delete();
         }
 
@@ -198,7 +201,7 @@ class ProcessService
     {
         $this->deleteApp($process);
         $process->fields()->delete();
-        $this->install($process, $archive);
+        $this->installApp($process, $archive);
 
         return $process;
     }
@@ -208,6 +211,16 @@ class ProcessService
         return ProcessFieldType::whereHas('process', function (Builder $query) use ($process) {
             $query->where('id', $process->id);
         })->active()->orderBy('order')->get();
+    }
+
+    public function getById(int $id) : Process
+    {
+        $model = Process::find($id);
+
+        Assert::notNull($model, "Can't find process with id $id");
+
+        return $model;
+
     }
 
 }

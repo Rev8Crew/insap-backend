@@ -17,6 +17,7 @@ class ProcessExecuteService
 {
     /**
      * @throws ProcessException
+     * @throws Throwable
      */
     public function execute(
         ProcessType      $processType,
@@ -58,7 +59,7 @@ class ProcessExecuteService
                 throw new ProcessException("[ExecuteEvent] Error from process", 0, $exception, implode(";", $importerErrors));
             }
 
-            throw new \RuntimeException("[ExecuteEvent] Can't execute command", 0, $exception);
+            throw $exception;
         }
 
         $importerErrors = $this->getErrorFromImporter($process);
