@@ -5,13 +5,18 @@ namespace App\Modules\Project\Services;
 
 
 use App\Enums\ActiveStatus;
+use App\Enums\ImportStatus;
+use App\Enums\Process\ProcessField;
 use App\Models\User;
 use App\Modules\Plugins\Services\PluginService;
+use App\Modules\Processing\Models\Dto\ProcessFileDto;
 use App\Modules\Processing\Models\Process;
 use App\Modules\Project\DTO\RecordCreateDto;
+use App\Modules\Project\DTO\RecordFieldDto;
 use App\Modules\Project\Models\Record;
 use App\Modules\Project\Models\RecordData;
 use App\Modules\Project\Models\RecordInfo;
+use App\Modules\Project\Requests\RecordImportRequest;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -110,16 +115,18 @@ class RecordService
     {
         $this->deleteRecordFiles($record);
 
-        return RecordInfo::where('record_id', $record->id)->delete();
+        $record->import_status = ImportStatus::create(ImportStatus::INITIAL);
+        $record->import_log = '';
+        $record->save();
+
+        $pluginService = $this->pluginService->getPluginService($record->process->plugin);
+
+        return (bool)$pluginService->deleteDataFromRecord($record);
     }
 
     public function getRecordInfo(Record $record): Collection
     {
-        if ($record->process->plugin) {
-            return $this->pluginService->getPluginService($record->process->plugin)->getQueryBuilder($record)->get();
-        }
-
-        return RecordInfo::where('record_id', $record->id)->orderBy('step_id')->get();
+        return $this->pluginService->getPluginService($record->process->plugin)->getDataFromRecord($record);
     }
 
     public function getRecordsByRecordData(RecordData $recordData): Collection
@@ -128,5 +135,25 @@ class RecordService
             $builder->where('id', $recordData->id);
             $builder->where('is_active', ActiveStatus::ACTIVE);
         })->where('is_active', ActiveStatus::ACTIVE)->orderByDesc('order')->get();
+    }
+
+    public function deleteRecordsFromRecord(Record $record): bool
+    {
+        return $this->deleteRecordsInfo($record);
+    }
+
+    public function makeFieldDtoFromArray(array $data): \Illuminate\Support\Collection
+    {
+        return collect($data)->map( fn(string $field) => RecordFieldDto::makeFromArray(json_decode($field, true, 512, JSON_THROW_ON_ERROR)));
+    }
+
+    public function getFilesFromFieldsCollectionAndRequest(\Illuminate\Support\Collection $fields, RecordImportRequest $request): \Illuminate\Support\Collection
+    {
+        return $fields->filter( fn(RecordFieldDto $dto) => $dto->getFieldType()->getValue() === ProcessField::FIELD_FILE)
+            ->map( fn(RecordFieldDto $dto) => ProcessFileDto::make($request->file('_file_alias_' . $dto->getAlias()), $dto->getAlias()));
+    }
+
+    public function isMultiplyImport(Record $record) {
+
     }
 }

@@ -193,4 +193,42 @@ class ProcessExecuteTest extends \Tests\TestCase
 
         $this->recordService->deleteRecordsInfo($this->record);
     }
+
+    public function testMultiplyImport() : void {
+        $process = $this->createWithInterpreter(InterpreterPython::class, 'importer_python_adcp.zip', Plugin::first());
+
+        $storage = Storage::disk('examples');
+
+        $dataFileDto = $this->getProcessFileDto('data',
+            $storage->path('adcp' . DIRECTORY_SEPARATOR . '1' . DIRECTORY_SEPARATOR . '1597842707_data.txt'),
+            'text/plain');
+
+        $refFileDto = $this->getProcessFileDto('ref',
+            $storage->path('adcp' . DIRECTORY_SEPARATOR . '1' . DIRECTORY_SEPARATOR . '1597842707_ref.txt'),
+            'text/plain');
+
+        $params = [
+            'date_time' => Carbon::now()->format('Y-m-d H:i:s'),
+            'expedition_number' => 1
+        ];
+
+        $this->assertNotNull($process->plugin);
+
+        $result = $this->importerService->executeProcess($process, $this->record, $params, [$dataFileDto, $refFileDto]);
+        $count = $this->recordService->getRecordInfo($this->record)->count();
+
+        $this->assertTrue($result);
+        $this->assertNotNull($this->record->process);
+        $this->assertTrue($this->recordService->getRecordInfo($this->record)->count() > 0);
+
+        $result = $this->importerService->executeProcess($process, $this->record, $params, [$dataFileDto, $refFileDto]);
+        $count2 = $this->recordService->getRecordInfo($this->record)->count();
+
+        $this->assertTrue($result);
+        $this->assertNotNull($this->record->process);
+        $this->assertTrue($this->recordService->getRecordInfo($this->record)->count() > 0);
+        $this->assertEquals($count2, $count * 2);
+
+        $this->recordService->deleteRecordsInfo($this->record);
+    }
 }

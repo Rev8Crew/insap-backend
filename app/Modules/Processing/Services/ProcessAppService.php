@@ -2,6 +2,7 @@
 
 namespace App\Modules\Processing\Services;
 
+use App\Enums\Process\ProcessOption;
 use App\Models\User;
 use App\Modules\Plugins\Models\Plugin;
 use App\Modules\Plugins\Services\PluginService;
@@ -28,13 +29,24 @@ class ProcessAppService
     protected PluginService $pluginService;
     protected ProcessExecuteService $processExecuteService;
     private FileService $fileService;
+    private ProcessOptionService $optionsService;
+    private ProcessFieldService $processFieldService;
 
-    public function __construct(RecordService $recordService, PluginService $pluginService, ProcessExecuteService $processExecuteService, FileService $fileService)
+    public function __construct(
+        RecordService $recordService,
+        PluginService $pluginService,
+        ProcessExecuteService $processExecuteService,
+        FileService $fileService,
+        ProcessOptionService $optionsService,
+        ProcessFieldService $processFieldService
+    )
     {
         $this->recordService = $recordService;
         $this->pluginService = $pluginService;
         $this->processExecuteService = $processExecuteService;
         $this->fileService = $fileService;
+        $this->optionsService = $optionsService;
+        $this->processFieldService = $processFieldService;
     }
 
     public function getAllByProject(Project $project): Collection
@@ -58,7 +70,7 @@ class ProcessAppService
 
             \DB::commit();
         } catch (\Throwable $throwable) {
-            $this->delete($process);
+            //$this->delete($process);
 
             $process = null;
             \DB::rollBack();
@@ -71,7 +83,7 @@ class ProcessAppService
     /**
      * @throws Exception|\Throwable
      */
-    public function installApp(Process $process, UploadedFile $archive)
+    public function installApp(Process $process, UploadedFile $archive): void
     {
         $storage = Storage::disk('process');
         $storage->makeDirectory($process->id);
@@ -96,56 +108,59 @@ class ProcessAppService
 
         $interpreter = $process->getInterpreter();
 
-        /** Install requirements */
-        $requirementsJsonFile = $path . DIRECTORY_SEPARATOR . Process::REQUIREMENTS_FILE_NAME;
-        if (file_exists($requirementsJsonFile)) {
-            /**
-             *  Parse commands from json
-             */
-            $commands = JsonMachine::fromFile($requirementsJsonFile, '/commands');
-
-            $cdCommand = 'cd ' . $path;
-            foreach ($commands as $command) {
-                $exitCode = $interpreter->execute("$cdCommand;$command");
-
-                if ($exitCode) {
-                    throw new Exception("[Install] Failed exit code from $command [cd $cdCommand]");
-                }
-
-            }
-        }
-
-        $optionsJsonFile = $path . DIRECTORY_SEPARATOR . Process::OPTIONS_FILE_NAME;
-
-        if (file_exists($optionsJsonFile)) {
-            $process->options = json_decode(file_get_contents($optionsJsonFile));
-            $process->save();
-
-            // Try to import fields from json file
-            $this->importFieldsFromOptions($process);
-        }
+        $this->installRequirements($process);
+        $this->installOptions($process);
 
         /** Execute Test Command */
         $interpreter->addArg('--test=', '1');
         $cdCommand = 'cd ' . $path;
+
         $exitCode = $interpreter->execute("$cdCommand;{$interpreter->getAppCommand()}");
         throw_if($exitCode > 0, new \RuntimeException('[Install] Test command exit code greater then 0, [' . $exitCode . ']'));
     }
 
-    private function importFieldsFromOptions(Process $process)
+    /**
+     * @throws \Throwable
+     */
+    private function installRequirements(Process $process): void
     {
-        $fields = $process->options['fields'] ?? [];
+        $path = $process->getStoragePath();
+        $interpreter = $process->getInterpreter();
 
-        if (!$fields) {
-            return;
+        $requirementsJsonFile = $path . DIRECTORY_SEPARATOR . Process::REQUIREMENTS_FILE_NAME;
+
+        throw_if(!\File::exists($requirementsJsonFile), new \RuntimeException("Can't find options file in [". $requirementsJsonFile ."]"));
+
+        $cdCommand = 'cd ' . $path;
+        $detectComposer = false;
+        foreach (JsonMachine::fromFile($requirementsJsonFile, '/commands') as $command) {
+
+            if (\Str::startsWith($command, 'composer')) {
+                $detectComposer = true;
+            }
+
+            try {
+                $finalCommand = $detectComposer ? "export COMPOSER_HOME=\"/tmp\";$cdCommand;$command" : "$cdCommand;$command";
+                $exitCode = $interpreter->execute($finalCommand);
+                throw_if($exitCode > 0, new \RuntimeException('[Install] Exit code greater then 0, [' . $exitCode . '] | Command:' . $cdCommand . ';' . $command));
+            } catch (\Throwable $throwable) {
+
+                throw $throwable;
+            }
         }
+    }
 
-        $processFields = collect();
-        foreach ($fields as $field) {
-            $processFields->push(ProcessFieldType::create($field));
-        }
+    /**
+     * @throws \Throwable
+     * @throws \JsonException
+     */
+    private function installOptions(Process $process): void {
+        throw_if(!$this->optionsService->isOptionsFileExists($process), new \RuntimeException("Can't find options file in [". $this->optionsService->getOptionFilePath($process) ."]"));
+        throw_if(!$this->optionsService->isAllRequiredOptionsExists($process), new \RuntimeException("Please provide all required options, such as " . $this->optionsService->getOptionsDiff($process)->implode(',')));
 
-        $process->fields()->saveMany($processFields);
+        $process->fill(['options' => $this->optionsService->getAllOptions($process)->all()])->save();
+
+        $this->processFieldService->installFieldsToProcess($process);
     }
 
     public function delete(Process $process): ?bool

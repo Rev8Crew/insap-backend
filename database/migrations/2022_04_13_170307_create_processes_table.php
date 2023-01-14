@@ -28,6 +28,7 @@ class CreateProcessesTable extends Migration
             $table->integer('archive_id')->index()->nullable();
 
             $table->integer('is_active');
+            $table->integer('default_process')->nullable();
 
             $table->timestamps();
         });

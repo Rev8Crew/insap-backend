@@ -23,6 +23,7 @@ class Appliance extends Model
     use HasFactory, SoftDeletes;
 
     public const APPLIANCE_TEST_ID = 1;
+    public const APPLIANCE_ADCP_ID = 2;
 
     /**
      * @var string[]

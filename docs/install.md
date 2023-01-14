@@ -28,6 +28,7 @@ roles:[
 ## Настройка Web
 
 - docker exec -it insap-backend_insap-web_1 bash
+- ln -s /usr/local/bin/php /usr/bin/php 
 - composer i
 - php artisan migrate --path=/database/migrations/mongodb
 - php artisan migrate --seed

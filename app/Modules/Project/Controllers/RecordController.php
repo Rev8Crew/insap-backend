@@ -2,19 +2,18 @@
 
 namespace App\Modules\Project\Controllers;
 
-use App\Enums\ImporterField;
 use App\Enums\Process\ProcessType;
 use App\Http\Controllers\Controller;
 use App\Models\Common\Response;
 use App\Modules\Processing\Factories\ProcessTypeFactory;
-use App\Modules\Processing\Models\Dto\ProcessFileDto;
-use App\Modules\Processing\Models\Process;
 use App\Modules\Processing\Services\ProcessAppService;
 use App\Modules\Project\DTO\RecordCreateDto;
 use App\Modules\Project\DTO\RecordFieldDto;
 use App\Modules\Project\Requests\GetRecordByIdRequest;
 use App\Modules\Project\Requests\RecordCreateRequest;
 use App\Modules\Project\Requests\RecordDataRequest;
+use App\Modules\Project\Requests\RecordIdRequest;
+use App\Modules\Project\Requests\RecordImportRequest;
 use App\Modules\Project\Requests\RecordUpdateRequest;
 use App\Modules\Project\Resources\RecordResource;
 use App\Modules\Project\Services\RecordDataService;
@@ -50,9 +49,9 @@ class RecordController extends Controller
         $response = Response::make();
 
         $dto = RecordCreateDto::fromRequest($request);
-        $this->recordService->createFromDto($dto);
+        $record = $this->recordService->createFromDto($dto);
 
-        return $response->success();
+        return $response->withData($record);
     }
 
     public function update(RecordUpdateRequest $request): Response
@@ -77,9 +76,40 @@ class RecordController extends Controller
         return $response->success();
     }
 
-    public function import(): Response
+    public function import(RecordImportRequest $request, ProcessTypeFactory $processTypeFactory): Response
     {
         $response = Response::make();
+
+        $record = $this->recordService->getRecordById($request->input('record_id'));
+
+        $fields = $this->recordService->makeFieldDtoFromArray($request->input('fields'));
+        $files = $this->recordService->getFilesFromFieldsCollectionAndRequest($fields, $request);
+
+        // Удаляем все данные с пустыми значениями(после того как выделили среди них файлы)
+        $fields = $fields->filter( fn(RecordFieldDto $dto) => $dto->isNotEmpty())->mapWithKeys( fn(RecordFieldDto $dto) => [$dto->getAlias() => $dto->getValue()]);
+
+        $importerService = $processTypeFactory->create(ProcessType::create(ProcessType::IMPORTER));
+
+        try {
+            $importerService->executeProcess($record->process, $record, $fields->all(), $files->all());
+        } catch (\Throwable $throwable) {
+            return $response->catch($throwable);
+        }
+
+        return $response->success();
+    }
+
+    public function deleteRecordsInRecord(RecordIdRequest $request): Response
+    {
+        $response = Response::make();
+
+        $record = $this->recordService->getRecordById($request->input('record_id'));
+
+        try {
+            $this->recordService->deleteRecordsFromRecord($record);
+        } catch (\Throwable $throwable) {
+            return $response->catch($throwable);
+        }
 
         return $response->success();
     }
@@ -92,30 +122,5 @@ class RecordController extends Controller
         $data->load(['user', 'process', 'recordData']);
 
         return $response->withData( RecordResource::make($data));
-    }
-
-    public function createWithInstall(RecordCreateRequest $request, ProcessTypeFactory $processTypeFactory): Response {
-        $response = Response::make();
-
-        $process = Process::find($request->input('process_id'));
-        $dto = RecordCreateDto::fromRequest($request);
-
-        $fields = collect($request->input('fields'))->map( fn(string $field) => RecordFieldDto::makeFromArray(json_decode($field, true, 512, JSON_THROW_ON_ERROR)));
-        $files = $fields->filter( fn(RecordFieldDto $dto) => $dto->getFieldType()->getValue() === ImporterField::FIELD_FILE)
-            ->map( fn(RecordFieldDto $dto) => ProcessFileDto::make($request->file('_file_alias_' . $dto->getAlias()), $dto->getAlias()));
-
-        // Удаляем все данные с пустыми значениями
-        $fields = $fields->filter( fn(RecordFieldDto $dto) => $dto->getValue())->mapWithKeys( fn(RecordFieldDto $dto) => [$dto->getAlias() => $dto->getValue()]);
-        $record = $this->recordService->createFromDto($dto);
-
-        $importerService = $processTypeFactory->create(ProcessType::create(ProcessType::IMPORTER));
-
-        try {
-            $importerService->executeProcess($process, $record, $fields->all(), $files->all());
-        } catch (\Throwable $throwable) {
-            return $response->catch($throwable);
-        }
-
-        return $response->withData( $request->allFiles());
     }
 }

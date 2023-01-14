@@ -42,11 +42,19 @@ class ProcessFieldType extends Model
 {
     use ActiveScope;
 
+    public const REQUIRED_FIELDS = [
+        'field_type',
+        'alias',
+        'title',
+        'order',
+    ];
+
     protected $fillable = [
         'field_type',
         'alias',
         'title',
         'description',
+        'default_value',
         'icon',
         'order',
         'is_active',

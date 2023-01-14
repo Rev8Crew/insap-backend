@@ -49,11 +49,10 @@ class ProcessExecuteService
                 'process' => $process->toArray(),
                 'command' => "$cd;{$interpreter->getAppCommand()}",
                 "error" => $exception->getMessage(),
-                "trace" => $exception->getTrace(),
                 "importer_Errors" => $importerErrors
             ]);
 
-            $this->clearAppDir($process);
+            //$this->clearAppDir($process);
 
             if ($importerErrors) {
                 throw new ProcessException("[ExecuteEvent] Error from process", 0, $exception, implode(";", $importerErrors));
@@ -93,9 +92,8 @@ class ProcessExecuteService
         $copyFiles = $this->copyFilesToPath($paramsDto->getFiles()->all(), $importerFilesPath);
         $this->writeArrayToJsonFile($copyFiles, $filesJsonFile);
 
-        if ($paramsDto->getData()->all()) {
-            $this->writeArrayToJsonFile($paramsDto->getData()->all(), $dataJsonFile);
-        }
+        $data = $paramsDto->getData()->all();
+        $this->writeArrayToJsonFile($data, $dataJsonFile);
     }
 
     private function getErrorFromImporter(Process $process): array
@@ -129,7 +127,6 @@ class ProcessExecuteService
         $this->clearAndCreateDir($importerDataPath);
         $this->clearAndCreateDir($importerFilesPath);
         $this->clearAndCreateDir($importerResultPath);
-
     }
 
     /**
@@ -144,6 +141,10 @@ class ProcessExecuteService
 
         if (!$onlyClear) {
             File::makeDirectory($path, 0755, true, true);
+        }
+
+        if (!File::exists($path)) {
+            throw new \RuntimeException('Cannot create directory ' . $path);
         }
     }
 
@@ -170,7 +171,8 @@ class ProcessExecuteService
             $extension = $file->getClientOriginalExtension() ?: $file->getExtension();
             $result[] = [
                 'name' => $file->hashName(),
-                'original' => $file->getClientOriginalName() . '.' . $extension,
+                'original' => $file->getClientOriginalName(),
+                'extension' => $extension,
                 'mime' => $file->getMimeType(),
                 'type' => $fileDto->getAlias(),
                 'alias' => $fileDto->getAlias(),
@@ -222,8 +224,8 @@ class ProcessExecuteService
     private function decodeJsonToArray(string $path): array
     {
         $result = [];
-        foreach (JsonMachine::fromFile($path) as $item) {
-            $result[] = $item;
+        foreach (JsonMachine::fromFile($path) as $key => $item) {
+            $result[$key] = $item;
         }
 
         return $result;

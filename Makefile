@@ -10,6 +10,11 @@ up:
 down:
 	docker-compose -f docker-compose.yml down --remove-orphans
 
+.PHONY: fresh
+fresh:
+	docker exec insap_web php artisan insap:fresh
+	docker exec insap_web php artisan migrate:plugin adcp mysql
+
 .PHONY: refresh
 refresh:
 	docker exec insap_web php artisan optimize:clear

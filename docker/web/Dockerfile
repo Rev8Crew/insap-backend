@@ -21,8 +21,9 @@ RUN apt-get update && apt-get install -y \
         pkg-config \
         libssl-dev \
         python3 \
-        python3-pip \
-    && a2enmod \
+        python3-pip
+
+RUN a2enmod \
         rewrite \
     && docker-php-ext-configure \
         gd \
@@ -36,9 +37,7 @@ RUN apt-get update && apt-get install -y \
         xml \
     && pecl install \
         mongodb \
-        xdebug \
-    && docker-php-ext-enable mongodb \
-        xdebug
+    && docker-php-ext-enable mongodb
 
 # Go Lang
 RUN wget https://go.dev/dl/go$GOLANG_VERSION.linux-amd64.tar.gz  \
@@ -49,15 +48,13 @@ ENV GOPATH=$HOME/.go
 
 RUN go version
 
-# Add the user UID:1000, GID:1000, home at /app
-RUN groupadd -r app -g 1000 && useradd -u 1000 -r -g app -m -d /app -s /sbin/nologin -c "App user" app && \
-    chmod 755 /var/www/html
-
 #Composer
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 RUN curl -sS https://getcomposer.org/installer | php -- \
         --filename=composer \
         --install-dir=/usr/local/bin && \
-        echo "alias composer='composer'" >> /root/.bashrc && \
+        echo "alias composer='composer'" >> /root/.bashrc &&  \
         composer
 
 # CLEANUP
@@ -81,11 +78,10 @@ ADD php.ini /usr/local/etc/php
 
 RUN chmod 755 /var/www/html
 
-USER app
-WORKDIR /var/www/html
-
 USER root
 COPY default.conf /etc/apache2/sites-enabled/000-default.conf
+
+RUN ln -s /usr/local/bin/php /usr/bin/php
 
 #CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
 CMD ["/usr/bin/supervisord"]

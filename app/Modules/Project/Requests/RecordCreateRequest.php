@@ -13,7 +13,7 @@ class RecordCreateRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:64',
-            'description' => 'required|string|',
+            'description' => 'nullable|string',
             'date' => 'nullable|date_format:Y-m-d',
 
             'process_id' => 'required|int|exists:processes,id',

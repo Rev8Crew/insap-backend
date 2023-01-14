@@ -13,6 +13,7 @@ use App\Modules\Project\Models\Project;
 use App\Modules\Project\Models\Record;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
@@ -71,7 +72,8 @@ class Process extends Model
         'options',
         'project_id',
         'image_id',
-        'archive_id'
+        'archive_id',
+        'default_process'
     ];
 
     protected $attributes = [
@@ -122,12 +124,25 @@ class Process extends Model
         return $this->hasMany(Record::class);
     }
 
+    public function children(): BelongsToMany
+    {
+        return $this->belongsToMany(self::class, 'related_process', 'parent_id', 'child_id');
+    }
+
     /**
      * Return URL of the image
      * @return string
      */
     public function getImageAttribute() : string {
         return $this->image_id ? File::find($this->image_id)->url : ImageHelper::getAvatarImage($this->name);
+    }
+
+    /**
+     * @param string $key
+     * @return mixed|null
+     */
+    public function getOptionsByKey(string $key) {
+        return collect($this->options)->get($key);
     }
 
     /**

@@ -10,6 +10,7 @@ class ImportStatus
     public const PROCESSING = 1;
     public const SUCCESS = 2;
     public const ERROR = 3;
+    public const FINAL = 4;
 
     public static function variants(): array
     {
@@ -17,7 +18,8 @@ class ImportStatus
             self::INITIAL,
             self::PROCESSING,
             self::SUCCESS,
-            self::ERROR
+            self::ERROR,
+            self::FINAL
         ];
     }
 }

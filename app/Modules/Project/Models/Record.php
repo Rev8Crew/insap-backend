@@ -68,7 +68,7 @@ class Record extends Model
         'files', // FileIds from MongoFS
         'params',
         'import_status',
-        'import_error',
+        'import_log',
         'record_data_id',
         'user_id',
         'process_id',

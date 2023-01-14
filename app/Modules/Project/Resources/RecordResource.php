@@ -5,14 +5,19 @@ namespace App\Modules\Project\Resources;
 use App\Modules\Processing\Resources\ProcessResource;
 use App\Modules\Project\Models\Record;
 use App\Modules\User\Resources\UserResource;
+use App\Services\File\FileService;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Carbon;
+use MongoDB\BSON\ObjectId;
+use Mts88\MongoGrid\Services\MongoGrid;
 
 /** @mixin Record */
 class RecordResource extends JsonResource
 {
     public function toArray($request): array
     {
+        $fileService = app(FileService::class);
+
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -22,11 +27,14 @@ class RecordResource extends JsonResource
 
             'image' => $this->image,
 
-            'files' => $this->files,
+            'files' => collect($this->files)->map(fn(array $fileArray) =>
+                $fileService->getFileInfoFromMongo($fileArray['$oid'])
+            ),
+
             'params' => $this->params,
 
             'import_status' => $this->import_status,
-            'import_error' => $this->import_error,
+            'import_log' => $this->import_log,
 
             'process_id' => $this->process_id,
 

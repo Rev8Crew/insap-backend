@@ -4,7 +4,6 @@ namespace App\Modules\Plugins\Services;
 
 use App\Enums\ActiveStatus;
 use App\Modules\Plugins\Models\Plugin;
-use App\Modules\Plugins\Models\PluginServiceInterface;
 use Illuminate\Database\Eloquent\Collection;
 
 class PluginService
@@ -30,12 +29,13 @@ class PluginService
         return Plugin::where('is_active', ActiveStatus::ACTIVE)->get();
     }
 
-    public function getPluginService(Plugin $plugin) : PluginServiceInterface
+    public function getPluginService(?Plugin $plugin = null) : PluginServiceInterface
     {
-        $service = app($plugin->service_class);
+        $class = $plugin ? $plugin->service_class : DefaultPluginService::class;
+        $service = app($class);
 
         if ( ($service instanceof PluginServiceInterface) === false) {
-            throw new \RuntimeException('Plugin class ' . $plugin->service_class . ' must be instance of PreProcessingInterface');
+            throw new \RuntimeException('Plugin class ' . $class . ' must be instance of PluginServiceInterface');
         }
 
         return $service;

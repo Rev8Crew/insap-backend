@@ -52,12 +52,12 @@ class ProcessController extends Controller
 
         try {
             $dto = ProcessDto::createFromRequest($request);
-            $this->processService->createWithApp($dto, $request->file('archive'));
+            $data = $this->processService->createWithApp($dto, $request->file('archive'));
         } catch (\Throwable $throwable) {
             return $response->catch($throwable);
         }
 
-        return $response->success();
+        return $response->withData($data);
     }
 
     public function getAllByUserDefaultProject(): Response

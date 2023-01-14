@@ -25,6 +25,7 @@ Route::prefix('projects')->middleware('auth:sanctum')->group(function () {
             Route::post('update', [RecordController::class, 'update']);
 
             Route::post('import', [RecordController::class, 'import']);
+            Route::post('delete-records-in-record', [RecordController::class, 'deleteRecordsInRecord']);
 
             Route::post('get-by-id', [RecordController::class, 'getById']);
             Route::post('get-records-by-record-data', [RecordController::class, 'getRecordsByRecordData']);

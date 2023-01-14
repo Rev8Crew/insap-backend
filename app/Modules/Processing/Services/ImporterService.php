@@ -4,6 +4,7 @@ namespace App\Modules\Processing\Services;
 
 use App\Enums\ActiveStatus;
 use App\Enums\ImportStatus;
+use App\Enums\Process\ProcessOption;
 use App\Enums\Process\ProcessType;
 use App\Events\PreImportEvent;
 use App\Exceptions\ProcessException;
@@ -39,43 +40,51 @@ class ImporterService implements ProcessServiceInterface
         $this->mongoGrid = $mongoGrid;
     }
 
+    /**
+     * @throws Throwable
+     * @throws ProcessException
+     */
     public function executeProcess(Process $process, Record $record, array $params = [], array $files = []): bool
     {
         ini_set('memory_limit', '2G');
+
+        throw_if($record->import_status === ImportStatus::FINAL, new \RuntimeException("Can't execute process in FINAL state"));
 
         try {
             DB::beginTransaction();
 
             PreImportEvent::dispatch($process, $record, $params, $files);
 
+            $pluginService = $this->pluginService->getPluginService($process->plugin);
+
             $processParamsDto = new ProcessParamsDto($params);
             $processParamsDto->setFilesFromUploaded($files);
+
+            if ($pluginService->isRecordHasImport($record) && $process->getOptionsByKey(ProcessOption::TRANSFER_DATA_ON_MULTIPLE_IMPORT) === true) {
+                $processParamsDto->setData($pluginService->getDataFromRecord($record));
+            }
+
+            $record->import_log = 'Start import process...' . PHP_EOL;
 
             // Processing data
             $processParamsDto = $this->processExecuteService->execute(ProcessType::create(ProcessType::IMPORTER), $process, $processParamsDto);
 
             // Add to DB
-            if ($process->plugin) {
-                $service = $this->pluginService->getPluginService($process->plugin);
-                $service->preprocess($record, $processParamsDto);
-            } else {
-                $this->addToDatabase($record, $processParamsDto->getData()->all());
-            }
+            $pluginService->addDataToDatabase($record, $processParamsDto, $process);
 
             $fileIds = [];
-            foreach ($processParamsDto->getFiles()->all() as $file) {
+            foreach ($processParamsDto->getFiles() as $file) {
 
                 $fileIds[] = $this->mongoGrid->storeFile($file->getUploadedFile()->getContent(), Uuid::uuid4(), [
                     'record_id' => $record->id,
-                    'importer_id' => $process->id,
-                    'filename' => $file->getUploadedFile()->getClientOriginalName(),
+                    'filename' => $file->getUploadedFile()->getFilename(),
                     'extension' => $file->getUploadedFile()->getClientOriginalExtension(),
                     'type' => $file->getAlias()
                 ]);
 
             }
 
-            $record->files = $fileIds;
+            $record->files = array_merge($record->files ?? [], $fileIds);
             $record->params = $processParamsDto->getParams()->all();
             $record->import_status = ImportStatus::SUCCESS;
             $record->process()->associate($process);
@@ -87,13 +96,12 @@ class ImporterService implements ProcessServiceInterface
             DB::rollBack();
 
             $record->import_status = ImportStatus::ERROR;
-            $record->import_error = $exception->getMessage() . ' Trace: ' . $exception->getTraceAsString();
 
             if ($exception instanceof ProcessException) {
-                $record->import_error = $exception->getMessage() . ' Processing Error ' . $exception->getProcessError();
+                $record->import_log = $exception->getMessage() . ' Processing Error ' . $exception->getProcessError();
+            } else {
+                $record->import_log = $exception->getMessage() . ' Trace: ' . $exception->getTraceAsString();
             }
-
-            $record->is_active = ActiveStatus::INACTIVE;
 
             $record->save();
 
@@ -103,30 +111,5 @@ class ImporterService implements ProcessServiceInterface
         }
 
         return true;
-    }
-
-    /**
-     * @param Record $record
-     * @param array $data
-     */
-    protected function addToDatabase(Record $record, array $data)
-    {
-        $chunk = [];
-
-        $step = 1;
-        foreach ($data as $array) {
-            // Add record_id to each record
-            $array['record_id'] = $record->id;
-            $array['step_id'] = $step;
-
-            $chunk[] = $array;
-            if (count($chunk) === 1000) {
-
-                RecordInfo::insert($chunk);
-                $chunk = [];
-            }
-
-            $step++;
-        }
     }
 }

@@ -9,6 +9,8 @@ interface InterpreterInterface
     /**
      * @param string $app
      * @return mixed
+     *
+     * @throws \Exception
      */
     public function execute(string $app);
 

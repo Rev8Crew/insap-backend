@@ -55,7 +55,7 @@ class RecordCreateDto implements Arrayable
             'import_status' => $this->importStatus,
             'files' => $this->files,
             'params' => $this->params,
-            'import_error' => $this->importError,
+            'import_log' => $this->importError,
 
             'record_data_id' => $this->recordDataId,
             'user_id' => $this->userId,

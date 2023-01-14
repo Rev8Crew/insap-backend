@@ -39,6 +39,8 @@ class ProcessResource extends JsonResource
             'process_type' => ProcessType::labels()[$this->type],
             'process_type_id' => $this->type,
 
+            'children' => self::make($this->whenLoaded('children')),
+
             'process_interpreter' => ProcessInterpreter::labels()[$this->interpreter],
             'process_interpreter_class' => $this->interpreter,
 

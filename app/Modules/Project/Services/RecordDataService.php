@@ -25,6 +25,7 @@ class RecordDataService
 
         if ($file) {
             $input['image_id'] = $this->fileService->createFromUploadedImage($file, $user)->id;
+            $input['creator_user_id'] = $user->id;
         }
 
         $recordData = RecordData::create($input);

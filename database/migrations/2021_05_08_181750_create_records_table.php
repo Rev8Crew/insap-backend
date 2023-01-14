@@ -23,7 +23,7 @@ class CreateRecordsTable extends Migration
             $table->json('params')->nullable();
 
             $table->smallInteger('import_status');
-            $table->text('import_error')->nullable();
+            $table->text('import_log')->nullable();
 
             $table->integer('record_data_id')->index()->nullable();
             $table->integer('user_id')->index()->nullable();
