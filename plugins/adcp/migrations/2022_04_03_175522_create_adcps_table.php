@@ -24,8 +24,6 @@ class CreateAdcpsTable extends Migration
 
             $table->dateTime('date')->index();
             $table->integer('record_id')->index()->default(0);
-
-            $table->timestamps();
         });
     }
 

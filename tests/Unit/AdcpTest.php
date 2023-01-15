@@ -1,11 +1,19 @@
 <?php
 
 
+use App\Enums\ActiveStatus;
+use App\Enums\Process\ProcessInterpreter;
 use App\Enums\Process\ProcessType;
+use App\Modules\Plugins\Models\Plugin;
 use App\Modules\Processing\Factories\ProcessTypeFactory;
+use App\Modules\Processing\Models\Dto\ProcessParamsDto;
+use App\Modules\Processing\Models\Interpreter\InterpreterPhp;
+use App\Modules\Processing\Models\Interpreter\InterpreterPython;
 use App\Modules\Processing\Services\ProcessAppService;
 use App\Modules\Processing\Services\ProcessServiceInterface;
+use App\Modules\Project\Models\Project;
 use App\Modules\Project\Services\RecordService;
+use Carbon\Carbon;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Tests\Fixture\ApplianceFixture;
 use Tests\Fixture\ProcessFixture;
@@ -61,8 +69,94 @@ class AdcpTest extends \Tests\TestCase
         $this->recordFixture = null;
     }
 
-    public function testBasic(): void
+    public function testInstallAdcpProcess(): void
     {
+        $project = Project::first();
+        $appliance = $this->applianceFixture->create('ADCP');
+        $process = $this->processFixture->createWithInterpreter(
+            InterpreterPython::class,
+            'importer_python_adcp.zip',
+            Plugin::first(),
+            $appliance,
+            $project
+        );
 
+        $this->assertEquals('test', $process->name);
+        $this->assertTrue(ProcessType::create($process->type)->is(ProcessType::IMPORTER));
+        $this->assertEquals(InterpreterPython::class, ProcessInterpreter::create($process->interpreter));
+        $this->assertEquals(ActiveStatus::ACTIVE, $process->is_active);
+    }
+
+    public function testMultiplyImportAdcp(): void
+    {
+        $storage = Storage::disk('examples');
+        $project = Project::first();
+        $appliance = $this->applianceFixture->create('ADCP');
+        $process = $this->processFixture->createWithInterpreter(
+            InterpreterPython::class,
+            'importer_python_adcp.zip',
+            Plugin::first(),
+            $appliance,
+            $project
+        );
+        $record = $this->recordFixture->create('ADCP Record Test', $process);
+
+        $array = [
+            [
+                'data_file' => 'adcp' . DIRECTORY_SEPARATOR . 'k2019_0708' . DIRECTORY_SEPARATOR . '1604059223_data.TXT',
+                'ref_file' => 'adcp' . DIRECTORY_SEPARATOR . 'k2019_0708' . DIRECTORY_SEPARATOR . '1604059223_ref.TXT',
+                'date_time' => Carbon::now()->format('Y-m-d H:i:s'),
+                'expedition_number' => 1
+            ],
+            [
+                'data_file' => 'adcp' . DIRECTORY_SEPARATOR . 'k2019_0708' . DIRECTORY_SEPARATOR . '1604059281_data.TXT',
+                'ref_file' => 'adcp' . DIRECTORY_SEPARATOR . 'k2019_0708' . DIRECTORY_SEPARATOR . '1604059281_ref.TXT',
+                'date_time' => Carbon::now()->copy()->addDay()->format('Y-m-d H:i:s'),
+                'expedition_number' => 2
+            ],
+            [
+                'data_file' => 'adcp' . DIRECTORY_SEPARATOR . 'k2019_0708' . DIRECTORY_SEPARATOR . '1604059326_data.TXT',
+                'ref_file' => 'adcp' . DIRECTORY_SEPARATOR . 'k2019_0708' . DIRECTORY_SEPARATOR . '1604059326_ref.TXT',
+                'date_time' => Carbon::now()->copy()->addDays(2)->format('Y-m-d H:i:s'),
+                'expedition_number' => 3
+            ],
+        ];
+
+        foreach ($array as $item) {
+            $dataFileDto = $this->processFixture->getProcessFileDto('data',
+                $storage->path($item['data_file']),
+                'text/plain');
+
+            $refFileDto = $this->processFixture->getProcessFileDto('ref',
+                $storage->path($item['ref_file']),
+                'text/plain');
+
+            $params = [
+                'date_time' => $item['date_time'],
+                'expedition_number' => $item['expedition_number']
+            ];
+
+            $result = $this->importerService->executeProcess($process, $record, $params, [$dataFileDto, $refFileDto]);
+
+            $this->assertTrue($result);
+            $this->assertNotNull($record->process);
+            $this->assertTrue($this->recordService->getRecordInfo($record)->count() > 0);
+        }
+
+        $exportProcess = $this->processFixture->createWithInterpreter(InterpreterPhp::class, 'exporter_php_adcp.zip', Plugin::first(), $appliance, $project);
+
+        $params = [
+            'speed' => 2,
+            'average' => 150
+        ];
+
+        $result = $this->exporterService->executeProcess($exportProcess, $record, $params, []);
+
+        $this->assertInstanceOf(ProcessParamsDto::class, $result);
+        $this->assertTrue($result->getFiles()->count() === 0);
+        $this->assertTrue($result->getParams()->count() > 0);
+        $this->assertTrue($result->getData()->count() > 0);
+
+        $this->recordService->deleteRecordsInfo($record);
     }
 }

@@ -29,7 +29,7 @@ class RecordFixture
 
         $dto = RecordCreateDto::make($name, ActiveStatus::create(ActiveStatus::ACTIVE))
             ->setRecordDataId($recordDataId)
-            ->setUserId($userId)
+            ->setUserId($userId->id)
             ->setProcessId($process->id);
 
         return $this->recordService->createFromDto($dto);
